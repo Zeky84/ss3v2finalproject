@@ -20,6 +20,9 @@ public class User implements UserDetails {
     private String lastName;
     private String email;
     private String password;
+    private boolean isAdmin=false;
+    private boolean isSuperUser=false;
+    private boolean isUser=false;
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
     private List<Authority> authorities = new ArrayList<>();
@@ -137,4 +140,27 @@ public class User implements UserDetails {
         return this;
     }
 
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public boolean isSuperUser() {
+        return isSuperUser;
+    }
+
+    public void setSuperUser(boolean superUser) {
+        isSuperUser = superUser;
+    }
+
+    public boolean isUser() {
+        return isUser;
+    }
+
+    public void setUser(boolean user) {
+        isUser = user;
+    }
 }

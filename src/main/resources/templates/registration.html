@@ -172,7 +172,7 @@
       </button>
     </div>
     <div class="form-container">
-      <h2>Sing Up!</h2>
+      <h2>Register Form</h2>
       <form
         th:object="${user}"
         th:action="@{/register}"
@@ -183,7 +183,7 @@
         <div class="form-group">
           <input
             type="text"
-            placeholder="Enter First Name"
+            placeholder="Enter First Name*"
             th:field="*{firstName}"
             name="firstName"
             required
@@ -193,7 +193,7 @@
         <div class="form-group">
           <input
             type="text"
-            placeholder="Enter Last Name"
+            placeholder="Enter Last Name*"
             th:field="*{lastName}"
             name="lastName"
             required
@@ -262,7 +262,7 @@
           <button type="submit">Create User Account</button>
         </div>
       </form>
-      <a href="/signin" class="button-like">Already User? Go to Sign-In</a>
+      <a href="/signin" class="button-like">Already User? Go to Login</a>
     </div>
 
     <script type="text/javascript">
@@ -285,7 +285,6 @@
           }
         });
 
-
       var eyeIcons = document.querySelectorAll(".fa-eye"); // . is for selecting by class
       eyeIcons.forEach(function (eyeIcon) {
         eyeIcon.addEventListener("click", function () {
@@ -302,8 +301,6 @@
           }
         });
       });
-
-      
     </script>
   </body>
 </html>

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Secured("ROLE_ADMIN")
-    @Transactional // This annotation ensures that changes are committed to the database
     public void elevateUserToAdmin(Integer userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
@@ -73,7 +72,93 @@ public class UserServiceImpl implements UserService {
                 logger.info("Setting Authorities: " + user.getAuthorities());
 
                 // Save the updated user
+                user.setAdmin(true);
                 userRepository.save(user);
+            }
+        } else {
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Transactional
+    public void removeAdminPrivileges(Integer userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+
+            // Check if the user has the admin role
+            Authority adminAuthority = user.getAuthorities().stream()
+                    .filter(auth -> "ROLE_ADMIN".equals(auth.getAuthority()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (adminAuthority != null) {
+                // Remove the admin role from the user
+                user.getAuthorities().remove(adminAuthority);
+                adminAuthority.setUser(null);
+
+                user.setAdmin(false);
+                userRepository.save(user);
+
+                logger.info("Removed Admin Role for user: " + user.getId() + " " + user.getEmail());
+            }
+        } else {
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
+    }
+    @Secured("ROLE_ADMIN")
+    public void elevateUserToSuperUser(Integer userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            // Check if the user doesn't already have the superuser role
+            if (user.getAuthorities().stream().noneMatch(auth -> "ROLE_SUPERUSER".equals(auth.getAuthority()))) {
+                // Add the superuser role to the user
+                Authority superUserAuth = new Authority("ROLE_SUPERUSER");
+                superUserAuth.setUser(user);
+                user.getAuthorities().add(superUserAuth);
+
+                logger.info("Setting Auth for user: " + user.getId() + user.getEmail());
+                logger.info("Setting Authorities: " + user.getAuthorities());
+
+                user.setSuperUser(true);
+                // Save the updated user
+                userRepository.save(user);
+            }
+        } else {
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Transactional
+    public void removeSuperUserPrivileges(Integer userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+
+            // Check if the user has the admin role
+            Authority adminAuthority = user.getAuthorities().stream()
+                    .filter(auth -> "ROLE_SUPERUSER".equals(auth.getAuthority()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (adminAuthority != null) {
+                // Remove the admin role from the user
+                user.getAuthorities().remove(adminAuthority);
+                adminAuthority.setUser(null);
+
+                user.setSuperUser(false);
+                userRepository.save(user);
+
+                logger.info("Removed Admin Role for user: " + user.getId() + " " + user.getEmail());
             }
         } else {
             throw new IllegalArgumentException("User not found with ID: " + userId);
@@ -82,7 +167,6 @@ public class UserServiceImpl implements UserService {
 
     public User registerUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-
             return null;
         }
         return userRepository.save(user);
@@ -97,6 +181,9 @@ public class UserServiceImpl implements UserService {
     }
 
     public User updateUser(User user) {
+        return userRepository.save(user);
+    }
+    public User save(User user) {
         return userRepository.save(user);
     }
 }
