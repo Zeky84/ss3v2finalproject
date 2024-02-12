@@ -23,12 +23,19 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
+    //All the methods related to the users control, like deleting, updating, and creating a user are
+    // implemented in this class, and only the admin can access these methods. Each user methods are going to be
+    // implemented in UserService Class
 
     private UserRepository userRepository;
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    public UserServiceImpl(UserRepository userRepository) {
+    //To delete the user we need to delete the refresh token as well
+    private RefreshTokenService refreshTokenService;
+
+    public UserServiceImpl(UserRepository userRepository, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -55,6 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Secured("ROLE_ADMIN")
+    @Transactional
     public void elevateUserToAdmin(Integer userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
@@ -110,6 +118,7 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Secured("ROLE_ADMIN")
+    @Transactional
     public void elevateUserToSuperUser(Integer userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
@@ -140,20 +149,21 @@ public class UserServiceImpl implements UserService {
     public void removeSuperUserPrivileges(Integer userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
+
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
 
             // Check if the user has the admin role
-            Authority adminAuthority = user.getAuthorities().stream()
+            Authority superUserAuth = user.getAuthorities().stream()
                     .filter(auth -> "ROLE_SUPERUSER".equals(auth.getAuthority()))
                     .findFirst()
                     .orElse(null);
 
-            if (adminAuthority != null) {
+            if (superUserAuth != null) {
                 // Remove the admin role from the user
-                user.getAuthorities().remove(adminAuthority);
-                adminAuthority.setUser(null);
+                user.getAuthorities().remove(superUserAuth);
+                superUserAuth.setUser(null);
 
                 user.setSuperUser(false);
                 userRepository.save(user);
@@ -163,6 +173,13 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new IllegalArgumentException("User not found with ID: " + userId);
         }
+    }
+
+    @Secured("ROLE_ADMIN")
+    @Transactional
+    public void deleteUser(Integer userId) {
+        refreshTokenService.deleteByUserId(userId);
+        userRepository.deleteById(userId);
     }
 
     public User registerUser(User user) {
@@ -186,4 +203,5 @@ public class UserServiceImpl implements UserService {
     public User save(User user) {
         return userRepository.save(user);
     }
+
 }

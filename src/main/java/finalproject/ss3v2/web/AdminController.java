@@ -2,8 +2,6 @@ package finalproject.ss3v2.web;
 
 import finalproject.ss3v2.domain.Authority;
 import finalproject.ss3v2.domain.User;
-import finalproject.ss3v2.repository.UserRepository;
-import finalproject.ss3v2.service.AuthorityService;
 import finalproject.ss3v2.service.UserServiceImpl;
 
 import jakarta.annotation.PostConstruct;
@@ -28,14 +26,13 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private UserServiceImpl userService;
-    private AuthorityService authorityService;
+    private UserServiceImpl userServiceImpl;
     private PasswordEncoder passwordEncoder;
     private Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     public AdminController(UserServiceImpl userService, PasswordEncoder passwordEncoder) {
         super();
-        this.userService = userService;
+        this.userServiceImpl = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -57,26 +54,26 @@ public class AdminController {
         Authority adminAuth = new Authority("ROLE_ADMIN", adminUser);
         adminUser.setAuthorities(Collections.singletonList(adminAuth));
         adminUser.setAdmin(true);
-        userService.save(adminUser);
+        userServiceImpl.save(adminUser);
     }
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.findAll();
+        List<User> users = userServiceImpl.findAll();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/dashboard")
     public String getDashboard(ModelMap model) {
-        List<User> users = userService.findAll();
+        List<User> users = userServiceImpl.findAll();
         model.addAttribute("userList", users);
         return "dashboard";
     }
 
     @PostMapping("/makeAdmin")
     public ResponseEntity<String> elevateToAdmin(@RequestParam Integer userId) {
-        Optional<User> findUser = userService.findUserById(userId);
-        userService.elevateUserToAdmin(userId);
+        Optional<User> findUser = userServiceImpl.findUserById(userId);
+        userServiceImpl.elevateUserToAdmin(userId);
         logger.info("Processing elevation for user: {}", findUser.get().getEmail());
         logger.info("Role: {}", findUser.get().getAuthorities());
         return ResponseEntity.ok("User elevated to admin");
@@ -84,16 +81,16 @@ public class AdminController {
 
     @PostMapping("/removeAdmin")
     public ResponseEntity<String> removeAdmin(@RequestParam Integer userId) {
-        Optional<User> findUser = userService.findUserById(userId);
-        userService.removeAdminPrivileges(userId);
+        Optional<User> findUser = userServiceImpl.findUserById(userId);
+        userServiceImpl.removeAdminPrivileges(userId);
         logger.info("Removing Admin for user: {}", findUser.get().getEmail());
         logger.info("Role: {}", findUser.get().getAuthorities());
         return ResponseEntity.ok("Removing admin privileges for user");
     }
     @PostMapping("/makeSuperUser")
     public ResponseEntity<String> elevateToSuperUser(@RequestParam Integer userId) {
-        Optional<User> findUser = userService.findUserById(userId);
-        userService.elevateUserToSuperUser(userId);
+        Optional<User> findUser = userServiceImpl.findUserById(userId);
+        userServiceImpl.elevateUserToSuperUser(userId);
         logger.info("Processing elevation for user: {}", findUser.get().getEmail());
         logger.info("Role: {}", findUser.get().getAuthorities());
         return ResponseEntity.ok("User elevated to admin");
@@ -101,10 +98,17 @@ public class AdminController {
 
     @PostMapping("/removeSuperUser")
     public ResponseEntity<String> removeSuperUser(@RequestParam Integer userId) {
-        Optional<User> findUser = userService.findUserById(userId);
-        userService.removeSuperUserPrivileges(userId);
+        Optional<User> findUser = userServiceImpl.findUserById(userId);
+        userServiceImpl.removeSuperUserPrivileges(userId);
         logger.info("Removing Admin for user: {}", findUser.get().getEmail());
         logger.info("Role: {}", findUser.get().getAuthorities());
         return ResponseEntity.ok("Removing admin privileges for user");
+    }
+    @PostMapping("/deleteUser")
+    public ResponseEntity<String> deleteUser(@RequestParam Integer userId) {
+        Optional<User> findUser = userServiceImpl.findUserById(userId);
+        userServiceImpl.deleteUser(userId);
+        logger.info("Deleting user: {}", findUser.get().getEmail());
+        return ResponseEntity.ok("User deleted");
     }
 }

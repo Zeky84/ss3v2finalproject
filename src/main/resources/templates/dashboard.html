@@ -1,36 +1,172 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
-    <title>Admin Dashboard</title>
+    <title>mycostliving-homepage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
+            background-color: #78a7d3; /* Optional: background color for the overall page */
+            color: #306DA6; /* Optional: default text color */
+            }
+        .form-container {/* GPT help */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 920px;
+            margin: auto;
+            padding: 20px;
+            box-shadow: 0 0 4px #c3e9ff;
+            border-radius: 10px;
+            background-color: #c3e9ff;
         }
-
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            margin-top: 50px;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         th, td {
-            border: 1px solid #ddd;
+            border: 2px solid #306DA6;
             padding: 8px;
             text-align: left;
         }
-
         th {
-            background-color: #4CAF50;
-            color: white;
+            background-color: #dfe451;
+            color: #306DA6;
+        }
+        
+        .form-group {/* GPT help */
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 15px; /* Spacing between rows */
+            width: 100%;
+        }
+        .form-group label {/* GPT help */
+            width: 150px; /* Adjust as needed */
+            text-align: right;
+            margin-right: 10px; /* Spacing between label and input */
         }
 
+        .form-group input {/* GPT help */
+            flex-grow: 1; /* Makes input take up the remaining space */
+            border: 1px solid #DEF3FF;
+            box-shadow: 0 0 4px #b0d9fd;
+            height: 40px;
+            width: 280px;
+            border-radius: 13px;
+            text-indent: 10px;
+
+        }
+
+        .form-group button {/* Some from my chatapp */
+            background-color: #306DA6;
+            box-shadow: 0 0 4px #306DA6;
+            border: none;
+            color: white;
+            padding: 2px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.5s;
+            margin-left: 5px;
+            margin-right: 5px;
+            margin-top: 7px;
+            height: 40px;
+            width: 300px;
+        }
+        .form-group button:hover {/* Some from my chatapp */
+            background-color: #24517a;
+            box-shadow: 0 0 4px #043E5F;
+            font-size: 17px;
+        }
+        .button-home {
+            font-family: 'Roboto', sans-serif;
+            background-color: #dfe451;
+            border: none;
+            box-shadow: 0 0 4px #e9ec8b;
+            color: #306DA6;
+            padding: 2px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.5s;
+            margin-left: 5px;
+            margin-right: 5px;
+            margin-top: 7px;
+            height: 40px;
+            width: 150px;
+          }
+          .button-home:hover {
+            background-color: #c6ca4c;
+            box-shadow: 0 0 4px #c6ca4c;
+            font-size: 22px;
+          }
+        .button-like {
+            background-color: #306DA6;
+            box-shadow: 0 0 4px #306DA6;;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.5s;
+            margin-left: 5px;
+            margin-right: 5px;
+            margin-top: 7px;
+            height: 40px;
+            width: 300px;
+            line-height: 40px;
+          }
+
+        .button-like:hover {
+            background-color: #24517a; /* Darker shade for hover */
+            box-shadow: 0 0 4px #043E5F;
+            font-size: 17px;
+        }
+            /* General style for all input placeholders */
+          .form-group input::placeholder {
+              color: #306DA6; /* Light blueish-gray color for the placeholder text */
+              font-size: 15px; /* Slightly smaller font size than the input text */
+              opacity: 0.8; /* Slightly transparent to differentiate from input text */
+          }
+
+          /* Hover effect on input fields to highlight the placeholder on focus */
+          .form-group input:hover::placeholder {
+              color: #306DA6; /* Darker color on hover for better visibility */
+              opacity: 1; /* Fully opaque on hover */
+              font-style: normal; /* Normal font style when the field is active */
+              font-size: 17px; /* Slightly smaller font size on focus */
+          }
+
+          /* Focus effect on input fields to change the placeholder when typing starts */
+          .form-group input:focus::placeholder {
+              color: #306DA6; /* Even darker color on focus */
+              font-style: normal; /* Normal font style when the field is active */
+              font-size: 18px; /* Slightly smaller font size on focus */
+          }
+          .form-group input:focus {
+              outline: 2px solid #306DA6; /* Change 'blue' to your desired color */
+          }
+          .form-group input:hover {
+                background-color: rgb(240, 251, 255);
+              }
+              .button-container {
+            margin-top: 10px; /* Adjust the margin as needed */
+        }
         .elevate-button {
             background-color: #4CAF50;
             color: white;
@@ -112,6 +248,12 @@
                             <form th:action="@{/admin/removeSuperUser}" th:method="post">
                                 <input type="hidden" th:name="userId" th:value="${user.id}" />
                                 <button type="submit" class="remove-button">Remove SuperUser priviledges</button>
+                            </form>
+                        </span>
+                        <span >
+                            <form th:action="@{/admin/deleteUser}" th:method="post">
+                                <input type="hidden" th:name="userId" th:value="${user.id}" />
+                                <button type="submit" class="remove-button">Delete User</button>
                             </form>
                         </span>
                     

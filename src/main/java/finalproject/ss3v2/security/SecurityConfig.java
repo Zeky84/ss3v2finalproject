@@ -65,10 +65,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
 //                                		.requestMatchers("/api/v1/auth/**").permitAll()
                                 .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
-                                .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
                                 .requestMatchers("/products").authenticated()
                                 .requestMatchers("/success").authenticated()
-                                .requestMatchers("/register").permitAll()
+                                .requestMatchers("homepage","/register").permitAll()
                                 .anyRequest().permitAll()
                 )
                 .headers(header -> header.frameOptions(frameOption -> frameOption.disable()))
