@@ -95,17 +95,20 @@
         font-size: 17px;
       }
       .button-home {
+        position: absolute; /* Take the div out of the normal document flow */
+        top: 10px; /* 10px from the top of the page */
+        right: 10px;
         font-family: "Roboto", sans-serif;
-        background-color: #dfe451;
+        background-color: #ffff4c;
         border: none;
-        box-shadow: 0 0 4px #e9ec8b;
+        box-shadow: 0 0 4px #ffff4c;
         color: #306da6;
         padding: 2px 5px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
-        font-size: 20px;
-        border-radius: 8px;
+        font-size: 18px;
+        border-radius: 10px;
         cursor: pointer;
         white-space: nowrap;
         transition: background-color 0.5s;
@@ -116,9 +119,9 @@
         width: 150px;
       }
       .button-home:hover {
-        background-color: #c6ca4c;
-        box-shadow: 0 0 4px #c6ca4c;
-        font-size: 22px;
+        background-color: #e4e440;
+        box-shadow: 0 0 4px #e4e440;
+        font-size: 19px;
       }
       .button-like {
         background-color: #306da6;
@@ -200,10 +203,10 @@
         transition: background-color 0.5s;
       }
       .elevate-button:hover {
-            background-color: #1e9738;
-            box-shadow: 0 0 4px #1e9738;
-            font-size: 17px;
-          }
+        background-color: #1e9738;
+        box-shadow: 0 0 4px #1e9738;
+        font-size: 17px;
+      }
       .remove-button {
         color: white;
         border: none;
@@ -228,10 +231,10 @@
         transition: background-color 0.5s;
       }
       .remove-button:hover {
-            background-color: #972525;
-            box-shadow: 0 0 4px #972525;
-            font-size: 17px;
-          }
+        background-color: #972525;
+        box-shadow: 0 0 4px #972525;
+        font-size: 17px;
+      }
       span {
         display: inline-block;
         margin-right: 10px; /* Adjust as needed */
@@ -317,7 +320,7 @@
       </table>
     </div>
     <form action="/logout" method="post">
-      <button type="submit">Logout</button>
+      <button class= "button-home" type="submit">Logout/Home</button>
     </form>
   </body>
 </html>
