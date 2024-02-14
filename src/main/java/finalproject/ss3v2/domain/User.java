@@ -1,14 +1,17 @@
 package finalproject.ss3v2.domain;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
+
 @Table(name = "users")
 
 public class User implements UserDetails {
@@ -20,9 +23,16 @@ public class User implements UserDetails {
     private String lastName;
     private String email;
     private String password;
+    @CreationTimestamp  // this annotation is to set the createdAt field to the current time when the user is created
+    @Column(name = "created_at", nullable = false)
+    private LocalDate createdAt;
     private boolean isAdmin=false;
     private boolean isSuperUser=false;
     private boolean isUser=false;
+    @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
+    private List<Profile> profiles = new ArrayList<>();
+    @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
+    private List<Post> posts = new ArrayList<>();
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
     private List<Authority> authorities = new ArrayList<>();

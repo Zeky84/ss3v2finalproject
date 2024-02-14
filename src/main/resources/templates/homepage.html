@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #78a7d3; /* Optional: background color for the overall page */
+            background-color: #1c3955; /* Optional: background color for the overall page */
             color: #306DA6; /* Optional: default text color */
             margin: 0
             }
@@ -68,15 +68,25 @@
             margin-top: 10px;
             right: 13px;
         }
+        .half-background {
+    position: fixed;
+    top: 0;
+    left: 0; /* Start from the left edge of the screen */
+    width: 100%; /* Cover the full width of the screen */
+    height: 75px; /* Cover the top half of the screen */
+    background-color: #1c3955; /* Your chosen color for the top half */
+    z-index: -1; /* Ensure it stays behind other content */
+}
 
     </style>
 </head>
 <body>
-<div class="button-container">
+    <div class="button-container">
     <button class="button-signlogin" style="border-radius: 10px 4px 4px 10px;" onclick="location.href='/register'">Sign Up</button>
     <button class="button-signlogin" style="border-radius: 4px 10px 10px 4px;" onclick="location.href='/signin'">Sign In</button>
     <!-- <button class="button-posts" onclick="location.href='/posts'">Posts</button> -->
 </div>
+
 
 </script>
 </body>

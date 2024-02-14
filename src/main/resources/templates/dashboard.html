@@ -9,7 +9,7 @@
     <style>
       body {
         font-family: "Roboto", sans-serif;
-        background-color: #78a7d3; /* Optional: background color for the overall page */
+        background-color: #1c3955; /* Optional: background color for the overall page */
         color: #306da6; /* Optional: default text color */
       }
       .form-container {
@@ -17,7 +17,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 920px;
+        width: 1500px;
         margin: auto;
         padding: 20px;
         box-shadow: 0 0 4px #c3e9ff;
@@ -31,68 +31,13 @@
       }
       th,
       td {
-        border: 2px solid #306da6;
+        border: 2px solid #1c3955;
         padding: 8px;
         text-align: left;
       }
       th {
         background-color: #dfe451;
         color: #306da6;
-      }
-
-      .form-group {
-        /* GPT help */
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        margin-bottom: 15px; /* Spacing between rows */
-        width: 100%;
-      }
-      .form-group label {
-        /* GPT help */
-        width: 150px; /* Adjust as needed */
-        text-align: right;
-        margin-right: 10px; /* Spacing between label and input */
-      }
-
-      .form-group input {
-        /* GPT help */
-        flex-grow: 1; /* Makes input take up the remaining space */
-        border: 1px solid #def3ff;
-        box-shadow: 0 0 4px #b0d9fd;
-        height: 40px;
-        width: 280px;
-        border-radius: 13px;
-        text-indent: 10px;
-      }
-
-      .form-group button {
-        /* Some from my chatapp */
-        background-color: #306da6;
-        box-shadow: 0 0 4px #306da6;
-        border: none;
-        color: white;
-        padding: 2px 5px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-        margin-left: 5px;
-        margin-right: 5px;
-        margin-top: 7px;
-        height: 40px;
-        width: 300px;
-      }
-      .form-group button:hover {
-        /* Some from my chatapp */
-        background-color: #24517a;
-        box-shadow: 0 0 4px #043e5f;
-        font-size: 17px;
       }
       .button-home {
         position: absolute; /* Take the div out of the normal document flow */
@@ -123,62 +68,6 @@
         box-shadow: 0 0 4px #e4e440;
         font-size: 19px;
       }
-      .button-like {
-        background-color: #306da6;
-        box-shadow: 0 0 4px #306da6;
-        border: none;
-        color: white;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-        margin-left: 5px;
-        margin-right: 5px;
-        margin-top: 7px;
-        height: 40px;
-        width: 300px;
-        line-height: 40px;
-      }
-
-      .button-like:hover {
-        background-color: #24517a; /* Darker shade for hover */
-        box-shadow: 0 0 4px #043e5f;
-        font-size: 17px;
-      }
-      /* General style for all input placeholders */
-      .form-group input::placeholder {
-        color: #306da6; /* Light blueish-gray color for the placeholder text */
-        font-size: 15px; /* Slightly smaller font size than the input text */
-        opacity: 0.8; /* Slightly transparent to differentiate from input text */
-      }
-
-      /* Hover effect on input fields to highlight the placeholder on focus */
-      .form-group input:hover::placeholder {
-        color: #306da6; /* Darker color on hover for better visibility */
-        opacity: 1; /* Fully opaque on hover */
-        font-style: normal; /* Normal font style when the field is active */
-        font-size: 17px; /* Slightly smaller font size on focus */
-      }
-
-      /* Focus effect on input fields to change the placeholder when typing starts */
-      .form-group input:focus::placeholder {
-        color: #306da6; /* Even darker color on focus */
-        font-style: normal; /* Normal font style when the field is active */
-        font-size: 18px; /* Slightly smaller font size on focus */
-      }
-      .form-group input:focus {
-        outline: 2px solid #306da6; /* Change 'blue' to your desired color */
-      }
-      .form-group input:hover {
-        background-color: rgb(240, 251, 255);
-      }
-      .button-container {
-        margin-top: 10px; /* Adjust the margin as needed */
-      }
       .elevate-button {
         color: white;
         border: none;
@@ -203,9 +92,10 @@
         transition: background-color 0.5s;
       }
       .elevate-button:hover {
-        background-color: #1e9738;
-        box-shadow: 0 0 4px #1e9738;
-        font-size: 17px;
+        color: rgb(204, 255, 189);
+        background-color: #19792e;
+        box-shadow: 0 0 4px #19792e;
+        font-size: 16px;
       }
       .remove-button {
         color: white;
@@ -231,9 +121,10 @@
         transition: background-color 0.5s;
       }
       .remove-button:hover {
-        background-color: #972525;
-        box-shadow: 0 0 4px #972525;
-        font-size: 17px;
+        color: rgb(255, 192, 192);
+        background-color: #831d1d;
+        box-shadow: 0 0 4px #831d1d;
+        font-size: 16px;
       }
       span {
         display: inline-block;
@@ -243,7 +134,7 @@
   </head>
 
   <body>
-    <div class="container">
+    <div class="form-container">
       <h2>Admin Dashboard</h2>
 
       <table>
