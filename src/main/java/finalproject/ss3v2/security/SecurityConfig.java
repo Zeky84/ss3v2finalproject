@@ -65,7 +65,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
 //                                		.requestMatchers("/api/v1/auth/**").permitAll()
                                 .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
-                                .requestMatchers("/products").authenticated()
+                                .requestMatchers("/usersession/**").authenticated()
                                 .requestMatchers("/success").authenticated()
                                 .requestMatchers("homepage","/register").permitAll()
                                 .anyRequest().permitAll()
@@ -96,7 +96,7 @@ public class SecurityConfig {
                                 logger.info("Successful authentication for: " + user.getUsername());
                                 logger.info("Access Cookie: " + accessTokenCookie.getValue());
                                 logger.info("Refresh Cookie: " + refreshTokenCookie.getValue());
-                                logger.info("Role for " + user.getUsername() + " is: " + user.authority(accessToken).toString());
+                                logger.info("Role for " + user.getUsername() + " is: " + user.authority(accessToken).getAuthorities().toString());
                                 logger.info("Successful authentication for: " + user.getUsername());
                                 logger.info("Access Cookie: " + accessTokenCookie.getValue());
                                 logger.info("Refresh Cookie: " + refreshTokenCookie.getValue());
@@ -104,7 +104,15 @@ public class SecurityConfig {
 //
                                 response.addCookie(accessTokenCookie);
                                 response.addCookie(refreshTokenCookie);
-                                response.sendRedirect("/success");
+                                // Modified from the original to redirect based on user role BY ME :)
+//                                response.sendRedirect("/success");
+                                String role = authentication.getAuthorities().stream().findFirst().get().getAuthority();
+
+                                if (role.equals("ROLE_ADMIN")) {
+                                    response.sendRedirect("/admin/dashboard");
+                                } else {
+                                    response.sendRedirect("/usersession");
+                                }
                             }
                         })
                         .failureHandler(new AuthenticationFailureHandler() {

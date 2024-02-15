@@ -77,12 +77,3 @@ public class RegistrationController {
         }
     }
 }
-/*
- * This code is from Trevor's original implementation which might be helpful for
- * those who are not using server rendering templates
- *
- * @PostMapping("/signup")
- * public ResponseEntity<JwtAuthenticationResponse> signup(@RequestBody SignUpRequest request) {
- * return ResponseEntity.ok(authenticationService.signup(request));
- * }
- */

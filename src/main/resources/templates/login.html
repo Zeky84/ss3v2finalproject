@@ -17,28 +17,22 @@
         background-color: #1c3955; /* Optional: background color for the overall page */
         color: #306da6; /* Optional: default text color */
       }
+      .gif-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
       .form-container {
-        /* GPT help */
+        /* Other styles remain unchanged */
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 320px;
-        margin: auto;
+        margin: 10px auto 0; /* Adjust the top margin as needed */
         padding: 20px;
         box-shadow: 0 0 4px #c3e9ff;
         border-radius: 10px;
         background-color: #c3e9ff;
-      }
-      .form-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          width: 320px;
-          margin: 100px auto 0; 
-          padding: 20px;
-          box-shadow: 0 0 4px #c3e9ff;
-          border-radius: 10px;
-          background-color: #c3e9ff;
       }
       .form-group {
         /* GPT help */
@@ -100,8 +94,8 @@
         right: 10px;
         font-family: "Roboto", sans-serif;
         background-color: #ffff4c;
-            border: none;
-            box-shadow: 0 0 4px #ffff4c;
+        border: none;
+        box-shadow: 0 0 4px #ffff4c;
         color: #306da6;
         padding: 2px 5px;
         text-align: center;
@@ -120,10 +114,10 @@
       }
       .button-home:hover {
         background-color: #e4e440;
-            box-shadow: 0 0 4px #e4e440;
-            font-size: 19px;
+        box-shadow: 0 0 4px #e4e440;
+        font-size: 19px;
       }
-      
+
       .button-like {
         background-color: #306da6;
         box-shadow: 0 0 4px #306da6;
@@ -180,6 +174,9 @@
     </style>
   </head>
   <body>
+    <div class="gif-container">
+      <img src="/images/micostliving01.gif" />
+    </div>
     <div>
       <button class="button-home" onclick="location.href='/homepage'">
         Home
