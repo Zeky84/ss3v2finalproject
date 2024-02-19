@@ -12,6 +12,10 @@
         background-color: #1c3955; /* Optional: background color for the overall page */
         color: #306da6; /* Optional: default text color */
       }
+      .container{
+        display: flex;
+        justify-content: space-between;
+      }
       .form-container {
         /* GPT help */
         display: flex;
@@ -23,21 +27,6 @@
         box-shadow: 0 0 4px #c3e9ff;
         border-radius: 10px;
         background-color: #c3e9ff;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-      }
-      th,
-      td {
-        border: 2px solid #1c3955;
-        padding: 8px;
-        text-align: left;
-      }
-      th {
-        background-color: #dfe451;
-        color: #306da6;
       }
       .button-home {
         position: absolute; /* Take the div out of the normal document flow */
@@ -68,81 +57,19 @@
         box-shadow: 0 0 4px #e4e440;
         font-size: 19px;
       }
-      .elevate-button {
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        cursor: pointer;
-        font-family: "Roboto", sans-serif;
-        background-color: #2eac49;
-        border: none;
-        box-shadow: 0 0 4px #2eac49;
-        /* color: #306DA6; */
-        padding: 4px 5px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        border-radius: 8px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-      }
-      .elevate-button:hover {
-        color: rgb(204, 255, 189);
-        background-color: #19792e;
-        box-shadow: 0 0 4px #19792e;
-        font-size: 16px;
-      }
-      .remove-button {
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        cursor: pointer;
-        font-family: "Roboto", sans-serif;
-        background-color: #ac2e2e;
-        border: none;
-        box-shadow: 0 0 4px #ac2e2e;
-        /* color: #306DA6; */
-        padding: 4px 5px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        border-radius: 8px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-      }
-      .remove-button:hover {
-        color: rgb(255, 192, 192);
-        background-color: #831d1d;
-        box-shadow: 0 0 4px #831d1d;
-        font-size: 16px;
-      }
-      span {
-        display: inline-block;
-        margin-right: 10px; /* Adjust as needed */
-      }
     </style>
   </head>
-
-  <body>
-    <h2 style="color: #c3e9ff; text-align: center; margin: 10px auto; display: block;">USER space</h2>
-
-    <div class="form-container">
-      <h2>Welcome! [[${user.firstName}]]</h2>
+  <body></body>
+    <div>
+      <img src="/images/imagehome.png" style="margin-left: 7px; margin-top: 7px;" />
+      <div>
+       <form action="/logout" method="post">
+        <button class="button-home" type="submit">Logout/Home</button>
+      </form> 
+      </div>
     </div>
-    <form action="/logout" method="post">
-      <button class= "button-home" type="submit">Logout/Home</button>
-    </form>
     <h1>Welcome to Your Session</h1>
     <p>Your session ID: <span th:text="${userId}"></span></p>
+    <h2>Welcome! [[${user.firstName}]]</h2>
   </body>
 </html>

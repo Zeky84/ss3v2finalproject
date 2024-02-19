@@ -1,49 +1,56 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
-<head>
+  <head>
     <title>mycostliving-homepage</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #1c3955; /* Optional: background color for the overall page */
-            color: #306DA6; /* Optional: default text color */
-            margin: 0
-            }
-.button-signlogin {
-    font-family: 'Roboto', sans-serif;
-    /* ... other button styles ... */
-    margin-top: 0; /* Adjust if needed to align with the image */
-}
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: #1c3955; /* Optional: background color for the overall page */
+        color: #306da6; /* Optional: default text color */
+        margin: 0;
+      }
+      .button-signlogin {
+        font-family: "Roboto", sans-serif;
+        /* ... other button styles ... */
+        margin-top: 0; /* Adjust if needed to align with the image */
+      }
+      .container{
+        display: flex;
+        justify-content: space-between;
+      }
 
-        .button-signlogin {
-            font-family: 'Roboto', sans-serif;
-            background-color: #ffff4c;
-            border: none;
-            box-shadow: 0 0 4px #ffff4c;
-            color: #306DA6;
-            padding: 2px 5px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: background-color 0.5s;
-            margin-left: 5px;
-            margin-right: 1px;
-            margin-top: 7px;
-            height: 40px;
-            width: 70px;
-          }
-          .button-signlogin:hover {
-            background-color: #e4e440;
-            box-shadow: 0 0 4px #e4e440;
-            font-size: 19px;
-          }
-        
-          /* .button-posts {
+      .button-signlogin {
+        font-family: "Roboto", sans-serif;
+        background-color: #ffff4c;
+        border: none;
+        box-shadow: 0 0 4px #ffff4c;
+        color: #306da6;
+        padding: 2px 5px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 0.5s;
+        margin-left: 5px;
+        margin-right: 1px;
+        margin-top: 7px;
+        height: 40px;
+        width: 70px;
+      }
+      .button-signlogin:hover {
+        background-color: #e4e440;
+        box-shadow: 0 0 4px #e4e440;
+        font-size: 19px;
+      }
+
+      /* .button-posts {
             font-family: 'Roboto', sans-serif;
             background-color: #ffd900;
             border: none;
@@ -69,25 +76,36 @@
             box-shadow: 0 0 4px #cab34c;
             font-size: 20px;
           } */
-          .button-container {
-            position: absolute;
-            margin-top: 10px;
-            right: 13px;
-        }
-
+      .button-container {
+        position: absolute;
+        margin-top: 10px;
+        right: 13px;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-  <div>
-    <div class="button-container">
-        <button class="button-signlogin" style="border-radius: 10px 4px 4px 10px;" onclick="location.href='/register'">Sign Up</button>
-        <button class="button-signlogin" style="border-radius: 4px 10px 10px 4px;" onclick="location.href='/signin'">Sign In</button>  
+  <body>
+    <div>
+      <div class="button-container">
+        <button
+          class="button-signlogin"
+          style="border-radius: 10px 4px 4px 10px"
+          onclick="location.href='/register'"
+        >
+          Sign Up
+        </button>
+        <button
+          class="button-signlogin"
+          style="border-radius: 4px 10px 10px 4px"
+          onclick="location.href='/signin'"
+        >
+          Sign In
+        </button>
+      </div>
+      <img
+        src="/images/imagehome.png"
+        style="margin-left: 15px; margin-top: 15px"
+      />
     </div>
-    <img src="/images/imagehome.png" style="margin-left: 10px;"/> 
-</div>
-
-
-</script>
-</body>
+  </body>
 </html>
