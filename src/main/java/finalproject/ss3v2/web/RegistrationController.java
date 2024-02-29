@@ -68,7 +68,7 @@ public class RegistrationController {
             if (signupResponse != null) {
                 // Successfully registered user, now proceed with authentication
                 logger.info("Successfully registered user. Redirecting to success.");
-                return "login";
+                return "signin";
             } else {
                 // Handle the case where authentication is not successful
                 logger.error("User registration failed. Redirecting to error.");

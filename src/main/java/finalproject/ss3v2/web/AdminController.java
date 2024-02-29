@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -61,9 +62,11 @@ public class AdminController {
 //    }
 
     @GetMapping("/dashboard")
-    public String getDashboard(ModelMap model) {
+    public String getDashboard(ModelMap model, Authentication authentication) {
+        String adminname = authentication.getName();
         List<User> users = userServiceImpl.findAll();
         model.addAttribute("userList", users);
+        model.addAttribute("adminname", adminname);
         return "dashboard";
     }
 

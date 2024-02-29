@@ -41,25 +41,21 @@ public class AuthenticationController {
 
 
     @GetMapping("/signin")
-    public String getLogin (@ModelAttribute("user") User user) {
-        return "login";
+    public String getLogin(@ModelAttribute("user") User user) {
+        return "signin";
     }
 
     @GetMapping("/login-error")
-    public String loginError (Model model) {
+    public String loginError(Model model) {
         model.addAttribute("loginError", true);
-        return "login";
+        return "signin"; // was "login" before
     }
-
 
     @PostMapping("/signin")
     public ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SignInRequest request, @RequestBody User user) {
         Optional<User> existingUser = userService.findUserByEmail(user.getEmail());
-
         String accessToken = jwtService.generateToken(user);
-
         return ResponseEntity.ok(authenticationService.signin(request));
-
     }
 
 

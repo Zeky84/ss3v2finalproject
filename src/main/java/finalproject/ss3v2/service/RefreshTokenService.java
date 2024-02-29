@@ -2,6 +2,7 @@ package finalproject.ss3v2.service;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,7 +60,6 @@ public class RefreshTokenService {
         return token;
     }
 
-
     @Transactional
     public int deleteByUserId(Integer userId) {
         return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
@@ -72,5 +72,23 @@ public class RefreshTokenService {
                 .map(refreshToken -> jwtService.generateToken(new HashMap<>(), refreshToken.getUser()))
                 .orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
         return accessToken;
+    }
+
+    //--------------------------------------------------------------------------------addition to the original code
+
+    public List<RefreshToken> findByUser(Integer userId) {// getting all refresh tokens for a user
+        // Because there is list of refresh tokens for a user, we need to get the last one
+        return refreshTokenRepository.findAllByUserId(userId);
+    }
+
+    public Boolean verifyRefreshTokenExpiration(Integer userId) {// verify if the last refresh token is not expired
+        List<RefreshToken> refreshTokenList = findByUser(userId);
+        RefreshToken refreshToken = refreshTokenList.get(refreshTokenList.size()-1);
+        System.out.println(refreshToken.getExpiryDate());//for debugging
+        System.out.println(Instant.now());//for debugging
+        if(refreshToken.getExpiryDate().compareTo(Instant.now()) < 0) {
+            return false;
+        }
+        return true;
     }
 }

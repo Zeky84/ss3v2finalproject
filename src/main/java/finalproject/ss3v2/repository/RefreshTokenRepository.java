@@ -1,5 +1,6 @@
 package finalproject.ss3v2.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,9 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
     @Modifying
     int deleteByUser(User user);
+
+    //-------------------------------------------------------------------------addition to the original code
+    Optional<RefreshToken> findByUserId(Integer userId);
+
+    List<RefreshToken> findAllByUserId(Integer userId);
 }

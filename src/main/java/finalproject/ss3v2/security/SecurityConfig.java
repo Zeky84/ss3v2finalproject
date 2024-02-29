@@ -68,82 +68,84 @@ public class SecurityConfig {
                                 .requestMatchers("/usersession/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                                 .requestMatchers("/edituser").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                                 .requestMatchers("/success").authenticated()
-                                .requestMatchers("homepage","/register").permitAll()
+                                .requestMatchers("homepage", "/register").permitAll()
                                 .anyRequest().permitAll()
                 )
                 .headers(header -> header.frameOptions(frameOption -> frameOption.disable()))
 //                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin(login -> {login
-                        .loginPage("/signin")
+                .formLogin(login -> {
+                    login
+                            .loginPage("/signin")
 //		        	.failureUrl("/failure"); // this can be linked to a failure message on the failure template
-                        .usernameParameter("email")
-                        .successHandler(new AuthenticationSuccessHandler() {
+                            .usernameParameter("email")
+                            .successHandler(new AuthenticationSuccessHandler() {
 
-                            @Override
-                            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                                                Authentication authentication) throws IOException, ServletException {
+                                @Override
+                                public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                                                    Authentication authentication) throws IOException, ServletException {
 
-                                //HttpServletResponseWrapper ensures that the cookie is set only when the authentication is successful
-                                response = new HttpServletResponseWrapper(response);
-                                User user = (User) authentication.getPrincipal();
-                                String accessToken = jwtService.generateToken(new HashMap<>(), user);
-                                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+                                    //HttpServletResponseWrapper ensures that the cookie is set only when the authentication is successful
+                                    response = new HttpServletResponseWrapper(response);
+                                    User user = (User) authentication.getPrincipal();
+                                    String accessToken = jwtService.generateToken(new HashMap<>(), user);
+                                    RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
-                                Cookie accessTokenCookie = CookieUtils.createAccessTokenCookie(accessToken);
-                                Cookie refreshTokenCookie = CookieUtils.createRefreshTokenCookie(refreshToken.getToken());
+                                    Cookie accessTokenCookie = CookieUtils.createAccessTokenCookie(accessToken);
+                                    Cookie refreshTokenCookie = CookieUtils.createRefreshTokenCookie(refreshToken.getToken());
 
-                                logger.info("Successful authentication for: " + user.getUsername());
-                                logger.info("Access Cookie: " + accessTokenCookie.getValue());
-                                logger.info("Refresh Cookie: " + refreshTokenCookie.getValue());
-                                logger.info("Role for " + user.getUsername() + " is: " + user.authority(accessToken).getAuthorities().toString());
-                                logger.info("Successful authentication for: " + user.getUsername());
-                                logger.info("Access Cookie: " + accessTokenCookie.getValue());
-                                logger.info("Refresh Cookie: " + refreshTokenCookie.getValue());
-                                logger.info("Role for " + user.getUsername() + " is: " + user.authority(accessToken).toString());
+                                    logger.info("Successful authentication for: " + user.getUsername());
+                                    logger.info("Access Cookie: " + accessTokenCookie.getValue());
+                                    logger.info("Refresh Cookie: " + refreshTokenCookie.getValue());
+                                    logger.info("Role for " + user.getUsername() + " is: " + user.authority(accessToken).getAuthorities().toString());
+                                    logger.info("Successful authentication for: " + user.getUsername());
+                                    logger.info("Access Cookie: " + accessTokenCookie.getValue());
+                                    logger.info("Refresh Cookie: " + refreshTokenCookie.getValue());
+                                    logger.info("Role for " + user.getUsername() + " is: " + user.authority(accessToken).toString());
 //
-                                response.addCookie(accessTokenCookie);
-                                response.addCookie(refreshTokenCookie);
-                                // Modified from the original to redirect based on user role BY ME :)
+                                    response.addCookie(accessTokenCookie);
+                                    response.addCookie(refreshTokenCookie);
+                                    // Modified from the original to redirect based on user role
 //                                response.sendRedirect("/success");
-                                String role = authentication.getAuthorities().stream().findFirst().get().getAuthority();
+                                    String role = authentication.getAuthorities().stream().findFirst().get().getAuthority();
 
-                                if (role.equals("ROLE_ADMIN")) {
-                                    response.sendRedirect("/admin/dashboard");
-                                } else {
-                                    response.sendRedirect("/usersession");
+                                    if (role.equals("ROLE_ADMIN")) {
+                                        response.sendRedirect("/admin/dashboard");
+                                    } else {
+                                        response.sendRedirect("/usersession");
+                                    }
                                 }
-                            }
-                        })
-                        .failureHandler(new AuthenticationFailureHandler() {
+                            })
+                            .failureHandler(new AuthenticationFailureHandler() {
 
-                            @Override
-                            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                                                AuthenticationException exception) throws IOException, ServletException {
+                                @Override
+                                public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+                                                                    AuthenticationException exception) throws IOException, ServletException {
 
-                                String email = request.getParameter("email");
-                                String password = request.getParameter("password");
+                                    String email = request.getParameter("email");
+                                    String password = request.getParameter("password");
 
-                                logger.error("Authentication failed for email: " + email);
-                                logger.error("Authentication failed: " + exception.getMessage(), exception);
-                                logger.info("Raw password during login: " + password);
-                                logger.info("Encoded password during login: " + passwordEncoder().encode(password));
+                                    logger.error("Authentication failed for email: " + email);
+                                    logger.error("Authentication failed: " + exception.getMessage(), exception);
+                                    logger.info("Raw password during login: " + password);
+                                    logger.info("Encoded password during login: " + passwordEncoder().encode(password));
 
-                                response.sendRedirect("/error");
-                            }
-                        })
-                        .permitAll();
+                                    response.sendRedirect("/error");
+                                }
+                            })
+                            .permitAll();
                 })
-                .logout(logoutConfigurer -> {logoutConfigurer
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/signin")
-                        // delete cookies from client after logout
-                        .deleteCookies("accessToken")
-                        .deleteCookies("refreshToken")
-                        .deleteCookies("JSESSIONID")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true);
+                .logout(logoutConfigurer -> {
+                    logoutConfigurer
+                            .logoutUrl("/logout")
+                            .logoutSuccessUrl("/signin")
+                            // delete cookies from client after logout
+                            .deleteCookies("accessToken")
+                            .deleteCookies("refreshToken")
+                            .deleteCookies("JSESSIONID")
+                            .invalidateHttpSession(true)
+                            .clearAuthentication(true);
                 });
         return http.build();
     }

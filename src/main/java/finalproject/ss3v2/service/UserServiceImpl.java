@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Secured("ROLE_ADMIN")// BY ME
+    @Secured("ROLE_ADMIN")// add to the original code
     @Transactional
     public void removeAdminPrivileges(Integer userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -117,7 +117,8 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User not found with ID: " + userId);
         }
     }
-    @Secured("ROLE_ADMIN")// BY ME
+
+    @Secured("ROLE_ADMIN")// add to the original code
     @Transactional
     public void elevateUserToSuperUser(Integer userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -144,7 +145,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Secured("ROLE_ADMIN")// BY ME
+    @Secured("ROLE_ADMIN")// add to the original code
     @Transactional
     public void removeSuperUserPrivileges(Integer userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -154,7 +155,6 @@ public class UserServiceImpl implements UserService {
             User user = optionalUser.get();
 
 
-            //  BY ME
             Authority superUserAuth = user.getAuthorities().stream()
                     .filter(auth -> "ROLE_SUPERUSER".equals(auth.getAuthority()))
                     .findFirst()
@@ -175,7 +175,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Secured("ROLE_ADMIN")// BY ME
+    @Secured("ROLE_ADMIN")// add to the original code
     @Transactional
     public void deleteUser(Integer userId) {
         refreshTokenService.deleteByUserId(userId);
@@ -200,6 +200,7 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user) {
         return userRepository.save(user);
     }
+
     public User save(User user) {
         return userRepository.save(user);
     }

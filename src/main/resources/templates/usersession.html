@@ -35,7 +35,7 @@
         background-color: #ffffff;
         border: none;
         box-shadow: 0 0 4px #ffffff;
-        color: #306da6;
+        color: #3f90db;
         padding: 2px 5px;
         text-align: center;
         display: inline-block;
@@ -57,7 +57,7 @@
         background-color: #d6effd;
         box-shadow: 0 0 6px #d6effd;
         border: none;
-        color: #306da6;
+        color: #3f90db;
         text-align: center;
         text-decoration: none;
         display: inline-block;
@@ -118,6 +118,26 @@
         margin-top: 7px;
         color: #b2e3ff;
       }
+      .expiration-clock {
+        position: absolute;
+        top: 75px;
+        right: 20px;
+        font-family: "Roboto", sans-serif;
+        color: #dbe3e9;
+        color-scheme: dark;
+        font-size: 33px;
+        text-shadow: 8px 8px 8px  rgba(255, 255, 255, 0.5);
+      }
+      .expiration-p {
+        position: absolute; /* Take the div out of the normal document flow */
+        top: 65px; /* 10px from the bottom of the page */
+        right: 20px;
+        font-family: "Roboto", sans-serif;
+        color: #dbe3e9;
+        color-scheme: dark;
+        font-size: 18px;
+        /* text-shadow: 2px 2px 4px  rgba(255, 255, 255, 0.5); */
+      }
     </style>
   </head>
   <body>
@@ -144,9 +164,53 @@
         >
       </div>
     </div>
-    <h2 class="name-container">
-      Welcome to Your Session [[${user.firstName}]]
-    </h2>
-    <p>Your session ID: <span th:text="${user.id}"></span></p>
+    <div>
+      <div class="expiration-p">
+        <p>expires in:</p>
+      </div>
+      <div class="expiration-clock">
+        <p>
+          <span id="session-timer" th:text="${formattedDuration}">30:00</span>
+        </p>
+      </div>
+    </div>
+    <script>
+      var sessionTimer;
+      var sessionDuration = 1800; // Session duration in seconds (30 minutes)
+
+      function startSessionTimer(duration, display) {
+        var timer = duration,
+          minutes,
+          seconds;
+        clearInterval(sessionTimer); // Clear existing timer
+        sessionTimer = setInterval(function () {
+          minutes = parseInt(timer / 60, 10);
+          seconds = parseInt(timer % 60, 10);
+
+          minutes = minutes < 10 ? "0" + minutes : minutes;
+          seconds = seconds < 10 ? "0" + seconds : seconds;
+
+          display.textContent = minutes + ":" + seconds;
+
+          if (--timer < 0) {
+            clearInterval(sessionTimer); // Clear timer at end
+            // Optional: Redirect to logout or login page when session expires
+            // window.location.href = '/logout';
+          }
+        }, 1000);
+      }
+
+      function resetSessionTimer() {
+        var display = document.querySelector("#session-timer");
+        startSessionTimer(sessionDuration, display);
+      }
+
+      window.onload = function () {
+        resetSessionTimer();
+        document.addEventListener("click", resetSessionTimer);
+        document.addEventListener("keypress", resetSessionTimer);
+        // Add other event listeners as needed
+      };
+    </script>
   </body>
 </html>

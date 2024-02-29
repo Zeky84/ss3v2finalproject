@@ -23,6 +23,7 @@ public class User implements UserDetails {
     private String lastName;
     private String email;
     private String password;
+    //-------------------------------------------------------------------------addition to the original code
     @CreationTimestamp  // this annotation is to set the createdAt field to the current time when the user is created
     @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
