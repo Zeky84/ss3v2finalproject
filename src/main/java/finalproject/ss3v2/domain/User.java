@@ -173,4 +173,5 @@ public class User implements UserDetails {
     public void setUser(boolean user) {
         isUser = user;
     }
+
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class UserController {
@@ -18,10 +19,10 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    // Among corrections in the enpoints directions the code  below was provided fully by CHATGPT
+    // the code  below was provided fully by CHATGPT.
     @GetMapping("/usersession")
     public String redirectToUserSession(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null) {
             Integer userId = ((User) authentication.getPrincipal()).getId();
             return "redirect:/usersession/" + userId;
         }
@@ -29,13 +30,30 @@ public class UserController {
     }
 
     @GetMapping("/usersession/{userId}")
-    public String userSession(@PathVariable Long userId, Model model, Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
+    public String userSession(@PathVariable Integer userId, Model model, Authentication authentication) {
+        if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             model.addAttribute("user", user);
             return "usersession"; // HTML view for the user's session
         }
         return "redirect:/login"; // Redirect to login if not authenticated
     }
-    //------------------------------------------------------------------------------
+    @GetMapping("/edituser")
+        public String editUser(Model model, Authentication authentication) {
+            if (authentication != null) {
+                User user = (User) authentication.getPrincipal();
+                model.addAttribute("user", user);
+                return "edituser"; // HTML view for editing user details
+            }
+            return "redirect:/login"; // Redirect to login if not authenticated
+        }
+        @PostMapping("/edituser")
+        public String edituser(User user, Authentication authentication) {
+            if (authentication != null) {
+                userServiceImpl.updateUser(user);
+                return "redirect:/usersession"; // Redirect to user session after editing
+            }
+            return "redirect:/login"; // Redirect to login if not authenticated
+        }
+
 }
