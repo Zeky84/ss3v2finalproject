@@ -30,9 +30,9 @@
         width: 320px;
         margin: 10px auto 0; /* Adjust the top margin as needed */
         padding: 20px;
-        box-shadow: 0 0 4px #c3e9ff;
+        box-shadow: 0 0 6px #e7f6ff;
         border-radius: 10px;
-        background-color: #c3e9ff;
+        background-color: #e7f6ff;
       }
       .form-group {
         /* GPT help */
@@ -53,8 +53,8 @@
       .form-group input {
         /* GPT help */
         flex-grow: 1; /* Makes input take up the remaining space */
-        border: 1px solid #def3ff;
-        box-shadow: 0 0 4px #b0d9fd;
+        border: 1px solid #ffffff;
+        box-shadow: 0 0 4px #306da6;
         height: 40px;
         width: 280px;
         border-radius: 13px;
@@ -89,13 +89,13 @@
         font-size: 17px;
       }
       .button-home {
-        position: absolute; 
-        top: 10px; 
+        position: absolute; /* Take the div out of the normal document flow */
+        top: 10px; /* 10px from the top of the page */
         right: 10px;
         font-family: "Roboto", sans-serif;
-        background-color: #ffff4c;
+        background-color: #ffffff;
         border: none;
-        box-shadow: 0 0 4px #ffff4c;
+        box-shadow: 0 0 6px #ffffff;
         color: #306da6;
         padding: 2px 5px;
         text-align: center;
@@ -113,10 +113,11 @@
         width: 150px;
       }
       .button-home:hover {
-        background-color: #e4e440;
-            box-shadow: 0 0 4px #e4e440;
-            font-size: 19px;
+        background-color: #b8b8b8ce;
+        box-shadow: 0 0 4px #b8b8b8ce;
+        font-size: 18px;
       }
+
       .button-like {
         background-color: #306da6;
         box-shadow: 0 0 4px #306da6;
@@ -169,6 +170,8 @@
       }
       .form-group input:hover {
         background-color: rgb(240, 251, 255);
+        box-shadow: 0 0 4px #043e5f;
+        
       }
     </style>
   </head>

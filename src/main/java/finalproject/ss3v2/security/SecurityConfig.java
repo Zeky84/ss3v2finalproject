@@ -65,7 +65,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
 //                                		.requestMatchers("/api/v1/auth/**").permitAll()
                                 .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
-                                .requestMatchers("/usersession/**").authenticated()
+                                .requestMatchers("/usersession/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
+                                .requestMatchers("/edituser").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                                 .requestMatchers("/success").authenticated()
                                 .requestMatchers("homepage","/register").permitAll()
                                 .anyRequest().permitAll()
@@ -136,7 +137,7 @@ public class SecurityConfig {
                 })
                 .logout(logoutConfigurer -> {logoutConfigurer
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/homepage")
+                        .logoutSuccessUrl("/signin")
                         // delete cookies from client after logout
                         .deleteCookies("accessToken")
                         .deleteCookies("refreshToken")
