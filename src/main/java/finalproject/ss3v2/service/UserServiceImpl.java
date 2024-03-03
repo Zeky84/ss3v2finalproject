@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
                 adminAuthority.setUser(user);
                 user.getAuthorities().add(adminAuthority);
 
-                logger.info("Setting Auth for user: " + user.getId() + user.getEmail());
+                logger.info("Added ROLE_ADMIN for user: " + user.getId() + ", " + user.getEmail());
                 logger.info("Setting Authorities: " + user.getAuthorities());
 
                 // Save the updated user
@@ -111,7 +111,8 @@ public class UserServiceImpl implements UserService {
                 user.setAdmin(false);
                 userRepository.save(user);
 
-                logger.info("Removed Admin Role for user: " + user.getId() + " " + user.getEmail());
+                logger.info("Removed ROLE_ADMIN for user: " + user.getId() + ", " + user.getEmail());
+                logger.info("Setting Authorities: " + user.getAuthorities());
             }
         } else {
             throw new IllegalArgumentException("User not found with ID: " + userId);
@@ -121,22 +122,34 @@ public class UserServiceImpl implements UserService {
     @Secured("ROLE_ADMIN")// add to the original code
     @Transactional
     public void elevateUserToSuperUser(Integer userId) {
+        //If is SUPERUSER, then remove the USER role
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
-            // BY ME
+
             if (user.getAuthorities().stream().noneMatch(auth -> "ROLE_SUPERUSER".equals(auth.getAuthority()))) {
-                // Add the superuser role to the user
+                // Add the ROLE_SUPERUSER to the user
                 Authority superUserAuth = new Authority("ROLE_SUPERUSER");
                 superUserAuth.setUser(user);
                 user.getAuthorities().add(superUserAuth);
 
-                logger.info("Setting Auth for user: " + user.getId() + user.getEmail());
-                logger.info("Setting Authorities: " + user.getAuthorities());
+                // Remove ROLE_USER if present
+                Authority roleUserAuthority = user.getAuthorities().stream()
+                        .filter(auth -> "ROLE_USER".equals(auth.getAuthority()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (roleUserAuthority != null) {
+                    user.getAuthorities().remove(roleUserAuthority);
+                    roleUserAuthority.setUser(null);
+                }
+
+                logger.info("Added ROLE_SUPERUSER/ removed ROLE_USER for user: " + user.getId() + ", " + user.getEmail());
 
                 user.setSuperUser(true);
+                user.setUser(false);
                 // Save the updated user
                 userRepository.save(user);
             }
@@ -154,21 +167,29 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
+            if (user.getAuthorities().stream().noneMatch(auth -> "ROLE_USER".equals(auth.getAuthority()))) {
+                // Add the ROLE_USER back when removing the SUPERUSER role
+                Authority userAuth = new Authority("ROLE_USER");
+                userAuth.setUser(user);
+                user.getAuthorities().add(userAuth);
 
-            Authority superUserAuth = user.getAuthorities().stream()
+
+            Authority roleSuperUserAuth = user.getAuthorities().stream()
                     .filter(auth -> "ROLE_SUPERUSER".equals(auth.getAuthority()))
                     .findFirst()
                     .orElse(null);
 
-            if (superUserAuth != null) {
-                // Remove the admin role from the user
-                user.getAuthorities().remove(superUserAuth);
-                superUserAuth.setUser(null);
+            if (roleSuperUserAuth != null) {
+                // Remove the ROLE_SUPERUSER from the user
+                user.getAuthorities().remove(roleSuperUserAuth);
+                roleSuperUserAuth.setUser(null);
+            }
+                logger.info("Removed SUPERUSER Role for user: " + user.getId() + " " + user.getEmail());
 
                 user.setSuperUser(false);
+                user.setUser(true);
                 userRepository.save(user);
 
-                logger.info("Removed Admin Role for user: " + user.getId() + " " + user.getEmail());
             }
         } else {
             throw new IllegalArgumentException("User not found with ID: " + userId);

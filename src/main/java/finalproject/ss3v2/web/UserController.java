@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.Optional;
+
 @Controller
 public class UserController {
     @Value("${token.refreshExpiration}")
@@ -53,7 +55,10 @@ public class UserController {
     public String editUser(Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpiration(((User) authentication.getPrincipal()).getId())) {
             refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
-            User user = (User) authentication.getPrincipal();
+            Integer userId = ((User) authentication.getPrincipal()).getId();
+            //Using the user id instead of the principal of the authentication to get the user object to update the frontend, otherwise,
+            //when refreshing the page the user fields will be filled with the old data all the time
+            Optional<User> user = userServiceImpl.findUserById(userId);
             model.addAttribute("user", user);
             return "edituser";
         }

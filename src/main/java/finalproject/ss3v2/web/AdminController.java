@@ -55,12 +55,6 @@ public class AdminController {
         userServiceImpl.save(adminUser);
     }
 
-//    @GetMapping("/users")
-//    public ResponseEntity<List<User>> getAllUsers() {
-//        List<User> users = userServiceImpl.findAll();
-//        return ResponseEntity.ok(users);
-//    }
-
     @GetMapping("/dashboard")
     public String getDashboard(ModelMap model, Authentication authentication) {
         String adminname = authentication.getName();
@@ -70,14 +64,14 @@ public class AdminController {
         return "dashboard";
     }
 
-//    @PostMapping("/makeAdmin")
+//    @PostMapping("/makeAdmin")--------------------------------------
 //    public ResponseEntity<String> elevateToAdmin(@RequestParam Integer userId) {
 //        Optional<User> findUser = userServiceImpl.findUserById(userId);
 //        userServiceImpl.elevateUserToAdmin(userId);
 //        logger.info("Processing elevation for user: {}", findUser.get().getEmail());
 //        logger.info("Role: {}", findUser.get().getAuthorities());
 //        return ResponseEntity.ok("User elevated to admin");
-//    }
+//    }-------------------------------------------------------------
 
 //    @PostMapping("/removeAdmin")
 //    public ResponseEntity<String> removeAdmin(@RequestParam Integer userId) {
