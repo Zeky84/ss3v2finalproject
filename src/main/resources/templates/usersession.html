@@ -120,13 +120,14 @@
       }
       .expiration-clock {
         position: absolute;
-        top: 75px;
+        top: 90px;
         right: 20px;
         font-family: "Roboto", sans-serif;
         color: #dbe3e9;
         color-scheme: dark;
         font-size: 33px;
-        text-shadow: 8px 8px 8px  rgba(255, 255, 255, 0.5);
+        font-weight: 500;
+        text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
       }
       .expiration-p {
         position: absolute; /* Take the div out of the normal document flow */
@@ -136,7 +137,7 @@
         color: #dbe3e9;
         color-scheme: dark;
         font-size: 18px;
-        /* text-shadow: 2px 2px 4px  rgba(255, 255, 255, 0.5); */
+        text-shadow: 4px 4px 8px  rgba(255, 255, 255, 0.5);
       }
     </style>
   </head>
@@ -166,7 +167,7 @@
     </div>
     <div>
       <div class="expiration-p">
-        <p>expires in:</p>
+        <p>session<br />expires in:</p>
       </div>
       <div class="expiration-clock">
         <p>

@@ -24,9 +24,6 @@ public class User implements UserDetails {
     private String email;
     private String password;
     //-------------------------------------------------------------------------addition to the original code
-    @CreationTimestamp  // this annotation is to set the createdAt field to the current time when the user is created
-    @Column(name = "created_at", nullable = false)
-    private LocalDate createdAt;
     private boolean isAdmin=false;
     private boolean isSuperUser=false;
     private boolean isUser=false;
