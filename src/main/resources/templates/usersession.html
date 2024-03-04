@@ -153,7 +153,7 @@
           <button class="button-logout" type="submit">Logout</button>
         </form>
 
-        <a href="/edituser" class="button-like" style="top: 10px; right: 123px"
+        <a th:href="@{/usersession/{userId}/edituser(userId=${user.id})}" class="button-like" style="top: 10px; right: 123px"
           >Edit User</a
         >
 

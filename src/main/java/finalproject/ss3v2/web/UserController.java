@@ -11,10 +11,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Optional;
 
 @Controller
+@RequestMapping("/usersession")
 public class UserController {
     @Value("${token.refreshExpiration}")
     private Integer expirtationtimeInMinutes;
@@ -30,7 +32,7 @@ public class UserController {
         this.refreshTokenService = refreshTokenService;
     }
 
-    @GetMapping("/usersession")
+    @GetMapping
     public String redirectToUserSession(Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpiration(((User) authentication.getPrincipal()).getId())) {
             refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
@@ -40,7 +42,7 @@ public class UserController {
         return "redirect:/error"; // Redirect to error page if not authenticated or token expired
     }
 
-    @GetMapping("/usersession/{userId}")
+    @GetMapping("/{userId}")
     public String userSession(@PathVariable Integer userId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpiration(((User) authentication.getPrincipal()).getId())) {
             refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
@@ -51,25 +53,24 @@ public class UserController {
         return "redirect:/error"; // Redirect to error page if not authenticated or token expired
     }
 
-    @GetMapping("/edituser")
-    public String editUser(Model model, Authentication authentication) {
+    @GetMapping("/{userId}/edituser")
+    public String editUser(@PathVariable Integer userId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpiration(((User) authentication.getPrincipal()).getId())) {
             refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
-            Integer userId = ((User) authentication.getPrincipal()).getId();
             //Using the user id instead of the principal of the authentication to get the user object to update the frontend, otherwise,
             //when refreshing the page the user fields will be filled with the old data all the time
-            Optional<User> user = userServiceImpl.findUserById(userId);
+            User user = userServiceImpl.findUserById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
             model.addAttribute("user", user);
             return "edituser";
         }
-        return "redirect:/homepage"; // Redirect to login if not authenticated
+        return "redirect:/error"; // Redirect to login if not authenticated
     }
 
-    @PostMapping("/edituser")
-    public String edituser(User user) {
-        Integer userId = user.getId();
-        userServiceImpl.updateUser(user);
-        return "redirect:/usersession";
+    @PostMapping("/{userId}/edituser")
+    public String updateUser(User user) {
+        userServiceImpl.save(user);
+        return "redirect:/usersession/" + user.getId()+"/edituser";
     }
 
 }

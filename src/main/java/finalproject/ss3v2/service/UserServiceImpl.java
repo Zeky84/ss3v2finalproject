@@ -218,12 +218,8 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId);
     }
 
-    public User updateUser(User user) {
-        return userRepository.save(user);
-    }
-
-    public User save(User user) {
-        return userRepository.save(user);
+    public void save(User user) {
+        userRepository.save(user);
     }
 
 }
