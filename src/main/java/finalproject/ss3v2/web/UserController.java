@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -20,14 +17,11 @@ import java.util.Optional;
 public class UserController {
     @Value("${token.refreshExpiration}")
     private Integer expirtationtimeInMinutes;
-
-    private UserService userService;
     private UserServiceImpl userServiceImpl;
     private RefreshTokenService refreshTokenService;
 
 
-    public UserController(UserService userService, UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService) {
-        this.userService = userService;
+    public UserController( UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService) {
         this.userServiceImpl = userServiceImpl;
         this.refreshTokenService = refreshTokenService;
     }
@@ -43,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public String userSession(@PathVariable Integer userId, Model model, Authentication authentication) {
+    public String goToUserSession(@PathVariable Integer userId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpiration(((User) authentication.getPrincipal()).getId())) {
             refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
             User user = (User) authentication.getPrincipal();
@@ -54,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/edituser")
-    public String editUser(@PathVariable Integer userId, Model model, Authentication authentication) {
+    public String goToEditUser(@PathVariable Integer userId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpiration(((User) authentication.getPrincipal()).getId())) {
             refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
             //Using the user id instead of the principal of the authentication to get the user object to update the frontend, otherwise,
@@ -69,8 +63,18 @@ public class UserController {
 
     @PostMapping("/{userId}/edituser")
     public String updateUser(User user) {
+
         userServiceImpl.save(user);
-        return "redirect:/usersession/" + user.getId()+"/edituser";
+        return "redirect:/usersession/" + user.getId();
+    }
+    @GetMapping("/newrefreshtoken")
+    @ResponseBody
+    public String createNewRefreshToken(Authentication authentication) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
+            return "Refresh token created";
+        }
+        return "Error creating refresh token";
     }
 
 }

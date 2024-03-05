@@ -24,9 +24,9 @@ public class User implements UserDetails {
     private String email;
     private String password;
     //-------------------------------------------------------------------------addition to the original code
-    private boolean isAdmin=false;
-    private boolean isSuperUser=false;
-    private boolean isUser=false;
+    private boolean isAdmin;
+    private boolean isSuperUser;
+    private boolean isUser;
     @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
     private List<Profile> profiles = new ArrayList<>();
     @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
@@ -171,7 +171,5 @@ public class User implements UserDetails {
     public void setUser(boolean user) {
         isUser = user;
     }
-
-
 
 }

@@ -13,16 +13,15 @@
         color: #306da6; /* Optional: default text color */
       }
       .form-container {
-        /* GPT help */
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 500px;
-        margin: auto;
+        width: 320px;
+        margin: 10px auto 0; /* Adjust the top margin as needed */
         padding: 20px;
-        box-shadow: 0 0 4px #dbe3e9;
+        box-shadow: 0 0 6px #e7f6ff;
         border-radius: 10px;
-        background-color: #dbe3e9;
+        background-color: #e7f6ff;
       }
       .button-save {
         position: absolute; /* Take the div out of the normal document flow */
@@ -48,7 +47,35 @@
         height: 40px;
         width: 100px;
       }
+      .button-like {
+        position: absolute;
+        top: 10px; /* 10px from the top of the page */
+        right: 237px;
+        background-color: #d6effd;
+        box-shadow: 0 0 6px #d6effd;
+        border: none;
+        color: #3f90db;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 0.5s;
+        margin-left: 5px;
+        margin-right: 5px;
+        margin-top: 7px;
+        height: 40px;
+        width: 100px;
+        line-height: 40px;
+      }
       .button-save:hover {
+        background-color: #b8b8b8ce;
+        box-shadow: 0 0 4px #b8b8b8ce;
+        font-size: 18px;
+      }
+      .button-like:hover {
         background-color: #b8b8b8ce;
         box-shadow: 0 0 4px #b8b8b8ce;
         font-size: 18px;
@@ -79,6 +106,22 @@
       #home-image {
         filter: blur(1px);
       }
+      .form-label {
+        display: inline-block;
+        margin-left: 10px; /* Adjust the right margin */
+        padding-top: 10px; /* Adjust the top padding */
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 3px 0;
+        display: inline-block;
+        border: 1px solid #306da6;
+        box-sizing: border-box;
+        border-radius: 13px;
+      }
     </style>
   </head>
 
@@ -91,39 +134,48 @@
         id="home-image"
       />
       <div class="form-container">
-        <form th:action="@{/usersession/{userId}/edituser(userId=${user.id})}" method="post">
-          <!-- <div th:if="${user.isAdmin.equals(true)}">
+        <h2>Edit User</h2>
+        <form
+          th:action="@{/usersession/{userId}/edituser(userId=${user.id})}"
+          th:object="${user}"
+          method="post"
+        >
+        <div th:if="${user.isAdmin}">
             <input type="hidden" th:field="${user.isAdmin}" />
-          </div>
-          <div th:if="${user.isSuperUser.equals(true)}">
+        </div>
+          <div th:if="${user.isSuperUser}">
             <input type="hidden" th:field="${user.isSuperUser}" />
           </div>
-          <div th:if="${user.isUser.equals(true)}">
-            <input type="hidden" th:field="${user.isUser}" />
-          </div> -->
-          <div>
-            <input type="text" th:field="${user.id}" />
+          <div th:if="${user.isUser}">
+            <p th:text="${user.isUser}">[[${user.isUser}]]</p>
           </div>
           <div>
-            <label>Name: </label>
+            <input type="hidden" th:field="${user.id}" />
+          </div>
+          <div>
+            <label class="form-label">Name: </label>
             <input type="text" th:field="${user.firstName}" />
           </div>
           <div>
-            <label>last Name: </label>
+            <label class="form-label">Last Name: </label>
             <input type="text" th:field="${user.lastName}" />
           </div>
           <div>
-            <label>Email:</label> <input type="text" th:field="${user.email}" />
+            <label class="form-label">Email:</label> <input type="text" th:field="${user.email}" />
           </div>
           <div>
-            <label>New Password:</label>
+            <label class="form-label">New Password:</label>
             <input type="password" th:field="${user.password}" />
           </div>
-          <!-- <div>
-                    Confirm Password: <input type="password" th:field="${user.confirmPassword}">
-                </div> -->
-          <button class="button-save" type="submit">Save</button>
+          <div>
+            <label class="form-label">Confirm New Password:</label>
+            <input type="password"  />
+          </div>
+          <button class="button-save" type="submit">Update</button>
         </form>
+        <a th:href="@{/usersession/{userId}(userId=${user.id})}" class="button-like" style="top: 10px; right: 123px"
+        >Go back</a
+      >
       </div>
     </div>
     <div>

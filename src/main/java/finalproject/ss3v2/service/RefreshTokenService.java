@@ -81,7 +81,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.findAllByUserId(userId);
     }
 
-    public Boolean verifyRefreshTokenExpiration(Integer userId) {// verify if the last refresh token is not expired
+    public Boolean verifyRefreshTokenExpirationByUserId(Integer userId) {// verify if the last refresh token is not expired
         List<RefreshToken> refreshTokenList = findByUser(userId);
         RefreshToken refreshToken = refreshTokenList.get(refreshTokenList.size()-1);
         System.out.println(refreshToken.getExpiryDate());//for debugging
