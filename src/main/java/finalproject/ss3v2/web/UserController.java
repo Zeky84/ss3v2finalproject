@@ -28,7 +28,7 @@ public class UserController {
 
     @GetMapping
     public String redirectToUserSession(Authentication authentication) {
-        if (authentication != null && refreshTokenService.verifyRefreshTokenExpiration(((User) authentication.getPrincipal()).getId())) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
             Integer userId = ((User) authentication.getPrincipal()).getId();
             return "redirect:/usersession/" + userId;
@@ -38,7 +38,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public String goToUserSession(@PathVariable Integer userId, Model model, Authentication authentication) {
-        if (authentication != null && refreshTokenService.verifyRefreshTokenExpiration(((User) authentication.getPrincipal()).getId())) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
             User user = (User) authentication.getPrincipal();
             model.addAttribute("user", user);
@@ -49,7 +49,7 @@ public class UserController {
 
     @GetMapping("/{userId}/edituser")
     public String goToEditUser(@PathVariable Integer userId, Model model, Authentication authentication) {
-        if (authentication != null && refreshTokenService.verifyRefreshTokenExpiration(((User) authentication.getPrincipal()).getId())) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             refreshTokenService.createRefreshToken(((User) authentication.getPrincipal()).getId());
             //Using the user id instead of the principal of the authentication to get the user object to update the frontend, otherwise,
             //when refreshing the page the user fields will be filled with the old data all the time
