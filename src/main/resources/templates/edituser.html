@@ -140,9 +140,9 @@
           th:object="${user}"
           method="post"
         >
-        <div th:if="${user.isAdmin}">
+          <div th:if="${user.isAdmin}">
             <input type="hidden" th:field="${user.isAdmin}" />
-        </div>
+          </div>
           <div th:if="${user.isSuperUser}">
             <input type="hidden" th:field="${user.isSuperUser}" />
           </div>
@@ -161,7 +161,8 @@
             <input type="text" th:field="${user.lastName}" />
           </div>
           <div>
-            <label class="form-label">Email:</label> <input type="text" th:field="${user.email}" />
+            <label class="form-label">Email:</label>
+            <input type="text" th:field="${user.email}" />
           </div>
           <div>
             <label class="form-label">New Password:</label>
@@ -169,13 +170,16 @@
           </div>
           <div>
             <label class="form-label">Confirm New Password:</label>
-            <input type="password"  />
+            <input type="password" />
           </div>
           <button class="button-save" type="submit">Update</button>
         </form>
-        <a th:href="@{/usersession/{userId}(userId=${user.id})}" class="button-like" style="top: 10px; right: 123px"
-        >Go back</a
-      >
+        <a
+          th:href="@{/usersession/{userId}(userId=${user.id})}"
+          class="button-like"
+          style="top: 10px; right: 123px"
+          >Go back</a
+        >
       </div>
     </div>
     <div>
@@ -183,48 +187,78 @@
         <p>session<br />expires in:</p>
       </div>
       <div class="expiration-clock">
-        <p>
-          <span id="session-timer" th:text="${formattedDuration}">30:00</span>
-        </p>
+        <div id="countDownRefreshToken" style="display: inline"></div>
       </div>
     </div>
     <script>
-      var sessionTimer;
-      var sessionDuration = 1800; // Session duration in seconds (30 minutes)
+      //   var sessionTimer;
+      //   var sessionDuration = 1800; // Session duration in seconds (30 minutes)
 
-      function startSessionTimer(duration, display) {
-        var timer = duration,
-          minutes,
-          seconds;
-        clearInterval(sessionTimer); // Clear existing timer
-        sessionTimer = setInterval(function () {
-          minutes = parseInt(timer / 60, 10);
-          seconds = parseInt(timer % 60, 10);
+      //   function startSessionTimer(duration, display) {
+      //     var timer = duration,
+      //       minutes,
+      //       seconds;
+      //     clearInterval(sessionTimer); // Clear existing timer
+      //     sessionTimer = setInterval(function () {
+      //       minutes = parseInt(timer / 60, 10);
+      //       seconds = parseInt(timer % 60, 10);
 
-          minutes = minutes < 10 ? "0" + minutes : minutes;
-          seconds = seconds < 10 ? "0" + seconds : seconds;
+      //       minutes = minutes < 10 ? "0" + minutes : minutes;
+      //       seconds = seconds < 10 ? "0" + seconds : seconds;
 
-          display.textContent = minutes + ":" + seconds;
+      //       display.textContent = minutes + ":" + seconds;
 
-          if (--timer < 0) {
-            clearInterval(sessionTimer); // Clear timer at end
-            // Optional: Redirect to logout or login page when session expires
-            // window.location.href = '/logout';
-          }
-        }, 1000);
+      //       if (--timer < 0) {
+      //         clearInterval(sessionTimer); // Clear timer at end
+      //         // Optional: Redirect to logout or login page when session expires
+      //         // window.location.href = '/logout';
+      //       }
+      //     }, 1000);
+      //   }
+
+      //   function resetSessionTimer() {
+      //     var display = document.querySelector("#session-timer");
+      //     startSessionTimer(sessionDuration, display);
+      //   }
+
+      //   window.onload = function () {
+      //     resetSessionTimer();
+      //     document.addEventListener("click", resetSessionTimer);
+      //     document.addEventListener("keypress", resetSessionTimer);
+      //     // Add other event listeners as needed
+      //   };
+
+
+
+      function refreshTokenExpCount() {
+        fetch(`/refreshtokenexptime`)
+          .then((response) => response.text())
+          .then((countdowntime) => {
+            console.log(countdowntime); // For debugging purposes
+            const countdownContainer = document.getElementById("countDownRefreshToken");
+            
+
+            // Set the innerHTML of the container to the countdown time
+            countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
+          })
+          .catch((error) => console.error("Error fetching countdown:", error));
       }
+      setInterval(refreshTokenExpCount, 1000);
+      refreshTokenExpCount();
 
-      function resetSessionTimer() {
-        var display = document.querySelector("#session-timer");
-        startSessionTimer(sessionDuration, display);
+      function activityDetected() {
+        // Make a call to the server to potentially refresh the token
+        fetch("/newrefreshtoken")
+          .then((response) => response.text())
+          .then((data) => console.log(data)) // Log the response for debugging
+          .catch((error) => console.error("Error:", error));
       }
 
       window.onload = function () {
-        resetSessionTimer();
-        document.addEventListener("click", resetSessionTimer);
-        document.addEventListener("keypress", resetSessionTimer);
-        // Add other event listeners as needed
+        // Set up event listeners for user activity
+        document.addEventListener("click", activityDetected);
       };
+
     </script>
   </body>
 </html>

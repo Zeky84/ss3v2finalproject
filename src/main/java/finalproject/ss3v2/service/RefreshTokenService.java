@@ -1,10 +1,8 @@
 package finalproject.ss3v2.service;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.Duration;//GPT-4 code ... suggested to implement new methods
+import java.time.Instant;//GPT-4 code ... suggested to implement new methods
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,8 +42,23 @@ public class RefreshTokenService {
         refreshToken.setUser(userRepository.findById(userId).get());
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
-
         refreshToken = refreshTokenRepository.save(refreshToken);
+
+        //----------------------------------------------------------addition to the original code
+        // Retrieve all tokens for the user
+        List<RefreshToken> tokens = refreshTokenRepository.findAllByUserId(userId);
+
+        // If more than one token exists, delete the older ones
+        if (tokens.size() > 1) {
+            // Sort tokens by expiryDate
+            tokens.sort(Comparator.comparing(RefreshToken::getExpiryDate));
+
+            // Remove the newest token from the list (last item after sorting)
+            tokens.remove(tokens.size() - 1);
+
+            // Delete the older tokens
+            refreshTokenRepository.deleteAll(tokens);
+        }
         return refreshToken;
     }
 
@@ -75,20 +88,30 @@ public class RefreshTokenService {
     }
 
     //--------------------------------------------------------------------------------addition to the original code
-
-    public List<RefreshToken> findByUser(Integer userId) {// getting all refresh tokens for a user
-        // Because there is list of refresh tokens for a user, we need to get the last one
-        return refreshTokenRepository.findAllByUserId(userId);
-    }
-
-    public Boolean verifyRefreshTokenExpirationByUserId(Integer userId) {// verify if the last refresh token is not expired
-        List<RefreshToken> refreshTokenList = findByUser(userId);
-        RefreshToken refreshToken = refreshTokenList.get(refreshTokenList.size()-1);
-        System.out.println(refreshToken.getExpiryDate());//for debugging
-        System.out.println(Instant.now());//for debugging
-        if(refreshToken.getExpiryDate().compareTo(Instant.now()) < 0) {
+    public Boolean verifyRefreshTokenExpirationByUserId(Integer userId) {// verify if the refresh token is not expired
+        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
+        if (refreshToken.getExpiryDate().compareTo(Instant.now()) < 0) {
             return false;
         }
         return true;
+    }
+    public boolean isRefreshTokenAlmostExpired(RefreshToken refreshToken, int secondsBeforeExpiry) {//GPT-4 code
+        Instant expirationTime = refreshToken.getExpiryDate();
+        Instant currentTime = Instant.now();
+        Duration timeLeft = Duration.between(currentTime, expirationTime);
+        return timeLeft.getSeconds() <= secondsBeforeExpiry && !timeLeft.isNegative();
+    }
+    public RefreshToken findByUserId(Integer userId) {
+        return refreshTokenRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
+    }
+    public String refreshTokenExpirationTimeLeft(RefreshToken refreshToken) {
+        Instant expirationTime = refreshToken.getExpiryDate();
+        Instant currentTime = Instant.now();
+        Duration timeLeft = Duration.between(currentTime, expirationTime);
+
+        long minutes = timeLeft.toMinutes();
+        long seconds = timeLeft.minusMinutes(minutes).getSeconds();
+
+        return  minutes +":"+ seconds ;
     }
 }
