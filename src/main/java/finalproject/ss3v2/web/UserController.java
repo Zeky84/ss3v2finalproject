@@ -7,6 +7,8 @@ import finalproject.ss3v2.service.UserService;
 import finalproject.ss3v2.service.UserServiceImpl;
 import finalproject.ss3v2.util.CookieUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,7 +35,7 @@ public class UserController {
             return "redirect:/usersession/" + userId;
         }
 
-        return "redirect:/error"; // Redirect to error page if not authenticated or token expired
+        return "redirect:/error";
     }
 
     @GetMapping("/usersession/{userId}")
@@ -44,7 +46,7 @@ public class UserController {
             return "usersession";
         }
         model.addAttribute("tokenexpired", true);
-        return "redirect:/error"; // Redirect to error page if not authenticated or token expired
+        return "redirect:/signin";
     }
 
     @GetMapping("/usersession/{userId}/edituser")
@@ -58,7 +60,7 @@ public class UserController {
             return "edituser";
         }
         model.addAttribute("tokenexpired", true);
-        return "redirect:/error"; // Redirect to error if not authenticated with the condition of why it failed
+        return "redirect:/signin";
     }
 
     @PostMapping("/usersession/{userId}/edituser")
@@ -68,35 +70,7 @@ public class UserController {
             return "redirect:/usersession/" + user.getId();
         }
         model.addAttribute("tokenexpired", true);
-        return "redirect:/error"; // Redirect to error if not authenticated with the condition of why it failed
+        return "redirect:/signin";
 
     }
-
-
-    @GetMapping("/newrefreshtoken")
-    @ResponseBody
-    public String createNewRefreshTokenIfCloseToExpire(Authentication authentication) {
-        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-            User user = (User) authentication.getPrincipal();
-            RefreshToken refreshToken = refreshTokenService.findByUserId(user.getId());
-            //To create a new refresh token if the current one is close to expire
-            if (refreshTokenService.isRefreshTokenAlmostExpired(refreshToken, 15)) {
-                refreshTokenService.createRefreshToken(user.getId());
-                return "Refresh token created";
-            }
-        }
-        if (authentication == null || refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId()).equals(false)) {
-            return "Refresh token expired";
-        }
-        return "Error creating refresh token or not required yet";
-    }
-
-    @GetMapping("/refreshtokenexptime")
-    @ResponseBody
-    public String getRefreshTokenExpirationTime(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        RefreshToken refreshToken = refreshTokenService.findByUserId(user.getId());
-        return  refreshTokenService.refreshTokenExpirationTimeLeft(refreshToken);
-    }
-
 }

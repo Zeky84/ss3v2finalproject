@@ -63,7 +63,6 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
 //        .authorizeHttpRequests(request -> request.requestMatchers("**").permitAll().anyRequest().authenticated())
                 .authorizeHttpRequests(request -> request
-//                                		.requestMatchers("/api/v1/auth/**").permitAll()
                                 .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
                                 .requestMatchers("/usersession/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                                 .requestMatchers("/edituser").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())

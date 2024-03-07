@@ -136,17 +136,17 @@ public class UserServiceImpl implements UserService {
                 user.getAuthorities().add(superUserAuth);
 
                 // Remove ROLE_USER if present
-                Authority roleUserAuthority = user.getAuthorities().stream()
-                        .filter(auth -> "ROLE_USER".equals(auth.getAuthority()))
-                        .findFirst()
-                        .orElse(null);
+//                Authority roleUserAuthority = user.getAuthorities().stream()
+//                        .filter(auth -> "ROLE_USER".equals(auth.getAuthority()))
+//                        .findFirst()
+//                        .orElse(null);
+//
+//                if (roleUserAuthority != null) {
+//                    user.getAuthorities().remove(roleUserAuthority);
+//                    roleUserAuthority.setUser(null);
+//                }
 
-                if (roleUserAuthority != null) {
-                    user.getAuthorities().remove(roleUserAuthority);
-                    roleUserAuthority.setUser(null);
-                }
-
-                logger.info("Added ROLE_SUPERUSER/ removed ROLE_USER for user: " + user.getId() + ", " + user.getEmail());
+//                logger.info("Added ROLE_SUPERUSER/ removed ROLE_USER for user: " + user.getId() + ", " + user.getEmail());
 
                 user.setSuperUser(true);
                 user.setUser(false);
@@ -167,12 +167,12 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
-            if (user.getAuthorities().stream().noneMatch(auth -> "ROLE_USER".equals(auth.getAuthority()))) {
-                // Add the ROLE_USER back when removing the SUPERUSER role
-                Authority userAuth = new Authority("ROLE_USER");
-                userAuth.setUser(user);
-                user.getAuthorities().add(userAuth);
-
+//            if (user.getAuthorities().stream().noneMatch(auth -> "ROLE_USER".equals(auth.getAuthority()))) {
+//                // Add the ROLE_USER back when removing the SUPERUSER role
+//                Authority userAuth = new Authority("ROLE_USER");
+//                userAuth.setUser(user);
+//                user.getAuthorities().add(userAuth);
+//            }
 
             Authority roleSuperUserAuth = user.getAuthorities().stream()
                     .filter(auth -> "ROLE_SUPERUSER".equals(auth.getAuthority()))
@@ -190,7 +190,7 @@ public class UserServiceImpl implements UserService {
                 user.setUser(true);
                 userRepository.save(user);
 
-            }
+
         } else {
             throw new IllegalArgumentException("User not found with ID: " + userId);
         }

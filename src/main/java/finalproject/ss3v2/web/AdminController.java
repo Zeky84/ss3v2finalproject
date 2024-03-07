@@ -105,32 +105,34 @@ public class AdminController {
 //        logger.info("Deleting user: {}", findUser.get().getEmail());
 //        return ResponseEntity.ok("User deleted");
 //    }
-    @PostMapping("/makeAdmin")// BY ME
+
+    //------------------------------------------------------------------adding to the original code
+    @PostMapping("/makeAdmin")
     public String elevateToAdmin(@RequestParam Integer userId) {
         Optional<User> findUser = userServiceImpl.findUserById(userId);
         userServiceImpl.elevateUserToAdmin(userId);
         return "redirect:/admin/dashboard";
     }
-    @PostMapping("/removeAdmin")// BY ME
+    @PostMapping("/removeAdmin")
     public String removeAdminPrivileges(@RequestParam Integer userId) {
         Optional<User> findUser = userServiceImpl.findUserById(userId);
         userServiceImpl.removeAdminPrivileges(userId);
         return "redirect:/admin/dashboard";
     }
-    @PostMapping("/makeSuperUser")// BY ME
+    @PostMapping("/makeSuperUser")
     public String elevateToSuperUser(@RequestParam Integer userId) {
         Optional<User> findUser = userServiceImpl.findUserById(userId);
         userServiceImpl.elevateUserToSuperUser(userId);
         return "redirect:/admin/dashboard";
     }
 
-    @PostMapping("/removeSuperUser")// BY ME
+    @PostMapping("/removeSuperUser")
     public String removeSuperUserPrivileges(@RequestParam Integer userId) {
         Optional<User> findUser = userServiceImpl.findUserById(userId);
         userServiceImpl.removeSuperUserPrivileges(userId);
         return "redirect:/admin/dashboard";
     }
-    @PostMapping("/deleteUser")// BY ME
+    @PostMapping("/deleteUser")
     public String deleteUser(@RequestParam Integer userId) {
 //        Optional<User> findUser = userServiceImpl.findUserById(userId);
         userServiceImpl.deleteUser(userId);

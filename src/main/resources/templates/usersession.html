@@ -137,7 +137,7 @@
         color: #dbe3e9;
         color-scheme: dark;
         font-size: 18px;
-        text-shadow: 4px 4px 8px  rgba(255, 255, 255, 0.5);
+        text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
       }
     </style>
   </head>
@@ -153,7 +153,10 @@
           <button class="button-logout" type="submit">Logout</button>
         </form>
 
-        <a th:href="@{/usersession/{userId}/edituser(userId=${user.id})}" class="button-like" style="top: 10px; right: 123px"
+        <a
+          th:href="@{/usersession/{userId}/edituser(userId=${user.id})}"
+          class="button-like"
+          style="top: 10px; right: 123px"
           >Edit User</a
         >
 
@@ -170,48 +173,74 @@
         <p>session<br />expires in:</p>
       </div>
       <div class="expiration-clock">
-        <p>
-          <span id="session-timer" th:text="${formattedDuration}">30:00</span>
-        </p>
+        <div id="countDownRefreshToken" style="display: inline"></div>
       </div>
     </div>
     <script>
-      var sessionTimer;
-      var sessionDuration = 1800; // Session duration in seconds (30 minutes)
+      function refreshTokenExpCount() {
+        fetch(`/tokens/refreshtokenexptime`)
+          .then((response) => response.text())
+          .then((countdowntime) => {
+            console.log(countdowntime); // For debugging purposes
+            const countdownContainer = document.getElementById(
+              "countDownRefreshToken"
+            );
 
-      function startSessionTimer(duration, display) {
-        var timer = duration,
-          minutes,
-          seconds;
-        clearInterval(sessionTimer); // Clear existing timer
-        sessionTimer = setInterval(function () {
-          minutes = parseInt(timer / 60, 10);
-          seconds = parseInt(timer % 60, 10);
+            // Check if countdown has reached "0:00" and update the display accordingly
+            if (countdowntime.trim() === "0:00") {
+              countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
+              clearInterval(refreshTokenInterval); // Stop the interval when session expires
+            } else {
+              countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
+            }
+          })
+          .catch((error) => console.error("Error fetching countdown:", error));
+      }
+      // Use setInterval to call refreshTokenExpCount every second
+      let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
+      refreshTokenExpCount();
 
-          minutes = minutes < 10 ? "0" + minutes : minutes;
-          seconds = seconds < 10 ? "0" + seconds : seconds;
-
-          display.textContent = minutes + ":" + seconds;
-
-          if (--timer < 0) {
-            clearInterval(sessionTimer); // Clear timer at end
-            // Optional: Redirect to logout or login page when session expires
-            // window.location.href = '/logout';
-          }
-        }, 1000);
+      function checkRefreshToken() {
+        fetch("/tokens/newrefreshtoken")
+          .then((response) => {
+            if (response.ok) {
+              return response.text();
+            } else if (response.status === 401) {
+              // Token expired or unauthorized
+              clearInterval(refreshTokenInterval); // Also stop the interval here in case of token expiration
+              clearLocalStorage();
+              redirectToLogSignIn();
+              console.log("Token expired or unauthorized");
+            } else if (response.status === 500) {
+              // Internal Server Error
+              clearInterval(refreshTokenInterval); // Also stop the interval here in case of token expiration
+              clearLocalStorage();
+              redirectToSignIn();
+              console.log("Internal Server Error");
+            } else {
+              console.error("Error fetching new refresh token");
+            }
+          })
+          .then((data) => console.log(data))
+          .catch((error) => console.error("Error:", error));
       }
 
-      function resetSessionTimer() {
-        var display = document.querySelector("#session-timer");
-        startSessionTimer(sessionDuration, display);
+      function clearLocalStorage() {
+        // Clearing local storage or session storage
+        localStorage.clear();
+        sessionStorage.clear();
       }
 
-      window.onload = function () {
-        resetSessionTimer();
-        document.addEventListener("click", resetSessionTimer);
-        document.addEventListener("keypress", resetSessionTimer);
-        // Add other event listeners as needed
-      };
+      function redirectToSignIn() {
+        // Redirect to the login page
+        window.location.href = "/signin";
+      }
+
+      function activityDetected() {
+        checkRefreshToken(); // Call the function to check and refresh the token
+      }
+
+      document.addEventListener("click", activityDetected);
     </script>
   </body>
 </html>
