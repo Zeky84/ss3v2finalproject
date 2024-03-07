@@ -91,7 +91,7 @@ public class UserController {
         return "Error creating refresh token or not required yet";
     }
 
-    @GetMapping("/refreshtokenexptime")// WORK IN THIS ONE
+    @GetMapping("/refreshtokenexptime")
     @ResponseBody
     public String getRefreshTokenExpirationTime(Authentication authentication) {
         User user = (User) authentication.getPrincipal();

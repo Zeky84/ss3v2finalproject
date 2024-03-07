@@ -112,6 +112,6 @@ public class RefreshTokenService {
         long minutes = timeLeft.toMinutes();
         long seconds = timeLeft.minusMinutes(minutes).getSeconds();
 
-        return  minutes +":"+ seconds ;
+        return  String.format("%d:%02d", minutes, seconds);
     }
 }
