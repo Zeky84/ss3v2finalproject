@@ -209,13 +209,13 @@
               // Token expired or unauthorized
               clearInterval(refreshTokenInterval); // Also stop the interval here in case of token expiration
               clearLocalStorage();
-              redirectToLogSignIn();
+              window.location.href = "/signin?tokenexpired=true";
               console.log("Token expired or unauthorized");
             } else if (response.status === 500) {
               // Internal Server Error
               clearInterval(refreshTokenInterval); // Also stop the interval here in case of token expiration
               clearLocalStorage();
-              redirectToSignIn();
+              window.location.href = "/signin?tokenexpired=true";
               console.log("Internal Server Error");
             } else {
               console.error("Error fetching new refresh token");
@@ -231,10 +231,10 @@
         sessionStorage.clear();
       }
 
-      function redirectToSignIn() {
-        // Redirect to the login page
-        window.location.href = "/signin?tokenexpired=true";
-      }
+      // function redirectToSignIn() {
+      //   // Redirect to the login page
+      //   window.location.href = "/signin?tokenexpired=true";
+      // }
 
       function activityDetected() {
         checkRefreshToken(); // Call the function to check and refresh the token

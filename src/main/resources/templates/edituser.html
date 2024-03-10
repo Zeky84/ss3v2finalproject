@@ -90,7 +90,7 @@
         font-size: 33px;
         font-weight: 500;
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
-        filter: blur(1px);
+        filter: blur(2px);
       }
       .expiration-p {
         position: absolute; /* Take the div out of the normal document flow */
@@ -101,10 +101,10 @@
         color-scheme: dark;
         font-size: 18px;
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
-        filter: blur(1px);
+        filter: blur(2px);
       }
       #home-image {
-        filter: blur(1px);
+        filter: blur(2px);
       }
       .form-label {
         display: inline-block;
@@ -223,13 +223,13 @@
               // Token expired or unauthorized
               clearInterval(refreshTokenInterval); // Also stop the interval here in case of token expiration
               clearLocalStorage();
-              redirectToLogSignIn();
+              window.location.href = "/signin?tokenexpired=true";
               console.log("Token expired or unauthorized");
             } else if (response.status === 500) {
               // Internal Server Error
               clearInterval(refreshTokenInterval); // Also stop the interval here in case of token expiration
               clearLocalStorage();
-              redirectToSignIn();
+              window.location.href = "/signin?tokenexpired=true";
               console.log("Internal Server Error");
             } else {
               console.error("Error fetching new refresh token");
@@ -245,10 +245,10 @@
         sessionStorage.clear();
       }
 
-      function redirectToSignIn() {
-        // Redirect to the login page
-        window.location.href = "/signin?tokenexpired=true";
-      }
+      // function redirectToSignIn() {
+      //   // Redirect to the login page
+      //   window.location.href = "/signin?tokenexpired=true";
+      // }
 
       function activityDetected() {
         checkRefreshToken(); // Call the function to check and refresh the token
