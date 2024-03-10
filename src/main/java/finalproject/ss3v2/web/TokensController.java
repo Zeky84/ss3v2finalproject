@@ -27,12 +27,12 @@ public class TokensController {
                 RefreshToken refreshToken = refreshTokenService.findByUserId(userId);
                 if (refreshTokenService.isRefreshTokenAlmostExpired(refreshToken, 15)) {
                     refreshTokenService.createRefreshToken(userId);
-                    return ResponseEntity.ok("Refresh token created");
+                    return ResponseEntity.ok(" New Refresh Token created");
                 }
-                return ResponseEntity.ok("No new token required");
+                return ResponseEntity.ok("No new token required yet");
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token expired");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token expired");
     }
 
     @GetMapping("/refreshtokenexptime")
