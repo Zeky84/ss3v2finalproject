@@ -247,7 +247,7 @@
 
       function redirectToSignIn() {
         // Redirect to the login page
-        window.location.href = "/signin";
+        window.location.href = "/signin?tokenexpired=true";
       }
 
       function activityDetected() {
@@ -255,6 +255,7 @@
       }
 
       document.addEventListener("click", activityDetected);
+      document.addEventListener("keypress", activityDetected);
     </script>
   </body>
 </html>

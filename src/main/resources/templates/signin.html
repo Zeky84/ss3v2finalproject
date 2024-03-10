@@ -185,6 +185,9 @@
     </div>
     <div class="form-container">
       <h2>Sign In Form</h2>
+      <div th:if="${param.tokenexpired}">
+        <p>Session expired. Please sign in again.</p>
+      </div>
 
       <form
         th:object="${user}"

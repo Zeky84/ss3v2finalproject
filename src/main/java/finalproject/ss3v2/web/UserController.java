@@ -22,7 +22,6 @@ public class UserController {
     private RefreshTokenService refreshTokenService;
 
 
-
     public UserController(UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService) {
         this.userServiceImpl = userServiceImpl;
         this.refreshTokenService = refreshTokenService;
@@ -34,7 +33,6 @@ public class UserController {
             Integer userId = ((User) authentication.getPrincipal()).getId();
             return "redirect:/usersession/" + userId;
         }
-
         return "redirect:/error";
     }
 
@@ -45,7 +43,6 @@ public class UserController {
             model.addAttribute("user", user);
             return "usersession";
         }
-        model.addAttribute("tokenexpired", true);
         return "redirect:/signin";
     }
 
@@ -59,7 +56,6 @@ public class UserController {
             model.addAttribute("user", user);
             return "edituser";
         }
-        model.addAttribute("tokenexpired", true);
         return "redirect:/signin";
     }
 
@@ -69,7 +65,6 @@ public class UserController {
             userServiceImpl.save(user);
             return "redirect:/usersession/" + user.getId();
         }
-        model.addAttribute("tokenexpired", true);
         return "redirect:/signin";
 
     }
