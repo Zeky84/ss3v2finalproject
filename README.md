@@ -1,1 +1,1 @@
-Utility app to give the user the cost living in specific area or zip code in the US
+Utility app to give the user the cost living in specific area or zip code in the US. It implements the basics for web security through Spring Security. To achive the user data retriving we call to few apis, some free, some paid. For this reason it is being implemented user previledges base on ROLES, also based on roles the user will have the oportunity to generate graphs to compare how the costs vary depending on the location. 
