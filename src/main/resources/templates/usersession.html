@@ -131,7 +131,7 @@
       }
       .expiration-p {
         position: absolute; /* Take the div out of the normal document flow */
-        top: 65px; /* 10px from the bottom of the page */
+        top: 10px; /* 10px from the bottom of the page */
         right: 20px;
         font-family: "Roboto", sans-serif;
         color: #dbe3e9;
@@ -170,7 +170,8 @@
     </div>
     <div>
       <div class="expiration-p">
-        <p>session<br />expires in:</p>
+        <p id="sessionWord" style="top: 10px;">session</p>
+        <p id="expiresInWord">Expires in:</p>
       </div>
       <div class="expiration-clock">
         <div id="countDownRefreshToken" style="display: inline"></div>
@@ -182,15 +183,19 @@
           .then((response) => response.text())
           .then((countdowntime) => {
             console.log(countdowntime); // For debugging purposes
-            const countdownContainer = document.getElementById(
-              "countDownRefreshToken"
-            );
+            const countdownContainer = document.getElementById("countDownRefreshToken");
+            const sessionWord = document.getElementById("sessionWord");
+            const expiresInWord = document.getElementById("expiresInWord");
 
             // Check if countdown has reached "0:00" and update the display accordingly
             if (countdowntime.trim() === "0:00") {
               countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
+              sessionWord.style.display = "none";
+              expiresInWord.style.display = "none";
               clearInterval(refreshTokenInterval); // Stop the interval when session expires
             } else {
+              sessionWord.style.display = "Session";
+              expiresInWord.style.display = "Expires in:";
               countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
             }
           })

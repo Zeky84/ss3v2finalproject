@@ -121,6 +121,8 @@
         border: 1px solid #306da6;
         box-sizing: border-box;
         border-radius: 13px;
+        box-shadow: 0 0 4px #306da6;
+        text-indent: 10px;
       }
     </style>
   </head>
@@ -140,15 +142,6 @@
           th:object="${user}"
           method="post"
         >
-          <!-- <div th:if="${user.isAdmin}">
-            <input type="hidden" th:field="${user.isAdmin}" />
-          </div>
-          <div th:if="${user.isSuperUser}">
-            <input type="hidden" th:field="${user.isSuperUser}" />
-          </div>
-          <div th:if="${user.isUser}">
-            <p th:text="${user.isUser}">[[${user.isUser}]]</p>
-          </div> -->
           <div>
             <input type="hidden" th:field="${user.id}" />
           </div>
@@ -165,13 +158,13 @@
             <input type="text" th:field="${user.email}" />
           </div>
           <div>
-            <label class="form-label">New Password:</label>
-            <input type="password" th:field="${user.password}" />
-          </div>
-          <div>
-            <label class="form-label">Confirm New Password:</label>
-            <input type="password" />
-          </div>
+            <label class="form-label">Current Password:</label>
+            <input type="password" th:value="${user.password}" disabled/>
+        </div>
+        <div>
+            <label class="form-label">New Password (enter to change):</label>
+            <input type="password" name="newPassword" />
+        </div>
           <button class="button-save" type="submit">Update</button>
         </form>
         <a

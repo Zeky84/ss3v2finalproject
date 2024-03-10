@@ -1,18 +1,18 @@
 package finalproject.ss3v2.web;
 
-import finalproject.ss3v2.domain.RefreshToken;
+
 import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.service.RefreshTokenService;
-import finalproject.ss3v2.service.UserService;
+
 import finalproject.ss3v2.service.UserServiceImpl;
-import finalproject.ss3v2.util.CookieUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -20,12 +20,14 @@ import java.util.Optional;
 public class UserController {
     private UserServiceImpl userServiceImpl;
     private RefreshTokenService refreshTokenService;
+    private PasswordEncoder passwordEncoder;
 
 
-
-    public UserController(UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService) {
+    public UserController(UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder) {
         this.userServiceImpl = userServiceImpl;
         this.refreshTokenService = refreshTokenService;
+        this.passwordEncoder = passwordEncoder;
+
     }
 
     @GetMapping("/usersession")
@@ -45,9 +47,7 @@ public class UserController {
             model.addAttribute("user", user);
             return "usersession";
         }
-//        if(refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId()).equals(false)){
-//            model.addAttribute("tokenexpired", true);
-//        }
+
         return "redirect:/signin";
     }
 
@@ -61,22 +61,30 @@ public class UserController {
             model.addAttribute("user", user);
             return "edituser";
         }
-//        if(refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId()).equals(false)){
-//            model.addAttribute("tokenexpired", true);
-//        }
+
         return "redirect:/signin";
     }
 
     @PostMapping("/usersession/{userId}/edituser")
-    public String updateUser(User user, Authentication authentication, Model model) {
+    public String updateUser(User user, @RequestParam(required = false) String newPassword, Authentication authentication, Model model) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-            userServiceImpl.save(user);
+            User existingUser = userServiceImpl.findUserById(user.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + user.getId()));
+
+            // Update user details
+            existingUser.setEmail(user.getEmail());
+            existingUser.setFirstName(user.getFirstName());
+            existingUser.setLastName(user.getLastName());
+
+            // If a new password is provided, encode and update it
+            if (newPassword != null && !newPassword.isBlank()) {
+                String encodedPassword = passwordEncoder.encode(newPassword);
+                existingUser.setPassword(encodedPassword);
+            }
+
+            userServiceImpl.save(existingUser);
             return "redirect:/usersession/" + user.getId();
         }
-//        if(refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId()).equals(false)){
-//            model.addAttribute("tokenexpired", true);
-//        }
         return "redirect:/signin";
-
     }
 }
