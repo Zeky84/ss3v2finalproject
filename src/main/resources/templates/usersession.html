@@ -120,7 +120,7 @@
       }
       .expiration-clock {
         position: absolute;
-        top: 90px;
+        top: 65px;
         right: 20px;
         font-family: "Roboto", sans-serif;
         color: #dbe3e9;
@@ -131,12 +131,22 @@
       }
       .expiration-p {
         position: absolute; /* Take the div out of the normal document flow */
-        top: 65px; /* 10px from the bottom of the page */
+        top: 62px; /* 10px from the bottom of the page */
         right: 20px;
         font-family: "Roboto", sans-serif;
         color: #dbe3e9;
         color-scheme: dark;
         font-size: 18px;
+        text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
+      }
+      .expiration-refresh {
+        position: absolute; /* Take the div out of the normal document flow */
+        top: 120px; /* 10px from the bottom of the page */
+        right: 20px;
+        font-family: "Roboto", sans-serif;
+        color: #dbe3e9;
+        color-scheme: dark;
+        font-size: 16px;
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
       }
     </style>
@@ -170,32 +180,51 @@
     </div>
     <div>
       <div class="expiration-p">
-        <p>session<br />expires in:</p>
+        <p id="expiresInP"></p>
       </div>
       <div class="expiration-clock">
         <div id="countDownRefreshToken" style="display: inline"></div>
       </div>
+      <div class="expiration-refresh">
+        <p id="activateMessage" ></p>
+      </div>
     </div>
     <script>
-      function refreshTokenExpCount() {
-        fetch(`/tokens/refreshtokenexptime`)
-          .then((response) => response.text())
-          .then((countdowntime) => {
-            console.log(countdowntime); // For debugging purposes
-            const countdownContainer = document.getElementById(
-              "countDownRefreshToken"
-            );
+function refreshTokenExpCount() {
+    fetch(`/tokens/refreshtokenexptime`)
+      .then((response) => response.text())
+      .then((countdowntime) => {
+        console.log(countdowntime); // For debugging purposes
+        const countdownContainer = document.getElementById("countDownRefreshToken");
+        const expirationP = document.getElementById("expiresInP");
+        const activateMessage = document.getElementById("activateMessage");
 
-            // Check if countdown has reached "0:00" and update the display accordingly
-            if (countdowntime.trim() === "0:00") {
-              countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
-              clearInterval(refreshTokenInterval); // Stop the interval when session expires
-            } else {
-              countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
-            }
-          })
-          .catch((error) => console.error("Error fetching countdown:", error));
-      }
+        //countdowntime into minutes and seconds
+        const [minutes, seconds] = countdowntime.split(":").map(Number);
+
+        //countdown has reached "0:00" and update the display 
+        if (countdowntime.trim() === "0:00") {
+          countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
+          expirationP.innerHTML = ``;
+          activateMessage.innerHTML = ''; 
+          clearInterval(refreshTokenInterval); 
+        } else {
+          if (minutes === 0 && seconds <= 15) {
+            // If less than 15 seconds, make the text red
+            countdownContainer.style.color = 'red';
+            activateMessage.innerHTML = `<h4 style="color:red;">key press refresh!</h4>`;
+          } else {
+            // Reset to default color if more than 15 seconds remain and hide the activate message
+            countdownContainer.style.color = '';
+            activateMessage.innerHTML = ''; // Clear the activate message
+          }
+          expirationP.innerHTML = `expires in:`;
+          countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
+        }
+      })
+      .catch((error) => console.error("Error fetching countdown:", error));
+}
+
       // Use setInterval to call refreshTokenExpCount every second
       let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
       refreshTokenExpCount();
@@ -242,7 +271,6 @@
 
       document.addEventListener("click", activityDetected);
       document.addEventListener("keypress", activityDetected);
-
     </script>
   </body>
 </html>

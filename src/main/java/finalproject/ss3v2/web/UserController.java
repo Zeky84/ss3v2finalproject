@@ -45,9 +45,12 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User user = (User) authentication.getPrincipal();
             model.addAttribute("user", user);
+            model.addAttribute("isSessionActive", true); // Session is active
             return "usersession";
         }
-
+//        if(refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId()).equals(false)){
+//            model.addAttribute("tokenexpired", true);
+//        }
         return "redirect:/signin";
     }
 
@@ -61,20 +64,22 @@ public class UserController {
             model.addAttribute("user", user);
             return "edituser";
         }
-
+//        if(refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId()).equals(false)){
+//            model.addAttribute("tokenexpired", true);
+//        }
         return "redirect:/signin";
     }
 
     @PostMapping("/usersession/{userId}/edituser")
-    public String updateUser(User user, @RequestParam(required = false) String newPassword, Authentication authentication, Model model) {
+    public String updateUser(User userFields, @RequestParam(required = false) String newPassword, Authentication authentication, Model model) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-            User existingUser = userServiceImpl.findUserById(user.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + user.getId()));
+            User existingUser = userServiceImpl.findUserById(userFields.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userFields.getId()));
 
             // Update user details
-            existingUser.setEmail(user.getEmail());
-            existingUser.setFirstName(user.getFirstName());
-            existingUser.setLastName(user.getLastName());
+            existingUser.setEmail(userFields.getEmail());
+            existingUser.setFirstName(userFields.getFirstName());
+            existingUser.setLastName(userFields.getLastName());
 
             // If a new password is provided, encode and update it
             if (newPassword != null && !newPassword.isBlank()) {
@@ -83,7 +88,7 @@ public class UserController {
             }
 
             userServiceImpl.save(existingUser);
-            return "redirect:/usersession/" + user.getId();
+            return "redirect:/usersession/" + userFields.getId();
         }
         return "redirect:/signin";
     }
