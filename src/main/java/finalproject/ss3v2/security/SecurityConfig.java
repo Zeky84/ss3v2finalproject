@@ -67,7 +67,7 @@ public class SecurityConfig {
                                 .requestMatchers("/usersession/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                                 .requestMatchers("/edituser").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                                 .requestMatchers("/success").authenticated()
-                                .requestMatchers("homepage", "/register").permitAll()
+                                .requestMatchers("homepage", "/registration").permitAll()
                                 .anyRequest().permitAll()
                 )
                 .headers(header -> header.frameOptions(frameOption -> frameOption.disable()))
@@ -130,7 +130,7 @@ public class SecurityConfig {
                                     logger.info("Raw password during login: " + password);
                                     logger.info("Encoded password during login: " + passwordEncoder().encode(password));
 
-                                    response.sendRedirect("/error");
+                                    response.sendRedirect("/signin?authError");// /error before
                                 }
                             })
                             .permitAll();

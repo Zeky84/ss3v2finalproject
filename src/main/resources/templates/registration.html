@@ -188,9 +188,10 @@
     </div>
     <div class="form-container">
       <h2>Register Form</h2>
+      <p th:if="${userExists}">Email already exists! Please choose another.</p>
       <form
         th:object="${user}"
-        th:action="@{/register}"
+        th:action="@{/registration}"
         method="post"
         enctype="application/x-www-form-urlencoded"
         id="registrationForm"
@@ -281,6 +282,18 @@
     </div>
 
     <script type="text/javascript">
+      window.onload = function () {
+        // Clear all input fields in forms
+        var inputs = document.getElementsByTagName("input");
+        for (var i = 0; i < inputs.length; i++) {
+          if (
+            inputs[i].type.toLowerCase() == "text" ||
+            inputs[i].type.toLowerCase() == "password"
+          ) {
+            inputs[i].value = "";
+          }
+        }
+      };
       document
         .getElementById("registrationForm")
         .addEventListener("submit", function (event) {

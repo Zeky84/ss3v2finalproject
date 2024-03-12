@@ -199,6 +199,15 @@
       </div>
     </div>
     <script>
+          window.onload = function() {
+        // Clear all input fields in forms
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].type.toLowerCase() == 'text' || inputs[i].type.toLowerCase() == 'password') {
+                inputs[i].value = '';
+            }
+        }
+    };
       function refreshTokenExpCount() {
         fetch(`/tokens/refreshtokenexptime`)
           .then((response) => response.text())
@@ -253,7 +262,7 @@
               // Internal Server Error
               clearInterval(refreshTokenInterval);
               clearLocalStorage();
-              window.location.href = "/signin?tokenexpired=true";
+              window.location.href = "/signin?sessionexpired=true";
               console.log("Internal Server Error");
             } else {
               console.error("Error fetching new refresh token");
@@ -270,7 +279,6 @@
       function activityDetected() {
         checkRefreshToken();
       }
-
       document.addEventListener("click", activityDetected);
       document.addEventListener("keypress", activityDetected);
     </script>

@@ -127,7 +127,7 @@
         font-size: 33px;
         font-weight: 500;
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
-        filter: blur(2px)
+        filter: blur(2px);
       }
       .expiration-p {
         position: absolute; /* Take the div out of the normal document flow */
@@ -138,7 +138,7 @@
         color-scheme: dark;
         font-size: 18px;
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
-        filter: blur(2px)
+        filter: blur(2px);
       }
       .expiration-refresh {
         position: absolute; /* Take the div out of the normal document flow */
@@ -149,15 +149,15 @@
         color-scheme: dark;
         font-size: 16px;
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
-        filter: blur(1px)
+        filter: blur(1px);
       }
       #home-image {
         filter: blur(2px);
       }
       .form-label {
         display: inline-block;
-        margin-left: 10px; 
-        padding-top: 10px; 
+        margin-left: 10px;
+        padding-top: 10px;
       }
 
       input[type="text"],
@@ -236,48 +236,52 @@
         <div id="countDownRefreshToken" style="display: inline"></div>
       </div>
       <div class="expiration-refresh">
-        <p id="activateMessage" ></p>
+        <p id="activateMessage"></p>
       </div>
     </div>
     <script>
-function refreshTokenExpCount() {
-    fetch(`/tokens/refreshtokenexptime`)
-      .then((response) => response.text())
-      .then((countdowntime) => {
-        console.log(countdowntime); // For debugging purposes
-        const countdownContainer = document.getElementById("countDownRefreshToken");
-        const expirationP = document.getElementById("expiresInP");
-        const activateMessage = document.getElementById("activateMessage");
+      // to update countdown clock
+      function refreshTokenExpCount() {
+        fetch(`/tokens/refreshtokenexptime`)
+          .then((response) => response.text())
+          .then((countdowntime) => {
+            console.log(countdowntime); // For debugging purposes
+            const countdownContainer = document.getElementById(
+              "countDownRefreshToken"
+            );
+            const expirationP = document.getElementById("expiresInP");
+            const activateMessage = document.getElementById("activateMessage");
 
-        //countdowntime into minutes and seconds
-        const [minutes, seconds] = countdowntime.split(":").map(Number);
+            //countdowntime into minutes and seconds
+            const [minutes, seconds] = countdowntime.split(":").map(Number);
 
-        if (countdowntime.trim() === "0:00") {
-          countdownContainer.style.color = 'white';
-          countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
-          expirationP.innerHTML = ``;
-          activateMessage.innerHTML = ''; 
-          clearInterval(refreshTokenInterval); 
-        } else {
-          if (minutes === 0 && seconds <= 15) {
-            // If less than 15 seconds, make the text red
-            countdownContainer.style.color = 'red';
-            activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
-          } else {
-            // Reset to default color if more than 15 seconds remain and hide the activate message
-            countdownContainer.style.color = '';
-            activateMessage.innerHTML = ''; // Clear the activate message
-          }
-          expirationP.innerHTML = `expires in:`;
-          countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
-        }
-      })
-      .catch((error) => console.error("Error fetching countdown:", error));
-}
+            if (countdowntime.trim() === "0:00") {
+              countdownContainer.style.color = "white";
+              countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
+              expirationP.innerHTML = ``;
+              activateMessage.innerHTML = "";
+              clearInterval(refreshTokenInterval);
+            } else {
+              if (minutes === 0 && seconds <= 15) {
+                // If less than 15 seconds, make the text red
+                countdownContainer.style.color = "red";
+                activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
+              } else {
+                // Reset to default color if more than 15 seconds remain and hide the activate message
+                countdownContainer.style.color = "";
+                activateMessage.innerHTML = ""; // Clear the activate message
+              }
+              expirationP.innerHTML = `expires in:`;
+              countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
+            }
+          })
+          .catch((error) => console.error("Error fetching countdown:", error));
+      }
 
       let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
       refreshTokenExpCount();
-
+      
+      // to check if account expired
       function checkRefreshToken() {
         fetch("/tokens/newrefreshtoken")
           .then((response) => {
@@ -285,15 +289,15 @@ function refreshTokenExpCount() {
               return response.text();
             } else if (response.status === 401) {
               // Token expired or unauthorized
-              clearInterval(refreshTokenInterval); 
+              clearInterval(refreshTokenInterval);
               clearLocalStorage();
-              window.location.href = "/signin?tokenexpired=true";
+              // window.location.href = "/signin?tokenexpired=true";
               console.log("Token expired or unauthorized");
             } else if (response.status === 500) {
               // Internal Server Error
               clearInterval(refreshTokenInterval);
               clearLocalStorage();
-              window.location.href = "/signin?tokenexpired=true";
+              window.location.href = "/signin?sessionexpired=true";
               console.log("Internal Server Error");
             } else {
               console.error("Error fetching new refresh token");
@@ -308,7 +312,7 @@ function refreshTokenExpCount() {
         sessionStorage.clear();
       }
       function activityDetected() {
-        checkRefreshToken(); 
+        checkRefreshToken();
       }
 
       document.addEventListener("click", activityDetected);
