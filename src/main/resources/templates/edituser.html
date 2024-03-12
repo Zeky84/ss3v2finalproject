@@ -23,6 +23,15 @@
         border-radius: 10px;
         background-color: #e7f6ff;
       }
+      .paragraph {
+        position: absolute;
+        font-size: 30px;
+        top: 0; /* Top of the container */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%); /* Adjust horizontal position */
+        color: #c3e9ff;
+        filter: blur(2px);
+      }
       .button-logout {
         position: absolute; /* Take the div out of the normal document flow */
         top: 10px; /* 10px from the top of the page */
@@ -174,6 +183,7 @@
         alt="this is the app logo"
         id="home-image"
       />
+      <p class="paragraph">[[${user.firstName}]]'s Session</p>
       <div class="form-container">
         <h2>Edit User</h2>
         <form
@@ -242,8 +252,8 @@ function refreshTokenExpCount() {
         //countdowntime into minutes and seconds
         const [minutes, seconds] = countdowntime.split(":").map(Number);
 
-        //countdown has reached "0:00" and update the display 
         if (countdowntime.trim() === "0:00") {
+          countdownContainer.style.color = 'white';
           countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
           expirationP.innerHTML = ``;
           activateMessage.innerHTML = ''; 
@@ -252,7 +262,7 @@ function refreshTokenExpCount() {
           if (minutes === 0 && seconds <= 15) {
             // If less than 15 seconds, make the text red
             countdownContainer.style.color = 'red';
-            activateMessage.innerHTML = `<h4 style="color:red;">key press refresh!</h4>`;
+            activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
           } else {
             // Reset to default color if more than 15 seconds remain and hide the activate message
             countdownContainer.style.color = '';

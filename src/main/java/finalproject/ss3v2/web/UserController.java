@@ -41,11 +41,11 @@ public class UserController {
     }
 
     @GetMapping("/usersession/{userId}")
-    public String goToUserSession(Model model, Authentication authentication) {
+    public String goToUserSession(@PathVariable Integer userId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-            User user = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
             model.addAttribute("user", user);
-            model.addAttribute("isSessionActive", true); // Session is active
             return "usersession";
         }
 //        if(refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId()).equals(false)){

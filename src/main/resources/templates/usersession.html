@@ -27,6 +27,14 @@
         border-radius: 10px;
         background-color: #c3e9ff;
       }
+      .paragraph {
+        position: absolute;
+        font-size: 30px;
+        top: 0; /* Top of the container */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%); /* Adjust horizontal position */
+        color: #c3e9ff;
+      }
       .button-logout {
         position: absolute; /* Take the div out of the normal document flow */
         top: 10px; /* 10px from the top of the page */
@@ -158,6 +166,7 @@
         style="margin-left: 7px; margin-top: 7px"
         alt="this is the app logo"
       />
+      <p class="paragraph">[[${user.firstName}]]'s Session</p>
       <div>
         <form action="/logout" method="post">
           <button class="button-logout" type="submit">Logout</button>
@@ -186,43 +195,46 @@
         <div id="countDownRefreshToken" style="display: inline"></div>
       </div>
       <div class="expiration-refresh">
-        <p id="activateMessage" ></p>
+        <p id="activateMessage"></p>
       </div>
     </div>
     <script>
-function refreshTokenExpCount() {
-    fetch(`/tokens/refreshtokenexptime`)
-      .then((response) => response.text())
-      .then((countdowntime) => {
-        console.log(countdowntime); // For debugging purposes
-        const countdownContainer = document.getElementById("countDownRefreshToken");
-        const expirationP = document.getElementById("expiresInP");
-        const activateMessage = document.getElementById("activateMessage");
+      function refreshTokenExpCount() {
+        fetch(`/tokens/refreshtokenexptime`)
+          .then((response) => response.text())
+          .then((countdowntime) => {
+            console.log(countdowntime); // For debugging purposes
+            const countdownContainer = document.getElementById(
+              "countDownRefreshToken"
+            );
+            const expirationP = document.getElementById("expiresInP");
+            const activateMessage = document.getElementById("activateMessage");
 
-        //countdowntime into minutes and seconds
-        const [minutes, seconds] = countdowntime.split(":").map(Number);
+            //countdowntime into minutes and seconds
+            const [minutes, seconds] = countdowntime.split(":").map(Number);
 
-        if (countdowntime.trim() === "0:00") {
-          countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
-          expirationP.innerHTML = ``;
-          activateMessage.innerHTML = ''; 
-          clearInterval(refreshTokenInterval); 
-        } else {
-          if (minutes === 0 && seconds <= 15) {
-            // If less than 15 seconds, make the text red
-            countdownContainer.style.color = 'red';
-            activateMessage.innerHTML = `<h4 style="color:red;">key press refresh!</h4>`;
-          } else {
-            // Reset to default color if more than 15 seconds remain and hide the activate message
-            countdownContainer.style.color = '';
-            activateMessage.innerHTML = ''; // Clear the activate message
-          }
-          expirationP.innerHTML = `expires in:`;
-          countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
-        }
-      })
-      .catch((error) => console.error("Error fetching countdown:", error));
-}
+            if (countdowntime.trim() === "0:00") {
+              countdownContainer.style.color = 'white';
+              countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
+              expirationP.innerHTML = ``;
+              activateMessage.innerHTML = "";
+              clearInterval(refreshTokenInterval);
+            } else {
+              if (minutes === 0 && seconds <= 15) {
+                // If less than 15 seconds, make the text red
+                countdownContainer.style.color = "red";
+                activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
+              } else {
+                // Reset to default color if more than 15 seconds remain and hide the activate message
+                countdownContainer.style.color = "";
+                activateMessage.innerHTML = ""; // Clear the activate message
+              }
+              expirationP.innerHTML = `expires in:`;
+              countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
+            }
+          })
+          .catch((error) => console.error("Error fetching countdown:", error));
+      }
       let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
       refreshTokenExpCount();
 
@@ -233,13 +245,13 @@ function refreshTokenExpCount() {
               return response.text();
             } else if (response.status === 401) {
               // Token expired or unauthorized
-              clearInterval(refreshTokenInterval); 
+              clearInterval(refreshTokenInterval);
               clearLocalStorage();
               window.location.href = "/signin?tokenexpired=true";
               console.log("Token expired or unauthorized");
             } else if (response.status === 500) {
               // Internal Server Error
-              clearInterval(refreshTokenInterval); 
+              clearInterval(refreshTokenInterval);
               clearLocalStorage();
               window.location.href = "/signin?tokenexpired=true";
               console.log("Internal Server Error");
@@ -252,12 +264,11 @@ function refreshTokenExpCount() {
       }
 
       function clearLocalStorage() {
-
         localStorage.clear();
         sessionStorage.clear();
       }
       function activityDetected() {
-        checkRefreshToken(); 
+        checkRefreshToken();
       }
 
       document.addEventListener("click", activityDetected);
