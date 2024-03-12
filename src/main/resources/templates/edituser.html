@@ -23,14 +23,37 @@
         border-radius: 10px;
         background-color: #e7f6ff;
       }
-      .button-save {
+      .button-logout {
         position: absolute; /* Take the div out of the normal document flow */
         top: 10px; /* 10px from the top of the page */
         right: 10px;
         font-family: "Roboto", sans-serif;
         background-color: #ffffff;
         border: none;
-        box-shadow: 0 0 6px #ffffff;
+        box-shadow: 0 0 4px #ffffff;
+        color: #3f90db;
+        padding: 2px 5px;
+        text-align: center;
+        display: inline-block;
+        font-size: 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 0.5s;
+        margin-left: 5px;
+        margin-right: 5px;
+        margin-top: 7px;
+        height: 40px;
+        width: 100px;
+      }
+      .button-save {
+        position: absolute; /* Take the div out of the normal document flow */
+        top: 10px; /* 10px from the top of the page */
+        right: 237px;
+        font-family: "Roboto", sans-serif;
+        background-color: #b2e3ff;
+        box-shadow: 0 0 6px #b2e3ff;
+        border: none;
         color: #3f90db;
         padding: 2px 5px;
         text-align: center;
@@ -59,7 +82,7 @@
         text-decoration: none;
         display: inline-block;
         font-size: 18px;
-        border-radius: 8px;
+        border-radius: 10px;
         cursor: pointer;
         white-space: nowrap;
         transition: background-color 0.5s;
@@ -76,6 +99,11 @@
         font-size: 18px;
       }
       .button-like:hover {
+        background-color: #b8b8b8ce;
+        box-shadow: 0 0 4px #b8b8b8ce;
+        font-size: 18px;
+      }
+      .button-logout:hover {
         background-color: #b8b8b8ce;
         box-shadow: 0 0 4px #b8b8b8ce;
         font-size: 18px;
@@ -112,15 +140,15 @@
         color-scheme: dark;
         font-size: 16px;
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
-        filter: blur(2px)
+        filter: blur(1px)
       }
       #home-image {
         filter: blur(2px);
       }
       .form-label {
         display: inline-block;
-        margin-left: 10px; /* Adjust the right margin */
-        padding-top: 10px; /* Adjust the top padding */
+        margin-left: 10px; 
+        padding-top: 10px; 
       }
 
       input[type="text"],
@@ -179,6 +207,9 @@
           </div>
           <button class="button-save" type="submit">Update</button>
         </form>
+        <form action="/logout" method="post">
+          <button class="button-logout" type="submit">Logout</button>
+        </form>
         <a
           th:href="@{/usersession/{userId}(userId=${user.id})}"
           class="button-like"
@@ -234,7 +265,6 @@ function refreshTokenExpCount() {
       .catch((error) => console.error("Error fetching countdown:", error));
 }
 
-      // Use setInterval to call refreshTokenExpCount every second
       let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
       refreshTokenExpCount();
 
@@ -245,13 +275,13 @@ function refreshTokenExpCount() {
               return response.text();
             } else if (response.status === 401) {
               // Token expired or unauthorized
-              clearInterval(refreshTokenInterval); // Also stop the interval here in case of token expiration
+              clearInterval(refreshTokenInterval); 
               clearLocalStorage();
               window.location.href = "/signin?tokenexpired=true";
               console.log("Token expired or unauthorized");
             } else if (response.status === 500) {
               // Internal Server Error
-              clearInterval(refreshTokenInterval); // Also stop the interval here in case of token expiration
+              clearInterval(refreshTokenInterval);
               clearLocalStorage();
               window.location.href = "/signin?tokenexpired=true";
               console.log("Internal Server Error");
@@ -264,18 +294,11 @@ function refreshTokenExpCount() {
       }
 
       function clearLocalStorage() {
-        // Clearing local storage or session storage
         localStorage.clear();
         sessionStorage.clear();
       }
-
-      // function redirectToSignIn() {
-      //   // Redirect to the login page
-      //   window.location.href = "/signin?tokenexpired=true";
-      // }
-
       function activityDetected() {
-        checkRefreshToken(); // Call the function to check and refresh the token
+        checkRefreshToken(); 
       }
 
       document.addEventListener("click", activityDetected);
