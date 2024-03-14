@@ -8,13 +8,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="">
     </head>
-<!--    <body>-->
-<!--        <div th:if(tokenexpired)>-->
-<!--                <h2>Token Expired</h2>-->
-<!--        </div>-->
-<!--        <h1>Registration / Login Error</h1>-->
-<!--        <h3>Hello World BLA BLA BLA</h3>-->
-<!--        -->
-<!--        <script src="" async defer></script>-->
-<!--    </body>-->
+    <body>
+        <div th:if(unAuthorize)>
+                <h2>No estas autorizado</h2>
+        </div>
+        <div th:if(unAuthenticated)>
+            <h2>Aun no eres usuarion, create an account to have access</h2>
+        </div>
+        <h1>Registration / Login Error</h1>
+        <h3>Hello World BLA BLA BLA</h3>
+
+        <script src="" async defer></script>
+    </body>
 </html>

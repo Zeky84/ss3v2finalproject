@@ -199,15 +199,18 @@
       </div>
     </div>
     <script>
-          window.onload = function() {
+      window.onload = function () {
         // Clear all input fields in forms
-        var inputs = document.getElementsByTagName('input');
+        var inputs = document.getElementsByTagName("input");
         for (var i = 0; i < inputs.length; i++) {
-            if (inputs[i].type.toLowerCase() == 'text' || inputs[i].type.toLowerCase() == 'password') {
-                inputs[i].value = '';
-            }
+          if (
+            inputs[i].type.toLowerCase() == "text" ||
+            inputs[i].type.toLowerCase() == "password"
+          ) {
+            inputs[i].value = "";
+          }
         }
-    };
+      };
       function refreshTokenExpCount() {
         fetch(`/tokens/refreshtokenexptime`)
           .then((response) => response.text())
@@ -223,7 +226,7 @@
             const [minutes, seconds] = countdowntime.split(":").map(Number);
 
             if (countdowntime.trim() === "0:00") {
-              countdownContainer.style.color = 'white';
+              countdownContainer.style.color = "white";
               countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
               expirationP.innerHTML = ``;
               activateMessage.innerHTML = "";

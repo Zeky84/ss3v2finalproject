@@ -62,13 +62,27 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
 //        .authorizeHttpRequests(request -> request.requestMatchers("**").permitAll().anyRequest().authenticated())
+
+                //---------------------------------------------------------------------added to the original
+                // Redirecting to denied page for unauthorized access user and unauthenticated users
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            // Redirect to signin for unauthenticated access
+                            response.sendRedirect("/homepage?unAuthenticated");// todo: change to nice desing page
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            // Redirect to homepage for unauthorized access
+                            response.sendRedirect("/homepage?unAuthorized");// todo: change to nice desing page
+                        })
+                )
+                //-------------------------------------------------------------------------------------------
                 .authorizeHttpRequests(request -> request
-                                .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
-                                .requestMatchers("/usersession/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
-                                .requestMatchers("/edituser").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
-                                .requestMatchers("/success").authenticated()
-                                .requestMatchers("homepage", "/registration").permitAll()
-                                .anyRequest().permitAll()
+                        .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/usersession/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
+                        .requestMatchers("/edituser").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
+                        .requestMatchers("/success").authenticated()
+                        .requestMatchers("homepage", "/registration").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .headers(header -> header.frameOptions(frameOption -> frameOption.disable()))
 //                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -102,18 +116,12 @@ public class SecurityConfig {
                                     logger.info("Access Cookie: " + accessTokenCookie.getValue());
                                     logger.info("Refresh Cookie: " + refreshTokenCookie.getValue());
                                     logger.info("Role for " + user.getUsername() + " is: " + user.authority(accessToken).toString());
-//
+
                                     response.addCookie(accessTokenCookie);
                                     response.addCookie(refreshTokenCookie);
-                                    // Modified from the original to redirect based on user role
-//                                response.sendRedirect("/success");
-                                    String role = authentication.getAuthorities().stream().findFirst().get().getAuthority();
 
-                                    if (role.equals("ROLE_ADMIN")) {
-                                        response.sendRedirect("/admin/dashboard");
-                                    } else {
-                                        response.sendRedirect("/usersession");
-                                    }
+
+                                response.sendRedirect("/usersession");
                                 }
                             })
                             .failureHandler(new AuthenticationFailureHandler() {

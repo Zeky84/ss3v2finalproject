@@ -95,7 +95,7 @@ public class RefreshTokenService {
         }
         return true;
     }
-    public boolean isRefreshTokenAlmostExpired(RefreshToken refreshToken, int secondsBeforeExpiry) {
+    public boolean isRefreshTokenAlmostExpired(RefreshToken refreshToken, int secondsBeforeExpiry) {//GPT-4 code
         Instant expirationTime = refreshToken.getExpiryDate();
         Instant currentTime = Instant.now();
         Duration timeLeft = Duration.between(currentTime, expirationTime);

@@ -5,7 +5,9 @@ import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.service.RefreshTokenService;
 
 import finalproject.ss3v2.service.UserServiceImpl;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,52 +42,57 @@ public class UserController {
     @GetMapping("/usersession/{userId}")
     public String goToUserSession(@PathVariable Integer userId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-            User user = userServiceImpl.findUserById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-            model.addAttribute("user", user);
+            User userAuth = (User) authentication.getPrincipal();
+            model.addAttribute("user", userAuth);
             return "usersession";
         }
-//        if(refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId()).equals(false)){
-//            model.addAttribute("tokenexpired", true);
-//        }
         return "redirect:/signin";
     }
 
     @GetMapping("/usersession/{userId}/edituser")
     public String goToEditUser(@PathVariable Integer userId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-            //Using the user id instead of the principal of the authentication to get the user object to update the frontend, otherwise,
-            //when refreshing the page the user fields will be filled with the old data all the time
-            User user = userServiceImpl.findUserById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-            model.addAttribute("user", user);
+            User userAuth = (User) authentication.getPrincipal();
+            model.addAttribute("user", userAuth);
             return "edituser";
         }
-//        if(refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId()).equals(false)){
-//            model.addAttribute("tokenexpired", true);
-//        }
         return "redirect:/signin";
     }
 
     @PostMapping("/usersession/{userId}/edituser")
-    public String updateUser(User userFields, @RequestParam(required = false) String newPassword, Authentication authentication, Model model) {
+    public String updateUser(@PathVariable Integer userId, User userFields,
+                             @RequestParam(required = false) String newPassword,
+                             Authentication authentication, Model model) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-            User existingUser = userServiceImpl.findUserById(userFields.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userFields.getId()));
+
+            User authenticatedUser = (User) authentication.getPrincipal();
+
+            // Check if the authenticated user's ID matches the user ID from the URL to avoid unauthorized updates
+            if (!authenticatedUser.getId().equals(userId)) {
+                // Redirect to an error page or a 'forbidden' page
+                return "redirect:/error"; //todo: make a nice desing vie for this like the one pending for unauthorized and unauthenticated in the security config
+            }
+
+            User existingUser = userServiceImpl.findUserById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
             // Update user details
             existingUser.setEmail(userFields.getEmail());
             existingUser.setFirstName(userFields.getFirstName());
             existingUser.setLastName(userFields.getLastName());
 
-            // If a new password is provided, encode and update it
             if (newPassword != null && !newPassword.isBlank()) {
                 String encodedPassword = passwordEncoder.encode(newPassword);
                 existingUser.setPassword(encodedPassword);
             }
 
             userServiceImpl.save(existingUser);
-            return "redirect:/usersession/" + userFields.getId();
+
+            // Update the security context
+            Authentication newAuth = new UsernamePasswordAuthenticationToken(existingUser, existingUser.getPassword(), existingUser.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+            return "redirect:/usersession/" + userId;
         }
         return "redirect:/signin";
     }
