@@ -6,6 +6,10 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <script
+      src="https://kit.fontawesome.com/17e9292b04.js"
+      crossorigin="anonymous"
+    ></script>
     <style>
       body {
         font-family: "Roboto", sans-serif;
@@ -17,24 +21,32 @@
         flex-direction: column;
         align-items: center;
         width: 320px;
-        margin: 10px auto 0; /* Adjust the top margin as needed */
+        margin: 10px auto 0; 
         padding: 20px;
         box-shadow: 0 0 6px #e7f6ff;
         border-radius: 10px;
         background-color: #e7f6ff;
       }
+      .form-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 5px; 
+        width: 100%;
+      }
       .paragraph {
         position: absolute;
         font-size: 30px;
-        top: 0; /* Top of the container */
-        left: 50%; /* Center horizontally */
-        transform: translateX(-50%); /* Adjust horizontal position */
+        top: 0; 
+        left: 50%; 
+        transform: translateX(-50%); 
         color: #c3e9ff;
         filter: blur(2px);
       }
       .button-logout {
-        position: absolute; /* Take the div out of the normal document flow */
-        top: 10px; /* 10px from the top of the page */
+        position: absolute; 
+        top: 10px; 
         right: 10px;
         font-family: "Roboto", sans-serif;
         background-color: #ffffff;
@@ -56,8 +68,8 @@
         width: 100px;
       }
       .button-save {
-        position: absolute; /* Take the div out of the normal document flow */
-        top: 10px; /* 10px from the top of the page */
+        position: absolute;
+        top: 10px; 
         right: 237px;
         font-family: "Roboto", sans-serif;
         background-color: #b2e3ff;
@@ -81,7 +93,7 @@
       }
       .button-like {
         position: absolute;
-        top: 10px; /* 10px from the top of the page */
+        top: 10px; 
         right: 237px;
         background-color: #d6effd;
         box-shadow: 0 0 6px #d6effd;
@@ -130,8 +142,8 @@
         filter: blur(3px);
       }
       .expiration-p {
-        position: absolute; /* Take the div out of the normal document flow */
-        top: 62px; /* 10px from the bottom of the page */
+        position: absolute; 
+        top: 62px; 
         right: 20px;
         font-family: "Roboto", sans-serif;
         color: #dbe3e9;
@@ -141,8 +153,8 @@
         filter: blur(3px);
       }
       .expiration-refresh {
-        position: absolute; /* Take the div out of the normal document flow */
-        top: 120px; /* 10px from the bottom of the page */
+        position: absolute; 
+        top: 120px; 
         right: 20px;
         font-family: "Roboto", sans-serif;
         color: #dbe3e9;
@@ -158,6 +170,11 @@
         display: inline-block;
         margin-left: 10px;
         padding-top: 10px;
+        width: 150px;
+        height: 20px;
+        box-sizing: border-box;
+        text-align: left;
+        white-space: nowrap;
       }
 
       input[type="text"],
@@ -207,13 +224,49 @@
             <label class="form-label">Email:</label>
             <input type="text" th:field="${user.email}" />
           </div>
-          <div>
-            <label class="form-label">Current Password:</label>
-            <input type="password" th:value="${user.password}" disabled />
-          </div>
-          <div>
-            <label class="form-label">New Password (enter to change):</label>
-            <input type="password" name="newPassword" />
+          <label class="form-label">
+            <input
+              type="checkbox"
+              id="changePasswordCheckbox"
+              onclick="togglePasswordChangeFields()"
+            />
+            Change Password
+          </label>
+          <div id="passwordChangeFields" style="display: none">
+            <label class="form-label">New Password:</label>
+            <div class="form-group" style="position: relative">
+              <input type="password" name="newPassword" id="newPassword" /><i
+                class="fa-solid fa-eye"
+                id="passwordEye"
+                style="
+                  position: absolute;
+                  top: 50%;
+                  right: 10px;
+                  transform: translateY(-50%);
+                  cursor: pointer;
+                  color: #306da6;
+                "
+              ></i>
+            </div>
+            <label class="form-label">Confirm New Password:</label>
+            <div class="form-group" style="position: relative">
+              <input
+                type="password"
+                name="confirmNewPassword"
+                id="confirmNewPassword"
+              /><i
+                class="fa-solid fa-eye"
+                id="#confirmNewPasswordEye"
+                style="
+                  position: absolute;
+                  top: 50%;
+                  right: 10px;
+                  transform: translateY(-50%);
+                  cursor: pointer;
+                  color: #306da6;
+                "
+              ></i>
+            </div>
           </div>
           <button class="button-save" type="submit">Update</button>
         </form>
@@ -280,7 +333,7 @@
 
       let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
       refreshTokenExpCount();
-      
+
       // to check if account expired
       function checkRefreshToken() {
         fetch("/tokens/newrefreshtoken")
@@ -315,8 +368,54 @@
         checkRefreshToken();
       }
 
+      function togglePasswordChangeFields() {
+        var checkBox = document.getElementById("changePasswordCheckbox");
+        var passwordFields = document.getElementById("passwordChangeFields");
+        var newPasswordInput = document.getElementById("newPassword");
+        var confirmNewPasswordInput =
+          document.getElementById("confirmNewPassword");
+
+        if (checkBox.checked) {
+          passwordFields.style.display = "block";
+        } else {
+          passwordFields.style.display = "none";
+          // Reset the password input fields
+          newPasswordInput.value = "";
+          confirmNewPasswordInput.value = "";
+        }
+      }
+
+      document
+        .getElementById("updateUserForm")
+        .addEventListener("submit", function (event) {
+          var password = document.getElementById("newPassword").value;
+          var confirmPassword =
+            document.getElementById("confirmNewPassword").value;
+
+          if (password !== confirmPassword) {
+            alert("Passwords do not match!, please try again.");
+            event.preventDefault(); // Prevent form submission
+          }
+        });
       document.addEventListener("click", activityDetected);
       document.addEventListener("keypress", activityDetected);
+
+      var eyeIcons = document.querySelectorAll(".fa-eye"); // . is for selecting by class
+      eyeIcons.forEach(function (eyeIcon) {
+        eyeIcon.addEventListener("click", function () {
+          // Find the related input box by using the previousElementSibling property
+          var relatedInput = eyeIcon.previousElementSibling;
+
+          if (eyeIcon.classList.contains("fa-eye")) {
+            eyeIcon.classList.remove("fa-eye");
+            eyeIcon.classList.add("fa-eye-slash");
+            relatedInput.setAttribute("type", "text");
+          } else {
+            eyeIcon.classList.replace("fa-eye-slash", "fa-eye");
+            relatedInput.setAttribute("type", "password");
+          }
+        });
+      });
     </script>
   </body>
 </html>
