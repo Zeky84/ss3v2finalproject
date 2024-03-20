@@ -23,9 +23,9 @@
         width: 1500px;
         margin: auto;
         padding: 20px;
-        box-shadow: 0 0 4px #c3e9ff;
-        border-radius: 10px;
-        background-color: #c3e9ff;
+        box-shadow: 0 0 6px #e7f6ff;
+        border-radius: 13px;
+        background-color: #e7f6ff;
       }
       .paragraph {
         position: absolute;
@@ -60,7 +60,7 @@
       }
       .button-like {
         position: absolute;
-        top: 10px; /* 10px from the top of the page */
+        top: 10px;
         right: 237px;
         background-color: #d6effd;
         box-shadow: 0 0 6px #d6effd;
@@ -83,7 +83,7 @@
       }
       .button-like1 {
         position: absolute;
-        top: 10px; /* 10px from the top of the page */
+        top: 10px;
         right: 237px;
         background-color: #b2e3ff;
         box-shadow: 0 0 6px #b2e3ff;
@@ -121,8 +121,8 @@
       }
       .name-container {
         display: flex;
-        justify-content: center; /* Centers horizontally */
-        width: 100%; /* Takes full width of its parent */
+        justify-content: center;
+        width: 100%;
         margin-top: 7px;
         color: #b2e3ff;
       }
@@ -138,8 +138,8 @@
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
       }
       .expiration-p {
-        position: absolute; /* Take the div out of the normal document flow */
-        top: 62px; /* 10px from the bottom of the page */
+        position: absolute;
+        top: 62px;
         right: 20px;
         font-family: "Roboto", sans-serif;
         color: #dbe3e9;
@@ -148,14 +148,42 @@
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
       }
       .expiration-refresh {
-        position: absolute; /* Take the div out of the normal document flow */
-        top: 120px; /* 10px from the bottom of the page */
+        position: absolute;
+        top: 120px;
         right: 20px;
         font-family: "Roboto", sans-serif;
         color: #dbe3e9;
         color-scheme: dark;
         font-size: 16px;
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
+      }
+      .icon-row {
+        display: flex; /* Align children in a row */
+        justify-content: space-around; /* Space the images evenly */
+        flex-wrap: wrap; /* Allow the items to wrap if needed */
+      }
+
+      .icon-row > div {
+        display: flex;
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center items horizontally */
+        margin: 15px; /* Add some space around each item */
+      }
+
+      .icon-row img {
+        width: 50px; /* Set a fixed width */
+        height: 50px; /* Set a fixed height */
+        margin-bottom: 5px; /* Space between image and label */
+      }
+      .form-group input {
+        /* GPT help */
+        flex-grow: 1; /* Makes input take up the remaining space */
+        border: 1px solid #ffffff;
+        box-shadow: 0 0 4px #306da6;
+        height: 50px;
+        width: 200px;
+        border-radius: 13px;
+        text-indent: 10px;
       }
     </style>
   </head>
@@ -165,6 +193,7 @@
         src="/images/imagehome.png"
         style="margin-left: 7px; margin-top: 7px"
         alt="this is the app logo"
+        aspect-ratio="1/1"
       />
       <p class="paragraph">[[${user.firstName}]]'s Session</p>
       <div>
@@ -196,6 +225,94 @@
       </div>
       <div class="expiration-refresh">
         <p id="activateMessage"></p>
+      </div>
+      <div></div>
+    </div>
+    <div class="form-container">
+      <h2>Cost Living Form</h2>
+      <p>
+        Please insert the US zip-code to analize and click the cost living
+        variable/s to include
+      </p>
+      <div class="icon-row">
+        <div class="form-group input">
+          <label for="state">State</label>
+          <input
+            type="text"
+            id="state"
+            name="state"
+            placeholder="Enter state"
+          />
+        </div>
+
+        <div class="form-group input" >
+          <label for="zip">Zip Code</label>
+          <input type="text" id="zip" name="zip" placeholder="Enter zip code" />
+        </div>
+        <div>
+          <label for="rent">Rent</label>
+          <img
+            src="/images/1rentOFF.png"
+            alt="Utility image representation"
+            onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png')"
+          />
+        </div>
+        <div>
+          <label for="fuel">Fuel</label>
+          <img
+            src="/images/1fuelOFF.png"
+            alt="Utility image representation"
+            onclick="toggleImage(this, '/images/1fuelON.png', '/images/1fuelOFF.png')"
+          />
+        </div>
+        <div>
+          <label for="electricity">Electricity</label>
+          <img
+            src="/images/1electOFF.png"
+            alt="Utility image representation"
+            onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png')"
+          />
+        </div>
+        <div>
+          <label for="waste">Waste</label>
+          <img
+            src="/images/1wasteOFF.png"
+            alt="Utility image representation "
+            onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png')"
+          />
+        </div>
+        <div>
+          <label for="water">Water</label>
+          <img
+            src="/images/1waterOFF.png"
+            alt="Utility image representation"
+            onclick="toggleImage(this, '/images/1waterON.png', '/images/1waterOFF.png')"
+          />
+        </div>
+        <div>
+          <label for="transp">Transport</label>
+          <img
+            src="/images/1transpOFF.png"
+            alt="Utility image representation"
+            onclick="toggleImage(this, '/images/1transpON.png', '/images/1transpOFF.png')"
+          />
+        </div>
+        <div>
+          <label for="green">Green areas</label>
+          <img
+            src="/images/1greenOFF.png"
+            alt="Utility image representation "
+            onclick="toggleImage(this, '/images/1greenON.png', '/images/1greenOFF.png')"
+          />
+        </div>
+        <div>
+          <label for="comm">Internet Providers</label>
+          <img
+            src="/images/1commOFF.png"
+            alt="Utility image representation"
+            onclick="toggleImage(this, '/images/1commON.png', '/images/1commOFF.png')"
+          />
+        </div>
       </div>
     </div>
     <script>
@@ -233,13 +350,16 @@
               clearInterval(refreshTokenInterval);
             } else {
               if (minutes === 0 && seconds <= 15) {
+                // If less than 15 seconds, will allow to detect activity for refreshing the token(was before at the end of the code)
+                document.addEventListener("click", activityDetected);
+                document.addEventListener("keypress", activityDetected);
                 // If less than 15 seconds, make the text red
                 countdownContainer.style.color = "red";
                 activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
               } else {
-                // Reset to default color if more than 15 seconds remain and hide the activate message
+                // Reset to default color if more than 15 seconds remain and hide the activate message(for the account refresh)
                 countdownContainer.style.color = "";
-                activateMessage.innerHTML = ""; // Clear the activate message
+                activateMessage.innerHTML = ""; // Clear "key press refresh" message
               }
               expirationP.innerHTML = `expires in:`;
               countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
@@ -259,7 +379,7 @@
               // Token expired or unauthorized
               clearInterval(refreshTokenInterval);
               clearLocalStorage();
-              window.location.href = "/signin?tokenexpired=true";
+              window.location.href = "/signin?sessionexpired=true";
               console.log("Token expired or unauthorized");
             } else if (response.status === 500) {
               // Internal Server Error
@@ -275,6 +395,14 @@
           .catch((error) => console.error("Error:", error));
       }
 
+      function toggleImage(imgElement, onSrc, offSrc) {
+        if (imgElement.src.includes(offSrc)) {
+          imgElement.src = onSrc;
+        } else {
+          imgElement.src = offSrc;
+        }
+      }
+
       function clearLocalStorage() {
         localStorage.clear();
         sessionStorage.clear();
@@ -282,8 +410,6 @@
       function activityDetected() {
         checkRefreshToken();
       }
-      document.addEventListener("click", activityDetected);
-      document.addEventListener("keypress", activityDetected);
     </script>
   </body>
 </html>

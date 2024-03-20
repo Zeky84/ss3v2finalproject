@@ -199,6 +199,7 @@
         style="margin-left: 7px; margin-top: 7px"
         alt="this is the app logo"
         id="home-image"
+        aspect-ratio="1/1"
       />
       <p class="paragraph">[[${user.firstName}]]'s Session</p>
       <div class="form-container">
@@ -316,13 +317,16 @@
               clearInterval(refreshTokenInterval);
             } else {
               if (minutes === 0 && seconds <= 15) {
+                // If less than 15 seconds, will allow to detect activity for refreshing the token(was before at the end of the code)
+                document.addEventListener("click", activityDetected);
+                document.addEventListener("keypress", activityDetected);
                 // If less than 15 seconds, make the text red
                 countdownContainer.style.color = "red";
                 activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
               } else {
-                // Reset to default color if more than 15 seconds remain and hide the activate message
+                // Reset to default color if more than 15 seconds remain and hide the activate message(for the account refresh)
                 countdownContainer.style.color = "";
-                activateMessage.innerHTML = ""; // Clear the activate message
+                activateMessage.innerHTML = ""; // Clear "key press refresh" message
               }
               expirationP.innerHTML = `expires in:`;
               countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
@@ -344,7 +348,7 @@
               // Token expired or unauthorized
               clearInterval(refreshTokenInterval);
               clearLocalStorage();
-              // window.location.href = "/signin?tokenexpired=true";
+              window.location.href = "/signin?sessionexpired=true";
               console.log("Token expired or unauthorized");
             } else if (response.status === 500) {
               // Internal Server Error
@@ -372,8 +376,7 @@
         var checkBox = document.getElementById("changePasswordCheckbox");
         var passwordFields = document.getElementById("passwordChangeFields");
         var newPasswordInput = document.getElementById("newPassword");
-        var confirmNewPasswordInput =
-          document.getElementById("confirmNewPassword");
+        var confirmNewPasswordInput =document.getElementById("confirmNewPassword");
 
         if (checkBox.checked) {
           passwordFields.style.display = "block";
