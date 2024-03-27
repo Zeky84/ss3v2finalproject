@@ -20,7 +20,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 1500px;
+        width: 1000px;
         margin: auto;
         padding: 20px;
         box-shadow: 0 0 6px #e7f6ff;
@@ -127,7 +127,7 @@
         color: #b2e3ff;
       }
       .expiration-clock {
-        position: absolute;
+        position: fixed; /* Fixed position, keep the timing always in the same screen position even if the user scroll down or up */
         top: 65px;
         right: 20px;
         font-family: "Roboto", sans-serif;
@@ -138,7 +138,7 @@
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
       }
       .expiration-p {
-        position: absolute;
+        position: fixed;
         top: 62px;
         right: 20px;
         font-family: "Roboto", sans-serif;
@@ -148,7 +148,7 @@
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
       }
       .expiration-refresh {
-        position: absolute;
+        position: fixed;
         top: 120px;
         right: 20px;
         font-family: "Roboto", sans-serif;
@@ -158,16 +158,27 @@
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
       }
       .icon-row {
-        display: flex; /* Align children in a row */
-        justify-content: space-around; /* Space the images evenly */
-        flex-wrap: wrap; /* Allow the items to wrap if needed */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around; /* This will space out items */
       }
 
-      .icon-row > div {
+      /* Style for the first four items */
+      .icon-row > div:nth-child(-n + 4) {
+        flex-basis: calc(25% - 30px); /* Adjust width for four items in a row */
         display: flex;
-        flex-direction: column; /* Stack items vertically */
-        align-items: center; /* Center items horizontally */
-        margin: 15px; /* Add some space around each item */
+        flex-direction: column; /* Keep the icon above the text */
+        align-items: center; /* Center the content */
+        margin: 15px; /* Adjust margin as needed */
+      }
+
+      /* Target the rest of the children to be displayed vertically */
+      .icon-row > div:nth-child(n + 5) {
+        flex-basis: 100%; /* Take full width */
+        display: flex;
+        flex-direction: column;
+        align-items: right;
+        margin: 5px;
       }
 
       .icon-row img {
@@ -180,10 +191,13 @@
         flex-grow: 1; /* Makes input take up the remaining space */
         border: 1px solid #ffffff;
         box-shadow: 0 0 4px #306da6;
-        height: 50px;
+        height: 40px;
         width: 200px;
         border-radius: 13px;
         text-indent: 10px;
+      }
+      .label {
+        font-size: 12px;
       }
     </style>
   </head>
@@ -236,21 +250,40 @@
       </p>
       <div class="icon-row">
         <div class="form-group input">
+          <label for="metropolitan area">Metropolitan area</label>
+          <input
+            type="text"
+            id="metro area"
+            name="metropolitan area"
+            placeholder="select state"
+          />
+        </div>
+        <div class="form-group input">
           <label for="state">State</label>
           <input
             type="text"
             id="state"
             name="state"
-            placeholder="Enter state"
+            placeholder="select state"
           />
         </div>
 
-        <div class="form-group input" >
+        <div class="form-group input">
+          <label for="zip">County</label>
+          <input
+            type="text"
+            id="county"
+            name="county"
+            placeholder="select county"
+          />
+        </div>
+
+        <div class="form-group input">
           <label for="zip">Zip Code</label>
           <input type="text" id="zip" name="zip" placeholder="Enter zip code" />
         </div>
         <div>
-          <label for="rent">Rent</label>
+          <label for="rent" class="label">Rent</label>
           <img
             src="/images/1rentOFF.png"
             alt="Utility image representation"
@@ -258,7 +291,7 @@
           />
         </div>
         <div>
-          <label for="fuel">Fuel</label>
+          <label for="fuel" class="label">Fuel</label>
           <img
             src="/images/1fuelOFF.png"
             alt="Utility image representation"
@@ -266,7 +299,7 @@
           />
         </div>
         <div>
-          <label for="electricity">Electricity</label>
+          <label for="electricity" class="label">Electricity</label>
           <img
             src="/images/1electOFF.png"
             alt="Utility image representation"
@@ -274,7 +307,7 @@
           />
         </div>
         <div>
-          <label for="waste">Waste</label>
+          <label for="waste" class="label">Waste</label>
           <img
             src="/images/1wasteOFF.png"
             alt="Utility image representation "
@@ -282,7 +315,7 @@
           />
         </div>
         <div>
-          <label for="water">Water</label>
+          <label for="water" class="label">Water</label>
           <img
             src="/images/1waterOFF.png"
             alt="Utility image representation"
@@ -290,7 +323,7 @@
           />
         </div>
         <div>
-          <label for="transp">Transport</label>
+          <label for="transp" class="label">Transportation</label>
           <img
             src="/images/1transpOFF.png"
             alt="Utility image representation"
@@ -298,7 +331,7 @@
           />
         </div>
         <div>
-          <label for="green">Green areas</label>
+          <label for="green" class="label">Green areas</label>
           <img
             src="/images/1greenOFF.png"
             alt="Utility image representation "
@@ -306,7 +339,7 @@
           />
         </div>
         <div>
-          <label for="comm">Internet Providers</label>
+          <label for="comm" class="label">Internet Providers</label>
           <img
             src="/images/1commOFF.png"
             alt="Utility image representation"

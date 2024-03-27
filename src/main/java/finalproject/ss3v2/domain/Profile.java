@@ -17,6 +17,9 @@ import java.time.YearMonth;
 @EqualsAndHashCode // from lombok
 @SuperBuilder // from lombok
 public class Profile {
+    // This table attempts to capture only the cost. The user needs to describe the profile, the variables involve in
+    // this table will display in the future which variables the user chose to include in the profile. but for now just
+    // the total cost of the adds of all the variables.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long profileId;
@@ -27,38 +30,28 @@ public class Profile {
     @Column(name="date_profile_created", nullable = false)
     private LocalDate dateProfileCreated;
 
-    @Column(name = "date_requested", nullable = false)
-    private YearMonth yearMonthInfoRequested;
 
-    @Column(name="state_or_region", nullable = false)
-    private String stateOrRegion;
+    private String profileDescription;//this is a description of the profile()
 
-    @Column(name = "zip_code", nullable = false)
-    private Integer zipCode;
-
-    private String address;
-
-    @Column(name = "house_hold_size")// could be null, in that case is going to be evaluated as 1
-    private Integer houseHoldSize;
 
     @ManyToOne
     @JoinColumn(name = "user_id")//FetchType.EAGER is the default
     private User user;
 
-    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)//FetchType.EAGER is the default
-    private CostElectricityResidential electricity;
-
-    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
-    private CostWaterResidential water;
-
-    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
-    private CostWasteResidential waste;
-
-    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
-    private CostRent rent;
-
-    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
-    private CostFuel fuel;
+//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)//FetchType.EAGER is the default
+//    private CostElectricityResidential electricity;
+//
+//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
+//    private CostWaterResidential water;
+//
+//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
+//    private CostWasteResidential waste;
+//
+//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
+//    private CostRent rent;
+//
+//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
+//    private CostFuel fuel;
 
 
 

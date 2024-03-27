@@ -1,19 +1,15 @@
 package finalproject.ss3v2.domain;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 
 @Table(name = "users")
-
 public class User implements UserDetails {
     private static final long serialVersionUID = 2025389852147750927L;
     @Id
