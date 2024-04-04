@@ -1,6 +1,11 @@
 package finalproject.ss3v2.web;
 
-import finalproject.ss3v2.domain.State;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import finalproject.ss3v2.domain.ApiMetroAreas;
+import finalproject.ss3v2.domain.ApiState;
+import finalproject.ss3v2.repository.MetroAreaRepository;
+import finalproject.ss3v2.repository.StateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class ApiRentHudUserIntegrationController {// ASSIGNMENT 10
@@ -19,8 +25,18 @@ public class ApiRentHudUserIntegrationController {// ASSIGNMENT 10
     // The retrieve information field for Counties and MetroAreas is different, for Counties: 'flips-code',
     // for MetroAreas: 'cbsa-code',
     // Logger for debugging and maintenance
+    // DBs created for States, MetroAreas and profile information
 
     private static final Logger logger = LoggerFactory.getLogger(ApiRentHudUserIntegrationController.class);
+
+
+    private StateRepository stateRepository;
+    private MetroAreaRepository metroAreaRepository;
+
+    public ApiRentHudUserIntegrationController(StateRepository stateRepository, MetroAreaRepository metroAreaRepository) {
+        this.stateRepository = stateRepository;
+        this.metroAreaRepository = metroAreaRepository;
+    }
 
     @Value("${huduser.accesstoken}")
     private String hudUserAccessToken;
@@ -29,42 +45,46 @@ public class ApiRentHudUserIntegrationController {// ASSIGNMENT 10
     private String hudUserBaseURL;
 
 
-    @GetMapping("/api/HudUser/AllStates")
-    public ResponseEntity<String> getStatesList() {
-        // Trevor's code didn't work here cause the way this API works
-        // , so I had to change it to this existing code, CHAT GPT-4 suggestions
+    @GetMapping("/api/HudUser/AllStatesAndMetroAreas")
+    public ResponseEntity<String> getStatesAndMetroAreasList() {
+        //List of States and MetroAreas are retrieved from the HUD User API and stored in a database if
+        // they are not already present. This is done this way cause the user will need to have this list to chose
+        // the find info criteria, by State or MetroArea.
         try {
-            RestTemplate rt = new RestTemplate();
-            HttpHeaders headers = createHeaders();
+            if (stateRepository.count() == 0 && metroAreaRepository.count() == 0) {
+                RestTemplate rt = new RestTemplate();
+                HttpHeaders headers = createHeaders();
+                HttpEntity<String> entity = new HttpEntity<>(headers);
+                URI uriState = buildUri("/listStates");
+                URI uriMetroArea = buildUri("/listMetroAreas");
 
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-            URI uri = buildUri("/listStates");
+                // Getting the response as a String
+                ResponseEntity<String> responseS = rt.exchange(uriState, HttpMethod.GET, entity, String.class);
+                ResponseEntity<String> responseM = rt.exchange(uriMetroArea, HttpMethod.GET, entity, String.class);
 
-            ResponseEntity<String> response = rt.exchange(uri, HttpMethod.GET, entity, String.class);
-            return response;
+                // Deserialize the JSON response into List<State>
+                ObjectMapper mapper = new ObjectMapper();
+                List<ApiState> states = mapper.readValue(responseS.getBody(), new TypeReference<List<ApiState>>() {
+                });
+                List<ApiMetroAreas> metroAreas = mapper.readValue(responseM.getBody(), new TypeReference<List<ApiMetroAreas>>() {
+                });
+
+                // Save the states and metro areas to the database
+                stateRepository.saveAll(states);
+                metroAreaRepository.saveAll(metroAreas);
+            } else {
+                logger.info("States and Metro Areas are already populated in the database.");
+                return ResponseEntity.ok("States and Metro Areas are already populated in the database.");
+            }
+
+            return ResponseEntity.ok("Operation completed successfully.");
+
         } catch (Exception e) {
             logger.error("Error while calling HUD User API", e);
-            // Handle the error appropriately
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
     }
-    @GetMapping("/api/HudUser/allMetroAreas")
-    public ResponseEntity<String> getMetroAreasList() {
-        try {
-            RestTemplate rt = new RestTemplate();
-            HttpHeaders headers = createHeaders();
 
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-            URI uri = buildUri("/listMetroAreas");
-
-            ResponseEntity<String> response = rt.exchange(uri, HttpMethod.GET, entity, String.class);
-            return response;
-        } catch (Exception e) {
-            logger.error("Error while calling HUD User API", e);
-            // Handle the error appropriately
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
-        }
-    }
     @GetMapping("/api/HudUser/listCounties/{stateCode}")
     public ResponseEntity<String> getCountiesByStateList(@PathVariable String stateCode) {
         try {

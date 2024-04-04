@@ -7,22 +7,18 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Entity(name = "cost_Fuel")
+@Entity
+@Table(name = "api_huduser_metropolitan_areas")
 @AllArgsConstructor// from lombok
 @NoArgsConstructor // from lombok
 @Data // from lombok
 @EqualsAndHashCode // from lombok
 @SuperBuilder // from lombok
-public class CostFuel {
+public class ApiMetroAreas {
     @Id
-    private Long profileId;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "profileId")
-    private Profile profile;
-
-    @Column(name = "fuel_cost")
-    private Double rentCost;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String cbsa_code;
+    private String area_name;
+    private String category;
 }
-

@@ -24,35 +24,25 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long profileId;
 
-    @Column(name="profile_name", nullable = false)
-    private String profileName;
-
-    @Column(name="date_profile_created", nullable = false)
+    @Column(name = "date_profile_created", nullable = false)
     private LocalDate dateProfileCreated;
-
-
-    private String profileDescription;//this is a description of the profile()
-
 
     @ManyToOne
     @JoinColumn(name = "user_id")//FetchType.EAGER is the default
     private User user;
 
-//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)//FetchType.EAGER is the default
-//    private CostElectricityResidential electricity;
-//
-//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
-//    private CostWaterResidential water;
-//
-//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
-//    private CostWasteResidential waste;
-//
-//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
-//    private CostRent rent;
-//
-//    @OneToOne(mappedBy = "profile",cascade = {CascadeType.PERSIST, CascadeType.REMOVE},orphanRemoval = true)
-//    private CostFuel fuel;
+    private String profileName;
 
+    private String profileDescription;//this is a description of the profile()
 
+    private Double totalCost;
 
+    private Double rentCost;
+    private Double fuelCost;
+    private Double electricityCost;
+    private Double wasteCost;
+    private Double waterCost;
+    private Double publicTransportCost;
+    private Boolean parksCloseBy;
+    private Double internetCost;
 }
