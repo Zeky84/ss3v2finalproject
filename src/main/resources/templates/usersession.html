@@ -159,45 +159,43 @@
       }
       .icon-row {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around; /* This will space out items */
-      }
-
-      /* Style for the first four items */
-      .icon-row > div:nth-child(-n + 4) {
-        flex-basis: calc(25% - 30px); /* Adjust width for four items in a row */
-        display: flex;
-        flex-direction: column; /* Keep the icon above the text */
-        align-items: center; /* Center the content */
-        margin: 15px; /* Adjust margin as needed */
-      }
-
-      /* Target the rest of the children to be displayed vertically */
-      .icon-row > div:nth-child(n + 5) {
-        flex-basis: 100%; /* Take full width */
-        display: flex;
         flex-direction: column;
-        align-items: right;
-        margin: 5px;
+        align-items: left;
+        width: 100%;
+      }
+      .icon-row img {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 15px;
+        cursor: pointer;
+      }
+      .icon-text-container {
+        display: flex;
+        flex-direction: column; /* Stack icon and text vertically */
+        order: -1;
+        font-size: 10px;
+      }
+      .inputs-row {
+        height: 40px;
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
       }
 
-      .icon-row img {
-        width: 40px; /* Set a fixed width */
-        height: 40px; /* Set a fixed height */
-        margin-bottom: 5px; /* Space between image and label */
+      .form-group input,
+      .form-group select {
+        width: auto; /* Adjust width automatically */
+        min-width: 50px; /* Set minimum width */
+        max-width: 300px; /* Set maximum width */
+        /* Rest of your styles... */
       }
-      .form-group input {
-        /* GPT help */
-        flex-grow: 1; /* Makes input take up the remaining space */
-        border: 1px solid #ffffff;
-        box-shadow: 0 0 4px #306da6;
-        height: 40px;
-        width: 200px;
-        border-radius: 13px;
-        text-indent: 10px;
-      }
-      .label {
-        font-size: 12px;
+      .scrollable-list {
+        max-height: 300px; /* Adjust the height as needed */
+        overflow-y: auto; /* Enables vertical scrolling */
+        width: 100%; /* Adjust the width as needed */
+        border: 1px solid #ccc; /* Optional, for styling */
+        border-radius: 5px; /* Optional, for styling */
+        padding: 10px; /* Optional, for styling */
       }
     </style>
   </head>
@@ -230,6 +228,7 @@
         >
       </div>
     </div>
+
     <div>
       <div class="expiration-p">
         <p id="expiresInP"></p>
@@ -242,47 +241,76 @@
       </div>
       <div></div>
     </div>
+
     <div class="form-container">
       <h2>Cost Living Profile Search</h2>
       <p>
         Please insert the US zip-code to analize and click the cost living
         variable/s to include
       </p>
+      <div class="inputs-row">
+        <div class="form-group input">
+          <label for="Metropolitan area">Metropolitan Area</label>
+          <select id="metro area" name="metropolitan area">
+            <option
+              th:each="area : ${metroAreas}"
+              th:value="${area.cbsa_code}"
+              th:text="${area.area_name}"
+            >
+              Metropolitan Area
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group input">
+        <input type="checkbox" id="stateToggle" class="toggle-checkbox" />
+        <label for="stateToggle" class="toggle-label">State</label>
+        <div class="scrollable-list" id="stateList">
+          <ul>
+            <li th:each="state : ${states}">
+              <a
+                th:href="@{/usersession/{userId}/counties/{stateCode}(userId=${user.id}, stateCode=${state.state_code})}"
+                th:text="${state.state_name} + ' - ' + ${state.state_code}"
+              >
+                State Link
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-group input">
+        <input type="checkbox" id="countyToggle" class="toggle-checkbox" />
+        <label for="countyToggle" class="toggle-label">County</label>
+        <div class="scrollable-list" id="countyList">
+          <ul>
+            <li th:each="county : ${counties}"> //todo: iterate over the list of states first and then over the list of counties
+              <a
+                th:href="@{/usersession/{userId}/counties/{stateCode}/data/{countyCode}(userId=${user.id}, stateCode=${stateCode}, countyCode=${county.fips_code})}"
+                th:text="${county.county_name} + ' - ' + ${county.state_code}"
+              >
+                County Link
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="form-group input">
+        <input type="checkbox" id="countyToggle" class="toggle-checkbox" />
+        <label for="countyToggle" class="toggle-label">County</label>
+        <div class="scrollable-list" id="countyList">
+          <ul>
+            <li th:each="dataset : ${data}">
+              <a th:text="${dataset.basicdata.zip_code}"> County Link </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-container">
       <div class="icon-row">
-        <div class="form-group input">
-          <label for="metropolitan area">Metropolitan area</label>
-          <input
-            type="text"
-            id="metro area"
-            name="metropolitan area"
-            placeholder="select state"
-          />
-        </div>
-        <div class="form-group input">
-          <label for="state">State</label>
-          <input
-            type="text"
-            id="state"
-            name="state"
-            placeholder="select state"
-          />
-        </div>
-
-        <div class="form-group input">
-          <label for="zip">County</label>
-          <input
-            type="text"
-            id="county"
-            name="county"
-            placeholder="select county"
-          />
-        </div>
-
-        <div class="form-group input">
-          <label for="zip">Zip Code</label>
-          <input type="text" id="zip" name="zip" placeholder="Enter zip code" />
-        </div>
-        <div>
+        <div class="icon-text-container">
           <label for="rent" class="label">Housing cost</label>
           <img
             src="/images/1rentOFF.png"
@@ -290,7 +318,7 @@
             onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png')"
           />
         </div>
-        <div>
+        <div class="icon-text-container">
           <label for="fuel" class="label">Fuel cost</label>
           <img
             src="/images/1fuelOFF.png"
@@ -298,15 +326,17 @@
             onclick="toggleImage(this, '/images/1fuelON.png', '/images/1fuelOFF.png')"
           />
         </div>
-        <div>
-          <label for="electricity" class="label">Electricity services cost</label>
+        <div class="icon-text-container">
+          <label for="electricity" class="label"
+            >Electricity services cost</label
+          >
           <img
             src="/images/1electOFF.png"
             alt="Utility image representation"
             onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png')"
           />
         </div>
-        <div>
+        <div class="icon-text-container">
           <label for="waste" class="label">Waste services cost</label>
           <img
             src="/images/1wasteOFF.png"
@@ -314,7 +344,7 @@
             onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png')"
           />
         </div>
-        <div>
+        <div class="icon-text-container">
           <label for="water" class="label">Water services cost</label>
           <img
             src="/images/1waterOFF.png"
@@ -322,7 +352,7 @@
             onclick="toggleImage(this, '/images/1waterON.png', '/images/1waterOFF.png')"
           />
         </div>
-        <div>
+        <div class="icon-text-container">
           <label for="transp" class="label">Transportation</label>
           <img
             src="/images/1transpOFF.png"
@@ -330,7 +360,7 @@
             onclick="toggleImage(this, '/images/1transpON.png', '/images/1transpOFF.png')"
           />
         </div>
-        <div>
+        <div class="icon-text-container">
           <label for="green" class="label">Green areas</label>
           <img
             src="/images/1greenOFF.png"
@@ -338,7 +368,7 @@
             onclick="toggleImage(this, '/images/1greenON.png', '/images/1greenOFF.png')"
           />
         </div>
-        <div>
+        <div class="icon-text-container">
           <label for="comm" class="label">Internet Providers</label>
           <img
             src="/images/1commOFF.png"
