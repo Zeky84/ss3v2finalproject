@@ -87,6 +87,7 @@ public class UserController {
             model.addAttribute("states", apisService.getStatesList());
             model.addAttribute("counties", apisService.getCountiesListByStateCode(stateCode));
             model.addAttribute("data", apisService.getTheDataCostByCode(countyCode));
+            model.addAttribute("stateCode", stateCode);
             return "usersession";
         }
         return "redirect:/signin";

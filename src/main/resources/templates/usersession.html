@@ -284,7 +284,7 @@
         <label for="countyToggle" class="toggle-label">County</label>
         <div class="scrollable-list" id="countyList">
           <ul>
-            <li th:each="county : ${counties}"> //todo: iterate over the list of states first and then over the list of counties
+            <li th:each="county : ${counties}">
               <a
                 th:href="@{/usersession/{userId}/counties/{stateCode}/data/{countyCode}(userId=${user.id}, stateCode=${stateCode}, countyCode=${county.fips_code})}"
                 th:text="${county.county_name} + ' - ' + ${county.state_code}"
