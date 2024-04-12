@@ -1,43 +1,51 @@
 package finalproject.ss3v2.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class County {
     // Attributes names are the one coming from the api.
-    private String state_code;
-    private String fips_code;
-    private String county_name;
-    private String town_name;
+
+    @JsonProperty("state_code")
+    private String stateCode;
+    @JsonProperty("fips_code")
+    private String fipsCode;
+    @JsonProperty("county_name")
+    private String countyName;
+    @JsonProperty("town_name")
+    private String townName;
+
     private String category;
 
-    public String getState_code() {
-        return state_code;
+    public String getStateCode() {
+        return stateCode;
     }
 
-    public void setState_code(String state_code) {
-        this.state_code = state_code;
+    public void setStateCode(String stateCode) {
+        this.stateCode = stateCode;
     }
 
-    public String getFips_code() {
-        return fips_code;
+    public String getFipsCode() {
+        return fipsCode;
     }
 
-    public void setFlip_code(String fips_code) {
-        this.fips_code = fips_code;
+    public void setFipsCode(String fipsCode) {
+        this.fipsCode = fipsCode;
     }
 
-    public String getCounty_name() {
-        return county_name;
+    public String getCountyName() {
+        return countyName;
     }
 
-    public void setCounty_name(String county_name) {
-        this.county_name = county_name;
+    public void setCountyName(String countyName) {
+        this.countyName = countyName;
     }
 
-    public String getTown_name() {
-        return town_name;
+    public String getTownName() {
+        return townName;
     }
 
-    public void setTown_name(String town_name) {
-        this.town_name = town_name;
+    public void setTownName(String townName) {
+        this.townName = townName;
     }
 
     public String getCategory() {

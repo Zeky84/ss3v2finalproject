@@ -2,11 +2,13 @@ package finalproject.ss3v2.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import finalproject.ss3v2.domain.ApiMetroAreas;
 import finalproject.ss3v2.domain.ApiState;
 import finalproject.ss3v2.dto.BasicData;
 import finalproject.ss3v2.dto.County;
+import finalproject.ss3v2.dto.DataRent;
 import finalproject.ss3v2.repository.ApiMetroAreaRepository;
 import finalproject.ss3v2.repository.ApiStateRepository;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -100,26 +103,50 @@ public class ApisService {
         }
     }
 
-    public List<BasicData> getTheDataCostByCode(String code){
-        // Fetching the data cost by code. If choosing through the county the code is the fips_code,
-        // if metro area the code is cbsa_code
-
-
-        RestTemplate rt = new RestTemplate();
+    public DataRent getTheDataCostByCode(String code) {
+        // The data response has a field basicdata that can be either an object or an array, that's why we need to
+        // handle it differently creating a CUSTOM DESERIALIZER, instead of using the mapper.readValue method
+        // directly. CHAT GPT_4 HELP!!!
+        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = createHeaders();
         HttpEntity<String> entity = new HttpEntity<>(headers);
         URI uri = buildUri("/data/" + code);
 
-        // Getting the response as a String
-        ResponseEntity<String> responseC = rt.exchange(uri, HttpMethod.GET, entity, String.class);
-
-        // Deserialize the JSON response into List<County>
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
         ObjectMapper mapper = new ObjectMapper();
+
         try {
-            return mapper.readValue(responseC.getBody(), new TypeReference<List<BasicData>>() {
-            });
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            JsonNode rootNode = mapper.readTree(response.getBody());
+            JsonNode dataNode = rootNode.path("data");
+            DataRent dataRent = new DataRent();
+
+            JsonNode basicDataNode = dataNode.path("basicdata");
+            if (basicDataNode.isArray()) {
+                // It's an array, deserialize as list
+                List<BasicData> basicDataList = mapper.convertValue(basicDataNode, new TypeReference<List<BasicData>>() {});
+                dataRent.setBasicdata(basicDataList);
+            } else if (basicDataNode.isObject()) {
+                // It's a single object, deserialize and add to list
+                BasicData basicData = mapper.convertValue(basicDataNode, BasicData.class);
+                dataRent.setBasicdata(Collections.singletonList(basicData));
+            }
+
+            // Deserializing others fields
+            dataRent.setCountyName(dataNode.path("county_name").asText());
+            dataRent.setCountiesMsa(dataNode.path("counties_msa").asText());
+            dataRent.setTownName(dataNode.path("town_name").asText());
+            dataRent.setMetroStatus(dataNode.path("metro_status").asText());
+            dataRent.setMetroName(dataNode.path("metro_name").asText());
+            dataRent.setAreaName(dataNode.path("area_name").asText());
+            dataRent.setSmallAreaStatus(dataNode.path("smallarea_status").asText());
+            dataRent.setYear(dataNode.path("year").asText());
+
+            // Other fields...
+
+            return dataRent;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse JSON", e);
         }
     }
 

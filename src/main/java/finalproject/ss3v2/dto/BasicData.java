@@ -1,14 +1,33 @@
 package finalproject.ss3v2.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BasicData {
 
-    private String zip_code;
+    @JsonProperty("zip_code")// sometimes appear, sometimes not
+    private String zipCode;
+    @JsonProperty("Efficiency")
     private int Efficiency;
-    private int One_Bedroom;
-    private int Two_Bedroom;
-    private int Three_Bedroom;
-    private int Four_Bedroom;
+    @JsonProperty("One-Bedroom")
+    private int oneBedroom;
+    @JsonProperty("Two-Bedroom")
+    private int twoBedroom;
+    @JsonProperty("Three-Bedroom")
+    private int threeBedroom;
+    @JsonProperty("Four-Bedroom")
+    private int forBedroom;
+
     private String year;
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
 
     public int getEfficiency() {
         return Efficiency;
@@ -18,36 +37,36 @@ public class BasicData {
         Efficiency = efficiency;
     }
 
-    public int getOne_Bedroom() {
-        return One_Bedroom;
+    public int getOneBedroom() {
+        return oneBedroom;
     }
 
-    public void setOne_Bedroom(int one_Bedroom) {
-        One_Bedroom = one_Bedroom;
+    public void setOneBedroom(int oneBedroom) {
+        this.oneBedroom = oneBedroom;
     }
 
-    public int getTwo_Bedroom() {
-        return Two_Bedroom;
+    public int getTwoBedroom() {
+        return twoBedroom;
     }
 
-    public void setTwo_Bedroom(int two_Bedroom) {
-        Two_Bedroom = two_Bedroom;
+    public void setTwoBedroom(int twoBedroom) {
+        this.twoBedroom = twoBedroom;
     }
 
-    public int getThree_Bedroom() {
-        return Three_Bedroom;
+    public int getThreeBedroom() {
+        return threeBedroom;
     }
 
-    public void setThree_Bedroom(int three_Bedroom) {
-        Three_Bedroom = three_Bedroom;
+    public void setThreeBedroom(int threeBedroom) {
+        this.threeBedroom = threeBedroom;
     }
 
-    public int getFour_Bedroom() {
-        return Four_Bedroom;
+    public int getForBedroom() {
+        return forBedroom;
     }
 
-    public void setFour_Bedroom(int four_Bedroom) {
-        Four_Bedroom = four_Bedroom;
+    public void setForBedroom(int forBedroom) {
+        this.forBedroom = forBedroom;
     }
 
     public String getYear() {

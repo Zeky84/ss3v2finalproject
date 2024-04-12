@@ -1,77 +1,99 @@
 package finalproject.ss3v2.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DataRent {
-    //attributes are the one coming from the API
-    private String county_name;
-    private String counties_msa;
-    private String town_name;
-    private String metro_status;
-    private String metro_name;
-    private String area_name;
-    private String smallarea_status;
-    private BasicData basicdata; // nested object
+    @JsonProperty("county_name")
+    private String countyName;
+    @JsonProperty("counties_msa")
+    private String countiesMsa;
+    @JsonProperty("town_name")
+    private String townName;
+    @JsonProperty("metro_status")
+    private String metroStatus;
+    @JsonProperty("metro_name")
+    private String metroName;
+    @JsonProperty("area_name")
+    private String areaName;
+    @JsonProperty("smallarea_status")
+    private String smallAreaStatus;
+    private List<BasicData> basicdata;
 
-    public String getCounty_name() {
-        return county_name;
+    private String year; // sometimes appear, sometimes not
+
+    public String getCountyName() {
+        return countyName;
     }
 
-    public void setCounty_name(String county_name) {
-        this.county_name = county_name;
+    public void setCountyName(String countyName) {
+        this.countyName = countyName;
     }
 
-    public String getCounties_msa() {
-        return counties_msa;
+    public String getCountiesMsa() {
+        return countiesMsa;
     }
 
-    public void setCounties_msa(String counties_msa) {
-        this.counties_msa = counties_msa;
+    public void setCountiesMsa(String countiesMsa) {
+        this.countiesMsa = countiesMsa;
     }
 
-    public String getTown_name() {
-        return town_name;
+    public String getTownName() {
+        return townName;
     }
 
-    public void setTown_name(String town_name) {
-        this.town_name = town_name;
+    public void setTownName(String townName) {
+        this.townName = townName;
     }
 
-    public String getMetro_status() {
-        return metro_status;
+    public String getMetroStatus() {
+        return metroStatus;
     }
 
-    public void setMetro_status(String metro_status) {
-        this.metro_status = metro_status;
+    public void setMetroStatus(String metroStatus) {
+        this.metroStatus = metroStatus;
     }
 
-    public String getMetro_name() {
-        return metro_name;
+    public String getMetroName() {
+        return metroName;
     }
 
-    public void setMetro_name(String metro_name) {
-        this.metro_name = metro_name;
+    public void setMetroName(String metroName) {
+        this.metroName = metroName;
     }
 
-    public String getArea_name() {
-        return area_name;
+    public String getAreaName() {
+        return areaName;
     }
 
-    public void setArea_name(String area_name) {
-        this.area_name = area_name;
+    public void setAreaName(String areaName) {
+        this.areaName = areaName;
     }
 
-    public String getSmallarea_status() {
-        return smallarea_status;
+    public String getSmallAreaStatus() {
+        return smallAreaStatus;
     }
 
-    public void setSmallarea_status(String smallarea_status) {
-        this.smallarea_status = smallarea_status;
+    public void setSmallAreaStatus(String smallAreaStatus) {
+        this.smallAreaStatus = smallAreaStatus;
     }
 
-    public BasicData getBasicdata() {
+    public List<BasicData> getBasicdata() {
         return basicdata;
     }
 
-    public void setBasicdata(BasicData basicdata) {
+    public void setBasicdata(List<BasicData> basicdata) {
         this.basicdata = basicdata;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 }
