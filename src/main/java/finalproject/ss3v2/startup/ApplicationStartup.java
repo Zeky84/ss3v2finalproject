@@ -1,6 +1,6 @@
 package finalproject.ss3v2.startup;
 
-import finalproject.ss3v2.service.ApisService;
+import finalproject.ss3v2.service.ApiServiceHudUser;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -8,15 +8,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApplicationStartup {
     //To get all the states and metro areas list from the HUD API when the application starts and saved in the database
-    ApisService apisService;
+    //To get the fuel cost by state(regular, midgrade, premium, diesel) could be weekly, monthly is too long to wait
+    ApiServiceHudUser apiServiceHudUser;
 
-    public ApplicationStartup(ApisService apisService) {
-        this.apisService = apisService;
+    public ApplicationStartup(ApiServiceHudUser apiServiceHudUser) {
+        this.apiServiceHudUser = apiServiceHudUser;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
-        apisService.fetchStatesAndMetroAreasFromApi();
+        apiServiceHudUser.fetchStatesAndMetroAreasFromHudUserApi();
     }
 
 }

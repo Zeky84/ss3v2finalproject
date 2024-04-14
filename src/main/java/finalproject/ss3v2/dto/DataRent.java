@@ -7,6 +7,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataRent {
+    // Belongs to Hud User Data
     @JsonProperty("county_name")
     private String countyName;
     @JsonProperty("counties_msa")

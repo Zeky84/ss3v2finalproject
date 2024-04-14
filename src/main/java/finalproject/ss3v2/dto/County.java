@@ -3,7 +3,7 @@ package finalproject.ss3v2.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class County {
-    // Attributes names are the one coming from the api.
+    // Belongs to Hud User Data
 
     @JsonProperty("state_code")
     private String stateCode;

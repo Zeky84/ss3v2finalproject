@@ -9,30 +9,28 @@
     <style>
       body {
         font-family: "Roboto", sans-serif;
-        background-color: #1c3955; /* Optional: background color for the overall page */
-        color: #306da6; /* Optional: default text color */
+        background-color: #1c3955;
+        color: #306da6;
       }
-      .container {
-        display: flex;
-      }
+
       .form-container {
         /* GPT help */
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        flex-direction: row;
+        align-items: top;
         width: 1500px;
-        height: 400px;
+        height: 260px;
         margin: auto;
         padding: 20px;
         box-shadow: 0 0 6px #e7f6ff;
         border-radius: 13px;
         background-color: #e7f6ff;
       }
+
       .form-container-addvalues {
         /* GPT help */
         display: flex;
         flex-direction: column;
-        align-items: center;
         width: 1500px;
         margin: auto;
         padding: 20px;
@@ -43,8 +41,8 @@
       .paragraph {
         position: absolute;
         font-size: 30px;
-        top: 0; /* Top of the container */
-        left: 50%; /* Center horizontally */
+        top: 0;
+        left: 50%;
         transform: translateX(-50%); /* Adjust horizontal position */
         color: #c3e9ff;
       }
@@ -132,13 +130,7 @@
         box-shadow: 0 0 4px #b8b8b8ce;
         font-size: 18px;
       }
-      .name-container {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-top: 7px;
-        color: #b2e3ff;
-      }
+
       .expiration-clock {
         position: fixed; /* Fixed position, keep the timing always in the same screen position even if the user scroll down or up */
         top: 65px;
@@ -190,25 +182,34 @@
       }
       .inputs-row {
         display: flex;
-        justify-content: space-between;
         width: 100%;
       }
-
-      .form-group select {
-        width: 120px;
-        margin-right: 50px;
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-      }
       .scrollable-list {
-        max-height: 125px; /* Adjust the height as needed */
-        overflow-y: auto; /* Enables vertical scrolling */
-        width: 100%; /* Adjust the width as needed */
-        border: 1px solid #ccc; /* Optional, for styling */
-        border-radius: 5px; /* Optional, for styling */
-        padding: 10px; /* Optional, for styling */
-        margin-left: 20px;
+        max-height: 220px;
+        overflow-y: auto;
+        overflow-x: auto;
+        width: 300px;
+        background-color: #d6effd;
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      /* Styling the scrollbar track (part the thumb slides within) */
+      .scrollable-list::-webkit-scrollbar-track {
+        background-color: #d6effd; /* Light grey track */
+        border-radius: 10px; /* Optional: adds rounded corners to the track */
+      }
+
+      /* Styling the scrollbar thumb (draggable part) */
+      .scrollable-list::-webkit-scrollbar-thumb {
+        background-color: #306da6; /* Dark blue thumb */
+        border-radius: 10px; /* Rounded corners on the thumb */
+        border: 3px solid #306da6; /* Optional: adds a border around the thumb */
+      }
+
+      .scrollable-list::-webkit-scrollbar {
+        width: 8px; /* Width of the vertical scrollbar */
+        height: 8px; /* Height of the horizontal scrollbar */
       }
     </style>
   </head>
@@ -255,29 +256,45 @@
       <div></div>
     </div>
 
+    <div
+      class="form-container"
+      style="flex-direction: column; align-items: center; height: auto"
+    >
+      <h2 style="flex-direction: column; align-items: center; height: auto">
+        Cost Living Profile Search
+      </h2>
+      <div>
+        Please select
+        <h3 style="display: inline">Metropolitan Area</h3>
+        or
+        <h3 style="display: inline">State</h3>
+        to start the search
+      </div>
+    </div>
+
+    <br />
+
     <div class="form-container">
-      <h2>Cost Living Profile Search</h2>
-      <p>
-        Please insert the US zip-code to analize and click the cost living
-        variable/s to include
-      </p>
-      <div class="inputs-row">
-        <div class="form-group select">
-          <label for="Metropolitan area">Metropolitan Area</label>
-          <select id="metro area" name="metropolitan area">
-            <option
-              th:each="area : ${metroAreas}"
-              th:value="${area.cbsaCode}"
-              th:text="${area.areaName}"
-            >
-              Metropolitan Area
-            </option>
-          </select>
+      <div th:if="${metroAreas}" class="inputs-row">
+        <div>
+          <label class="toggle-label">Metropolitan Area</label>
+          <div class="scrollable-list" id="metroareaList">
+            <ul>
+              <li th:each="metroArea : ${metroAreas}">
+                <a
+                  th:href="@{/usersession/{userId}/metroarea/data/{metroAreaCode}(userId=${user.id}, metroAreaCode=${metroArea.cbsaCode})}"
+                  th:text="${metroArea.areaName}"
+                >
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="inputs-row">
-        <div class="form-group select">
-          <label for="stateToggle" class="toggle-label">State</label>
+
+      <div th:if="${states}" class="inputs-row">
+        <div>
+          <label class="toggle-label">State</label>
           <div class="scrollable-list" id="stateList">
             <ul>
               <li th:each="state : ${states}">
@@ -285,16 +302,15 @@
                   th:href="@{/usersession/{userId}/counties/{stateCode}(userId=${user.id}, stateCode=${state.stateCode})}"
                   th:text="${state.stateName} + ' - ' + ${state.stateCode}"
                 >
-                  State Link
                 </a>
               </li>
             </ul>
           </div>
         </div>
       </div>
-      <div class="inputs-row">
-        <div class="form-group select">
-          <label for="countyToggle" class="toggle-label">County</label>
+      <div th:if="${counties}" class="inputs-row">
+        <div>
+          <label class="toggle-label">County</label>
           <div class="scrollable-list" id="countyList">
             <ul>
               <li th:each="county : ${counties}">
@@ -302,17 +318,16 @@
                   th:href="@{/usersession/{userId}/counties/{stateCode}/data/{countyCode}(userId=${user.id}, stateCode=${stateCode}, countyCode=${county.fipsCode})}"
                   th:text="${county.countyName} + ' - ' + ${county.stateCode}"
                 >
-                  County Link
                 </a>
               </li>
             </ul>
           </div>
         </div>
       </div>
-      <div class="inputs-row">
-        <div class="form-group select">
-          <label for="countyToggle" class="toggle-label">County</label>
-          <div class="scrollable-list" id="countyList">
+      <div th:if="${data}" class="inputs-row">
+        <div>
+          <label class="toggle-label">Zip Codes</label>
+          <div class="scrollable-list" id="data">
             <ul>
               <li th:each="field : ${data}">
                 <div th:each="rentObject: ${field.basicdata}">
@@ -324,6 +339,13 @@
         </div>
       </div>
     </div>
+    <br />
+    <div
+      class="form-container"
+      style="flex-direction: column; align-items: center; height: auto"
+    >
+      bla bla bla
+    </div>
 
     <div>
       <br />
@@ -332,7 +354,7 @@
     <div class="form-container-addvalues">
       <div class="icon-row">
         <div class="icon-text-container">
-          <label for="rent" class="label">Housing cost</label>
+          <label class="label">Housing cost</label>
           <img
             src="/images/1rentOFF.png"
             alt="Utility image representation"
@@ -340,7 +362,7 @@
           />
         </div>
         <div class="icon-text-container">
-          <label for="fuel" class="label">Fuel cost</label>
+          <label class="label">Fuel cost</label>
           <img
             src="/images/1fuelOFF.png"
             alt="Utility image representation"
@@ -348,9 +370,7 @@
           />
         </div>
         <div class="icon-text-container">
-          <label for="electricity" class="label"
-            >Electricity services cost</label
-          >
+          <label class="label">Electricity services cost</label>
           <img
             src="/images/1electOFF.png"
             alt="Utility image representation"
@@ -358,7 +378,7 @@
           />
         </div>
         <div class="icon-text-container">
-          <label for="waste" class="label">Waste services cost</label>
+          <label class="label">Waste services cost</label>
           <img
             src="/images/1wasteOFF.png"
             alt="Utility image representation "
@@ -366,7 +386,7 @@
           />
         </div>
         <div class="icon-text-container">
-          <label for="water" class="label">Water services cost</label>
+          <label class="label">Water services cost</label>
           <img
             src="/images/1waterOFF.png"
             alt="Utility image representation"
@@ -374,7 +394,7 @@
           />
         </div>
         <div class="icon-text-container">
-          <label for="transp" class="label">Transportation</label>
+          <label class="label">Transportation</label>
           <img
             src="/images/1transpOFF.png"
             alt="Utility image representation"
@@ -382,7 +402,7 @@
           />
         </div>
         <div class="icon-text-container">
-          <label for="green" class="label">Green areas</label>
+          <label class="label">Natural Gas</label>
           <img
             src="/images/1greenOFF.png"
             alt="Utility image representation "
@@ -390,7 +410,7 @@
           />
         </div>
         <div class="icon-text-container">
-          <label for="comm" class="label">Internet Providers</label>
+          <label class="label">Internet Providers</label>
           <img
             src="/images/1commOFF.png"
             alt="Utility image representation"
@@ -423,11 +443,11 @@
             const expirationP = document.getElementById("expiresInP");
             const activateMessage = document.getElementById("activateMessage");
 
-            //countdowntime into minutes and seconds
+            //countdowntime in minutes and seconds
             const [minutes, seconds] = countdowntime.split(":").map(Number);
 
             if (countdowntime.trim() === "0:00") {
-              countdownContainer.style.color = "white";
+              countdownContainer.style.color = "red";
               countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
               expirationP.innerHTML = ``;
               activateMessage.innerHTML = "";
@@ -439,6 +459,7 @@
                 document.addEventListener("keypress", activityDetected);
                 // If less than 15 seconds, make the text red
                 countdownContainer.style.color = "red";
+                activateMessage.style.color = "red";
                 activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
               } else {
                 // Reset to default color if more than 15 seconds remain and hide the activate message(for the account refresh)

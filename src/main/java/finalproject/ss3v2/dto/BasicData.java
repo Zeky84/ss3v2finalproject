@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BasicData {
+    // Belongs to Hud User Data
 
     @JsonProperty("zip_code")// sometimes appear, sometimes not
     private String zipCode;

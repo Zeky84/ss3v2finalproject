@@ -13,9 +13,7 @@ import lombok.experimental.SuperBuilder;
 public class ApiState {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //In Java, Trevor told me once isn't a good practice to use underscore in variable names like I learned in python
-    //but to store the data directly into the db i need to this adjustment cause the date in the json is in snake case,
-    // so need to match the names.
+
     private Long id;
     @JsonProperty("state_name")
     private String stateName;

@@ -1,10 +1,8 @@
 package finalproject.ss3v2.web;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import finalproject.ss3v2.domain.User;
-import finalproject.ss3v2.dto.County;
-import finalproject.ss3v2.service.ApisService;
+import finalproject.ss3v2.service.ApiServiceHudUser;
 import finalproject.ss3v2.service.RefreshTokenService;
 
 import finalproject.ss3v2.service.UserServiceImpl;
@@ -17,27 +15,26 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
-import java.util.Optional;
-
 @Controller
+@RequestMapping("/usersession")
 public class UserController {
     private UserServiceImpl userServiceImpl;
     private RefreshTokenService refreshTokenService;
     private PasswordEncoder passwordEncoder;
 
-    private ApisService apisService;
+    private ApiServiceHudUser apiServiceHudUser;
+
 
 
     public UserController(UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder,
-                          ApisService apisService) {
+                          ApiServiceHudUser apiServiceHudUser) {
         this.userServiceImpl = userServiceImpl;
         this.refreshTokenService = refreshTokenService;
         this.passwordEncoder = passwordEncoder;
-        this.apisService = apisService;
+        this.apiServiceHudUser = apiServiceHudUser;
     }
 
-    @GetMapping("/usersession")
+    @GetMapping("")
     public String redirectToUserSession(Authentication authentication) {
         if (authentication != null) {
             Integer userId = ((User) authentication.getPrincipal()).getId();
@@ -46,7 +43,7 @@ public class UserController {
         return "redirect:/error";
     }
 
-    @GetMapping("/usersession/{userId}")
+    @GetMapping("/{userId}")
     public String goToUserSession(@PathVariable Integer userId, Model model, ModelMap modelMap, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             // the user from the auth object instead from the to avoid any possible manipulation of the URL
@@ -54,46 +51,62 @@ public class UserController {
             model.addAttribute("user", userAuth);
 
             // Addingg the states and metro areas to the html view
-            modelMap.put("states", apisService.getStatesList());
-            modelMap.put("metroAreas", apisService.getMetroAreasList());
+            modelMap.put("states", apiServiceHudUser.getStatesList());
+            modelMap.put("metroAreas", apiServiceHudUser.getMetroAreasList());
 
             return "usersession";
         }
         return "redirect:/signin";
     }
 
-    @GetMapping("/usersession/{userId}/counties/{stateCode}")
+    @GetMapping("/{userId}/metroarea/data/{metroAreaCode}")
+    public String getDataByMetroArea(@PathVariable Integer userId, @PathVariable String metroAreaCode, Model model, Authentication authentication){
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User userAuth = (User) authentication.getPrincipal();
+            model.addAttribute("user", userAuth);
+
+            model.addAttribute("states", apiServiceHudUser.getStatesList());
+            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(metroAreaCode));
+
+            return "usersession";
+        }
+        return "redirect:/signin";
+    }
+
+    @GetMapping("/{userId}/counties/{stateCode}")
     public String getCountiesByState(@PathVariable Integer userId, @PathVariable String stateCode, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
 
-            model.addAttribute("states", apisService.getStatesList());
-            model.addAttribute("metroAreas", apisService.getMetroAreasList());
-            model.addAttribute("counties", apisService.getCountiesListByStateCode(stateCode));
+            model.addAttribute("states", apiServiceHudUser.getStatesList());
+            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+            model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
             model.addAttribute("stateCode", stateCode);
             return "usersession";
         }
         return "redirect:/signin";
     }
 
-    @GetMapping("/usersession/{userId}/counties/{stateCode}/data/{countyCode}")
+    @GetMapping("/{userId}/counties/{stateCode}/data/{countyCode}")
     public String getDataByZipCode(@PathVariable Integer userId, @PathVariable String stateCode,
                                    @PathVariable String countyCode, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
 
-            model.addAttribute("states", apisService.getStatesList());
-            model.addAttribute("counties", apisService.getCountiesListByStateCode(stateCode));
-            model.addAttribute("data", apisService.getTheDataCostByCode(countyCode));
+            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+            model.addAttribute("states", apiServiceHudUser.getStatesList());
+            model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
+            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(countyCode));
             model.addAttribute("stateCode", stateCode);
             return "usersession";
         }
         return "redirect:/signin";
     }
 
-    @GetMapping("/usersession/{userId}/edituser")
+    @GetMapping("/{userId}/edituser")
     public String goToEditUser(@PathVariable Integer userId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
@@ -103,7 +116,7 @@ public class UserController {
         return "redirect:/signin";
     }
 
-    @PostMapping("/usersession/{userId}/edituser")
+    @PostMapping("/{userId}/edituser")
     public String updateUser(@PathVariable Integer userId, User userFields,
                              @RequestParam(required = false) String newPassword,
                              Authentication authentication, Model model) {

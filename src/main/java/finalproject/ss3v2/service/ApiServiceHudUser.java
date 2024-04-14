@@ -24,11 +24,14 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class ApisService {
+public class ApiServiceHudUser {
+    // THIS IS THE SERVICE CLASS THAT WILL INTERACT WITH THE HUD USER API( TO GET THE RENT DATA)
+    // This class is the one that not only is uses to get the data rent from the HUD User API but also to get the
+    // the States and Metro Areas to look the info based on them.
     private ApiStateRepository stateRepository;
     private ApiMetroAreaRepository metroAreaRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(ApisService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApiServiceHudUser.class);
 
     @Value("${huduser.accesstoken}")
     private String hudUserAccessToken;
@@ -37,13 +40,13 @@ public class ApisService {
     private String hudUserBaseURL;
 
 
-    public ApisService(ApiStateRepository stateRepository, ApiMetroAreaRepository metroAreaRepository) {
+    public ApiServiceHudUser(ApiStateRepository stateRepository, ApiMetroAreaRepository metroAreaRepository) {
         this.stateRepository = stateRepository;
         this.metroAreaRepository = metroAreaRepository;
         ;
     }
 
-    public void fetchStatesAndMetroAreasFromApi() {
+    public void fetchStatesAndMetroAreasFromHudUserApi() {
         // Fetch the states and metro areas from the HUD User API when the application starts and
         // save them into the DBs
         try {
