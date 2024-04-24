@@ -144,7 +144,6 @@ public class ApiServiceHudUser {
             dataRent.setSmallAreaStatus(dataNode.path("smallarea_status").asText());
             dataRent.setYear(dataNode.path("year").asText());
 
-            // Other fields...
 
             return dataRent;
 

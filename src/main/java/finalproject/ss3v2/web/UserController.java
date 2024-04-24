@@ -2,6 +2,8 @@ package finalproject.ss3v2.web;
 
 
 import finalproject.ss3v2.domain.User;
+import finalproject.ss3v2.dto.BasicData;
+import finalproject.ss3v2.dto.DataRent;
 import finalproject.ss3v2.service.ApiServiceHudUser;
 import finalproject.ss3v2.service.RefreshTokenService;
 
@@ -15,6 +17,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/usersession")
 public class UserController {
@@ -23,7 +27,6 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     private ApiServiceHudUser apiServiceHudUser;
-
 
 
     public UserController(UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder,
@@ -43,7 +46,7 @@ public class UserController {
         return "redirect:/error";
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/{userId}") // EN-POINT FOR STARTING SEARCHING CRITERIA
     public String goToUserSession(@PathVariable Integer userId, Model model, ModelMap modelMap, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             // the user from the auth object instead from the to avoid any possible manipulation of the URL
@@ -59,22 +62,46 @@ public class UserController {
         return "redirect:/signin";
     }
 
-    @GetMapping("/{userId}/metroarea/data/{metroAreaCode}")
-    public String getDataByMetroArea(@PathVariable Integer userId, @PathVariable String metroAreaCode, Model model, Authentication authentication){
+    @GetMapping("/{userId}/metroarea/data/{dataEntityCode}") // EN-POINT METRO AREA SEARCHING CRITERIA
+    public String getDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
 
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
-            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(metroAreaCode));
-
+            model.addAttribute("entityCode", dataEntityCode);
+            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
             return "usersession";
         }
         return "redirect:/signin";
     }
 
-    @GetMapping("/{userId}/counties/{stateCode}")
+    @GetMapping("/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}") // EN-POINT METRO AREA SEARCHING CRITERIA FINAL DATA
+    public String getSpecificDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model,
+                                                 @PathVariable Integer id, Authentication authentication) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User userAuth = (User) authentication.getPrincipal();
+            model.addAttribute("user", userAuth);
+
+            model.addAttribute("states", apiServiceHudUser.getStatesList());
+            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
+            model.addAttribute("entityCode", dataEntityCode);
+
+            List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
+            if (basicData.size() > 1) {
+                model.addAttribute("dataRent", basicData.get(id));
+            }
+            if(basicData.size()==1){
+                model.addAttribute("dataRent",basicData);
+            }
+            return "usersession";
+        }
+        return "redirect:/signin";
+    }
+
+    @GetMapping("/{userId}/counties/{stateCode}") // EN-POINT FOR STATE-COUNTY SEARCHING CRITERIA
     public String getCountiesByState(@PathVariable Integer userId, @PathVariable String stateCode, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
@@ -89,9 +116,9 @@ public class UserController {
         return "redirect:/signin";
     }
 
-    @GetMapping("/{userId}/counties/{stateCode}/data/{countyCode}")
+    @GetMapping("/{userId}/counties/{stateCode}/data/{dataEntityCode}") // EN-POINT FOR STATE-COUNTY SEARCHING CRITERIA
     public String getDataByZipCode(@PathVariable Integer userId, @PathVariable String stateCode,
-                                   @PathVariable String countyCode, Model model, Authentication authentication) {
+                                   @PathVariable String dataEntityCode, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
@@ -99,7 +126,7 @@ public class UserController {
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
-            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(countyCode));
+            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
             model.addAttribute("stateCode", stateCode);
             return "usersession";
         }
