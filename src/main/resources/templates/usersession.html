@@ -310,13 +310,13 @@
       </div>
       <div th:if="${counties}" class="inputs-row">
         <div>
-          <label class="toggle-label">Counties</label>
+          <label class="toggle-label">State / Counties</label>
           <div class="scrollable-list" id="countyList">
             <ul>
               <li th:each="county : ${counties}">
                 <a
                   th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${county.fipsCode})}"
-                  th:text="${county.countyName} + ' - ' + ${county.stateCode}"
+                  th:text="${county.stateCode}  + ' - ' +${county.countyName} "
                 >
                 </a>
               </li>
@@ -324,64 +324,71 @@
           </div>
         </div>
       </div>
-        <div th:if="${data != null and data.countyName == ''}" class="inputs-row">
-          <!-- when countyName empty refers to MetroArea-->
-          <div>
-              <label class="toggle-label">Metropolitan Area/Zip Codes</label>
-              <div class="scrollable-list" id="data">
-                  <ul>
-                      <li th:each="field : ${data}">
-                          <div th:if="${field.smallAreaStatus}==1">
-                              <div th:each="rentObject, iterStat : ${field.basicdata}">
-                                  <a
-                                    th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=${iterStat.index})}"
-                                    th:text=" ${rentObject.zipCode}">
-                                  </a>
-                              </div>
-                          </div>
-                          <div th:if="${field.smallAreaStatus}==0">
-                              <a
-                              th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=0)}"
-                              th:text="${field.areaName}"
-                              ></a>
-                          </div>
-                      </li>
-                  </ul>
-              </div>
-          </div>
-        </div>  
-        <div th:if="${data != null and data.countyName != ''}" class="inputs-row">
-          <!-- when countyName not empty refers to County-->
-          <div>
-              <label class="toggle-label">County/Zip Codes</label>
-              <div class="scrollable-list" id="data">
-                  <ul>
-                      <li th:each="field : ${data}">
-                          <div th:if="${field.smallAreaStatus}==1">
-                              <div th:each="rentObject, iterStat : ${field.basicdata}">
-                                  <a
-                                  th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, id=${iterStat.index})}"
-                                    th:text="'Index:' + ${iterStat.index}+' ' + ${rentObject.zipCode}">
-                                  </a>
-                              </div>
-                          </div>
-                          <div th:if="${field.smallAreaStatus}==0">
-                              <a th:text="${field.areaName}"></a>
-                          </div>
-                      </li>
-                  </ul>
-              </div>
-          </div>
-        </div>  
+      <div th:if="${data != null and data.countyName == ''}" class="inputs-row">
+        <!-- when countyName empty refers to MetroArea-->
+        <div>
+          <label class="toggle-label">Metropolitan Area / Zip Codes</label>
+          <div class="scrollable-list" id="data">
+            <ul>
+              <li th:each="field : ${data}">
+                <div th:if="${field.smallAreaStatus}==1">
 
-      
+                  <div th:each="rentObject, iterStat : ${field.basicdata}">
+                    <a
+                      th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=${iterStat.index})}"
+                      th:text=" ${rentObject.zipCode}"
+                    >
+                    </a>
+                  </div>
+                </div>
+                <div th:if="${field.smallAreaStatus}==0">
+                  <a
+                    th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=0)}"
+                    th:text="${field.metroName}"
+                  ></a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div th:if="${data != null and data.countyName != ''}" class="inputs-row">
+        <!-- when countyName not empty refers to County-->
+        <div>
+          <label class="toggle-label">State/County/Zip Codes</label>
+          <div class="scrollable-list" id="data">
+            <ul>
+              <li th:each="field : ${data}">
+                <div th:if="${field.smallAreaStatus}==1">
+                  <div th:each="rentObject, iterStat : ${field.basicdata}">
+                    <a
+                      th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, id=${iterStat.index})}"
+                      th:text="'Index:' + ${iterStat.index}+' ' + ${rentObject.zipCode}"
+                    >
+                    </a>
+                  </div>
+                </div>
+                <div th:if="${field.smallAreaStatus}==0">
+                  <a
+                    th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, id=0)}"
+                    th:text="${field.countyName}"
+                  ></a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
     <br />
     <div
       class="form-container"
       style="flex-direction: column; align-items: center; height: auto"
     >
-      bla bla bla
+      <div th:if="${location}">
+        You have shownsen the following location: <h3 style="display: inline">[[${location}]]</h3>
+      </div>
+    
     </div>
 
     <div>
@@ -397,6 +404,9 @@
             alt="Utility image representation"
             onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png')"
           />
+          <div th:if="${dataRent}">
+            Efficiency: [[${dataRent.efficiency}]], One Bedroom: [[${dataRent.oneBedroom}]], Two Bedroom: [[${dataRent.twoBedroom}]], Three Bedroom: [[${dataRent.threeBedroom}]]
+          </div>
         </div>
         <div class="icon-text-container">
           <label class="label">Fuel cost</label>

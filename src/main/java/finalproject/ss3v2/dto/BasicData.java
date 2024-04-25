@@ -10,7 +10,7 @@ public class BasicData {
     @JsonProperty("zip_code")// sometimes appear, sometimes not
     private String zipCode;
     @JsonProperty("Efficiency")
-    private int Efficiency;
+    private int efficiency;
     @JsonProperty("One-Bedroom")
     private int oneBedroom;
     @JsonProperty("Two-Bedroom")
@@ -31,11 +31,11 @@ public class BasicData {
     }
 
     public int getEfficiency() {
-        return Efficiency;
+        return efficiency;
     }
 
     public void setEfficiency(int efficiency) {
-        Efficiency = efficiency;
+        this.efficiency = efficiency;
     }
 
     public int getOneBedroom() {
