@@ -29,6 +29,7 @@ public class UserController {
     private ApiServiceHudUser apiServiceHudUser;
 
 
+
     public UserController(UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder,
                           ApiServiceHudUser apiServiceHudUser) {
         this.userServiceImpl = userServiceImpl;
@@ -89,12 +90,17 @@ public class UserController {
             model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
             model.addAttribute("entityCode", dataEntityCode);
 
+
             List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
             if (basicData.size() > 1) {
                 model.addAttribute("dataRent", basicData.get(id));
+                model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getMetroName() + " / Zip Code: " + basicData.get(id).getZipCode());
             }
             if(basicData.size()==1){
                 model.addAttribute("dataRent",basicData);
+                model.addAttribute("location",apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
+
             }
             return "usersession";
         }
@@ -123,12 +129,16 @@ public class UserController {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
 
+
+
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
             model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
             model.addAttribute("stateCode", stateCode);
             model.addAttribute("entityCode", dataEntityCode);
+
+
             return "usersession";
         }
         return "redirect:/signin";
@@ -141,6 +151,8 @@ public class UserController {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
 
+
+
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
@@ -151,9 +163,12 @@ public class UserController {
             List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
             if (basicData.size() > 1) {
                 model.addAttribute("dataRent", basicData.get(id));
+                model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getCountyName() + " / Zip Code: " + basicData.get(id).getZipCode());
             }
             if(basicData.size()==1){
                 model.addAttribute("dataRent",basicData);
+                model.addAttribute("location",apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getCountyName());
             }
             return "usersession";
         }
