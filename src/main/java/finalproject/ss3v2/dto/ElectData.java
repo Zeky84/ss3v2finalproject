@@ -3,15 +3,17 @@ package finalproject.ss3v2.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ElectData {
     // Belongs to EIA dataset
     private String total;
     private String dateFormat;
-    private String monthly;
+    private String frequency;
 
     @JsonProperty("data")
-    private String electDataInfo;
+    private List<ElectDataInfo> electDataInfo;
 
     public String getTotal() {
         return total;
@@ -29,19 +31,19 @@ public class ElectData {
         this.dateFormat = dateFormat;
     }
 
-    public String getMonthly() {
-        return monthly;
+    public String getFrequency() {
+        return frequency;
     }
 
-    public void setMonthly(String monthly) {
-        this.monthly = monthly;
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
     }
 
-    public String getElectDataInfo() {
+    public List<ElectDataInfo> getElectDataInfo() {
         return electDataInfo;
     }
 
-    public void setElectDataInfo(String electDataInfo) {
+    public void setElectDataInfo(List<ElectDataInfo> electDataInfo) {
         this.electDataInfo = electDataInfo;
     }
 }

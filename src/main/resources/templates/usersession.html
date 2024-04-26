@@ -275,10 +275,10 @@
     <br />
 
     <div class="form-container">
-      <div th:if="${metroAreas}" class="inputs-row">
+      <div th:if="${metroAreas}" class="inputs-row" >
         <div>
           <label class="toggle-label">Metropolitan Area</label>
-          <div class="scrollable-list" id="metroareaList">
+          <div class="scrollable-list" id="metroareaList" style="background-color: #c7eaff;">
             <ul>
               <li th:each="metroArea : ${metroAreas}">
                 <a
@@ -328,7 +328,7 @@
         <!-- when countyName empty refers to MetroArea-->
         <div>
           <label class="toggle-label">Metropolitan Area / Zip Codes</label>
-          <div class="scrollable-list" id="data">
+          <div class="scrollable-list" id="data" style="background-color: #c7eaff;">
             <ul>
               <li th:each="field : ${data}">
                 <div th:if="${field.smallAreaStatus}==1">
@@ -404,8 +404,9 @@
             alt="Utility image representation"
             onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png')"
           />
-          <div th:if="${dataRent}">
-            Efficiency: [[${dataRent.efficiency}]], One Bedroom: [[${dataRent.oneBedroom}]], Two Bedroom: [[${dataRent.twoBedroom}]], Three Bedroom: [[${dataRent.threeBedroom}]]
+          <div th:if="${rentValues}">
+            Efficiency: [[${rentValues.efficiency}]], One Bedroom: [[${rentValues.oneBedroom}]], Two Bedroom: [[${rentValues.twoBedroom}]], Three Bedroom: [[${rentValues.threeBedroom}]]
+            , Four Bedroom: [[${rentValues.fourBedroom}]]
           </div>
         </div>
         <div class="icon-text-container">

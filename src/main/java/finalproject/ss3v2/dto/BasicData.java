@@ -18,7 +18,7 @@ public class BasicData {
     @JsonProperty("Three-Bedroom")
     private int threeBedroom;
     @JsonProperty("Four-Bedroom")
-    private int forBedroom;
+    private int fourBedroom;
 
     private String year;
 
@@ -62,12 +62,12 @@ public class BasicData {
         this.threeBedroom = threeBedroom;
     }
 
-    public int getForBedroom() {
-        return forBedroom;
+    public int getFourBedroom() {
+        return fourBedroom;
     }
 
-    public void setForBedroom(int forBedroom) {
-        this.forBedroom = forBedroom;
+    public void setFourBedroom(int fourBedroom) {
+        this.fourBedroom = fourBedroom;
     }
 
     public String getYear() {

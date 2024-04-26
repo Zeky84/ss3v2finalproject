@@ -13,7 +13,7 @@ public class ElectDataInfo {
     private String sectorId;
     private String sectorName;
     private String price;
-    @JsonProperty("price-unit")
+    @JsonProperty("price-units")
     private String priceUnit;
 
     public String getPeriod() {

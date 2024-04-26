@@ -20,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -106,7 +108,7 @@ public class ApiServiceHudUser {
     }
 
     public DataRent getTheDataCostByCode(String code) {
-        // The data response has a field basicdata that can be either an object or an array of objects, that's why we need to
+        // The data response has a field basicdata that can be either an object or an array of objectslo, that's why we need to
         // handle it differently creating a CUSTOM DESERIALIZER, instead of using the mapper.readValue method
         // directly. CHAT GPT_4 HELP!!!
         RestTemplate restTemplate = new RestTemplate();
@@ -125,7 +127,8 @@ public class ApiServiceHudUser {
             JsonNode basicDataNode = dataNode.path("basicdata");
             if (basicDataNode.isArray()) {
                 // It's an array, deserialize as list
-                List<BasicData> basicDataList = mapper.convertValue(basicDataNode, new TypeReference<List<BasicData>>() {});
+                List<BasicData> basicDataList = mapper.convertValue(basicDataNode, new TypeReference<List<BasicData>>() {
+                });
                 dataRent.setBasicdata(basicDataList);
             } else if (basicDataNode.isObject()) {
                 // It's a single object, deserialize and add to list
@@ -142,7 +145,6 @@ public class ApiServiceHudUser {
             dataRent.setAreaName(dataNode.path("area_name").asText());
             dataRent.setSmallAreaStatus(dataNode.path("smallarea_status").asText());
             dataRent.setYear(dataNode.path("year").asText());
-
 
             return dataRent;
 
@@ -169,6 +171,21 @@ public class ApiServiceHudUser {
 
     public List<ApiMetroAreas> getMetroAreasList() {
         return metroAreaRepository.findAll();
+    }
+
+    public List<String> getAllStatesCodesInMetroArea(String metroAreaCode) {
+        String metroName = getTheDataCostByCode(metroAreaCode).getMetroName();
+        List<String> statesCodes = new ArrayList<>();
+
+        // Split the string to separate the metropolitan area from the state codes
+        String[] parts = metroName.split(", ");
+
+        if (parts.length > 1) {
+            // Further split to get individual state codes
+            String[] codes = parts[1].split("-");
+            statesCodes.addAll(Arrays.asList(codes));
+        }
+        return statesCodes;
     }
 
 
