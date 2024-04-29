@@ -19,7 +19,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/usersession")
@@ -31,7 +33,6 @@ public class UserController {
     private ApiServiceHudUser apiServiceHudUser;
 
     private ApiServiceEnergyInfoAdmin apiServiceEnergyInfoAdmin;
-
 
 
     public UserController(UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder,
@@ -68,7 +69,7 @@ public class UserController {
         return "redirect:/signin";
     }
 
-    @GetMapping("/{userId}/metroarea/data/{dataEntityCode}") // END-POINT METRO AREA SEARCHING CRITERIA
+    @GetMapping("/{userId}/metroarea/data/{dataEntityCode}") // ENDPOINT METRO AREA SEARCHING CRITERIA
     public String getDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
@@ -89,7 +90,7 @@ public class UserController {
         return "redirect:/signin";
     }
 
-    @GetMapping("/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}") // END-POINT METRO AREA SEARCHING CRITERIA FINAL DATA
+    @GetMapping("/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}")// ENDPOINT MET AREA SEARCH CRITERIA FINAL DATA
     public String getSpecificDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model,
                                                  @PathVariable Integer id, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
@@ -101,19 +102,28 @@ public class UserController {
             model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
             model.addAttribute("entityCode", dataEntityCode);
             model.addAttribute("stateCodes", apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode));
-            String stateCode = apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode).get(0);
-            ElectResponseData responseData = apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode);// for testing purposes
 
+            // To manage the case when the metro area has more than one state code, so the user can select the state
+            List<String> stateCodes = apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode);
+            Map<String, Double> electRates = new HashMap<>();
+            for (String stateCode : stateCodes) {
+                electRates.put(stateCode, apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+            }
+
+            // to manage when the data has more than one basic data object(the one that contains the rent values)
             List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
             if (basicData.size() > 1) {
                 model.addAttribute("rentValues", basicData.get(id));
+                model.addAttribute("electRates", electRates);
+                model.addAttribute("stateCode", stateCodes);
                 model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName() + " / Zip Code: " + basicData.get(id).getZipCode());
             }
-            if(basicData.size()==1){
-                model.addAttribute("rentValues",basicData.get(0));
-                model.addAttribute("location",apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
-
+            if (basicData.size() == 1) {
+                model.addAttribute("rentValues", basicData.get(0));
+                model.addAttribute("electRates", electRates);
+                model.addAttribute("stateCode", stateCodes);
+                model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
 
             }
             return "usersession";
@@ -144,7 +154,6 @@ public class UserController {
             model.addAttribute("user", userAuth);
 
 
-
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
@@ -158,13 +167,13 @@ public class UserController {
         return "redirect:/signin";
     }
 
-    @GetMapping("/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{id}") // EN-POINT METRO AREA SEARCHING CRITERIA FINAL DATA
+    @GetMapping("/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{id}")
+    // EN-POINT METRO AREA SEARCHING CRITERIA FINAL DATA
     public String getSpecificDataByCountyCode(@PathVariable Integer userId, @PathVariable String stateCode, @PathVariable String dataEntityCode,
                                               Model model, @PathVariable Integer id, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
-
 
 
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
@@ -180,9 +189,9 @@ public class UserController {
                 model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getCountyName() + " / Zip Code: " + basicData.get(id).getZipCode());
             }
-            if(basicData.size()==1){
-                model.addAttribute("rentValues",basicData.get(0));
-                model.addAttribute("location",apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getCountyName());
+            if (basicData.size() == 1) {
+                model.addAttribute("rentValues", basicData.get(0));
+                model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getCountyName());
             }
             return "usersession";
         }

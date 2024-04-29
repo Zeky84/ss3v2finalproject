@@ -12,7 +12,7 @@ public class ElectDataInfo {
     @JsonProperty("sectorid")
     private String sectorId;
     private String sectorName;
-    private String price;
+    private Double price;
     @JsonProperty("price-units")
     private String priceUnit;
 
@@ -56,11 +56,11 @@ public class ElectDataInfo {
         this.sectorName = sectorName;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

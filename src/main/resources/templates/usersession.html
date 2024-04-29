@@ -162,24 +162,6 @@
         font-size: 16px;
         text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
       }
-      .icon-row {
-        display: flex;
-        flex-direction: column;
-        align-items: left;
-        width: 100%;
-      }
-      .icon-row img {
-        width: 40px;
-        height: 40px;
-        margin-bottom: 15px;
-        cursor: pointer;
-      }
-      .icon-text-container {
-        display: flex;
-        flex-direction: column; /* Stack icon and text vertically */
-        order: -1;
-        font-size: 10px;
-      }
       .inputs-row {
         display: flex;
         width: 100%;
@@ -210,6 +192,30 @@
       .scrollable-list::-webkit-scrollbar {
         width: 8px; /* Width of the vertical scrollbar */
         height: 8px; /* Height of the horizontal scrollbar */
+      }
+      .icon-row {
+        display: flex;
+        flex-direction: column;
+        align-items: left;
+        width: 100%;
+      }
+      .icon-row img {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 15px;
+        cursor: pointer;
+      }
+      .icon-text-container-row {
+        display: flex;
+        flex-direction: row; /* Stack icon and text vertically */
+        order: -1;
+        font-size: 16px;
+      }
+      .icon-text-container-column {
+        display: flex;
+        flex-direction: column; /* Stack icon and text vertically */
+        font-size: 10px;
+        
       }
     </style>
   </head>
@@ -267,7 +273,7 @@
         Please select
         <h3 style="display: inline">Metropolitan Area</h3>
         or
-        <h3 style="display: inline">State/Counties</h3>
+        <h3 style="display: inline">State</h3>
         to start the search
       </div>
     </div>
@@ -275,10 +281,14 @@
     <br />
 
     <div class="form-container">
-      <div th:if="${metroAreas}" class="inputs-row" >
+      <div th:if="${metroAreas}" class="inputs-row">
         <div>
           <label class="toggle-label">Metropolitan Area</label>
-          <div class="scrollable-list" id="metroareaList" style="background-color: #c7eaff;">
+          <div
+            class="scrollable-list"
+            id="metroareaList"
+            style="background-color: #ffedc7"
+          >
             <ul>
               <li th:each="metroArea : ${metroAreas}">
                 <a
@@ -328,11 +338,14 @@
         <!-- when countyName empty refers to MetroArea-->
         <div>
           <label class="toggle-label">Metropolitan Area / Zip Codes</label>
-          <div class="scrollable-list" id="data" style="background-color: #c7eaff;">
+          <div
+            class="scrollable-list"
+            id="data"
+            style="background-color: #ffedc7"
+          >
             <ul>
               <li th:each="field : ${data}">
                 <div th:if="${field.smallAreaStatus}==1">
-
                   <div th:each="rentObject, iterStat : ${field.basicdata}">
                     <a
                       th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=${iterStat.index})}"
@@ -386,9 +399,9 @@
       style="flex-direction: column; align-items: center; height: auto"
     >
       <div th:if="${location}">
-        You have shownsen the following location: <h3 style="display: inline">[[${location}]]</h3>
+        You have shownsen the following location:
+        <h3 style="display: inline">[[${location}]]</h3>
       </div>
-    
     </div>
 
     <div>
@@ -397,19 +410,25 @@
 
     <div class="form-container-addvalues">
       <div class="icon-row">
-        <div class="icon-text-container">
-          <label class="label">Housing cost</label>
-          <img
-            src="/images/1rentOFF.png"
-            alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png')"
-          />
-          <div th:if="${rentValues}">
-            Efficiency: [[${rentValues.efficiency}]], One Bedroom: [[${rentValues.oneBedroom}]], Two Bedroom: [[${rentValues.twoBedroom}]], Three Bedroom: [[${rentValues.threeBedroom}]]
-            , Four Bedroom: [[${rentValues.fourBedroom}]]
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Rent  cost</label>
+            <img
+              src="/images/1rentOFF.png"
+              alt="Utility image representation"
+              onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png')"
+            />
+          </div>
+          <div th:if="${rentValues}" style="padding-left: 10px; padding-top: 20px;">
+            Efficiency: [[${rentValues.efficiency}]], One Bedroom:
+            [[${rentValues.oneBedroom}]], Two Bedroom:
+            [[${rentValues.twoBedroom}]], Three Bedroom:
+            [[${rentValues.threeBedroom}]] , Four Bedroom:
+            [[${rentValues.fourBedroom}]]
           </div>
         </div>
-        <div class="icon-text-container">
+
+        <div class="icon-text-container-column">
           <label class="label">Fuel cost</label>
           <img
             src="/images/1fuelOFF.png"
@@ -417,15 +436,24 @@
             onclick="toggleImage(this, '/images/1fuelON.png', '/images/1fuelOFF.png')"
           />
         </div>
-        <div class="icon-text-container">
-          <label class="label">Electricity services cost</label>
+
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+           <label class="label">Elect cost</label>
           <img
             src="/images/1electOFF.png"
             alt="Utility image representation"
             onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png')"
-          />
+          /> 
+          </div>
+          <div th:if="${electRates}" style="padding-left: 10px; padding-top: 20px;">
+            <div th:each="electRate: ${electRates}">
+              State: [[${electRate.key}]]  Rate: [[${electRate.value}]]
+            </div>
+          </div>
         </div>
-        <div class="icon-text-container">
+
+        <div class="icon-text-container-column">
           <label class="label">Waste services cost</label>
           <img
             src="/images/1wasteOFF.png"
@@ -433,7 +461,7 @@
             onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png')"
           />
         </div>
-        <div class="icon-text-container">
+        <div class="icon-text-container-column">
           <label class="label">Water services cost</label>
           <img
             src="/images/1waterOFF.png"
@@ -441,7 +469,7 @@
             onclick="toggleImage(this, '/images/1waterON.png', '/images/1waterOFF.png')"
           />
         </div>
-        <div class="icon-text-container">
+        <div class="icon-text-container-column">
           <label class="label">Transportation</label>
           <img
             src="/images/1transpOFF.png"
@@ -449,7 +477,7 @@
             onclick="toggleImage(this, '/images/1transpON.png', '/images/1transpOFF.png')"
           />
         </div>
-        <div class="icon-text-container">
+        <div class="icon-text-container-column">
           <label class="label">Natural Gas</label>
           <img
             src="/images/1greenOFF.png"
@@ -457,7 +485,7 @@
             onclick="toggleImage(this, '/images/1greenON.png', '/images/1greenOFF.png')"
           />
         </div>
-        <div class="icon-text-container">
+        <div class="icon-text-container-column">
           <label class="label">Internet Providers</label>
           <img
             src="/images/1commOFF.png"

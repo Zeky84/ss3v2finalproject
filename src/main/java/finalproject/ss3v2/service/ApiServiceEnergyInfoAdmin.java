@@ -25,7 +25,7 @@ public class ApiServiceEnergyInfoAdmin {
     private ElectResponseData responseData;
 
 
-    public ElectResponseData getEnergyRateByStateDebug(String stateCode) {
+    public Double getEnergyRateByStateDebug(String stateCode) {
         RestTemplate restTemplate = new RestTemplate();
         URI uri = UriComponentsBuilder.fromHttpUrl(eiaBaseURL)
                 .path("/v2/electricity/retail-sales/data")
@@ -44,7 +44,9 @@ public class ApiServiceEnergyInfoAdmin {
             ObjectMapper mapper = new ObjectMapper();
             try {
                 ElectResponseData responseData = mapper.readValue(response.getBody(), ElectResponseData.class);
-                return responseData;
+                Double electRate = responseData.getElectData().getElectDataInfo().get(0).getPrice();
+                System.out.println();
+                return electRate;
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
