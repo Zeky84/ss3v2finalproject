@@ -166,6 +166,33 @@
         display: flex;
         width: 100%;
       }
+      .scrollable-list-metroarea {
+        max-height: 220px;
+        overflow-y: auto;
+        overflow-x: auto;
+        width: 300px;
+        background-color: #ffedc7;
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      /* Styling the scrollbar track (part the thumb slides within) */
+      .scrollable-list-metroarea::-webkit-scrollbar-track {
+        background-color: #ffedc7; /* Light grey track */
+        border-radius: 10px; /* Optional: adds rounded corners to the track */
+      }
+
+      /* Styling the scrollbar thumb (draggable part) */
+      .scrollable-list-metroarea::-webkit-scrollbar-thumb {
+        background-color: #b88f37; /* Dark blue thumb */
+        border-radius: 10px; /* Rounded corners on the thumb */
+        border: 3px solid #b88f37; /* Optional: adds a border around the thumb */
+      }
+
+      .scrollable-list-metroarea::-webkit-scrollbar {
+        width: 8px; /* Width of the vertical scrollbar */
+        height: 8px; /* Height of the horizontal scrollbar */
+      }
       .scrollable-list {
         max-height: 220px;
         overflow-y: auto;
@@ -193,6 +220,8 @@
         width: 8px; /* Width of the vertical scrollbar */
         height: 8px; /* Height of the horizontal scrollbar */
       }
+      
+      
       .icon-row {
         display: flex;
         flex-direction: column;
@@ -271,7 +300,7 @@
       </h2>
       <div>
         Please select
-        <h3 style="display: inline">Metropolitan Area</h3>
+        <h3 style="display: inline; color: #806326">Metropolitan Area</h3>
         or
         <h3 style="display: inline">State</h3>
         to start the search
@@ -283,11 +312,10 @@
     <div class="form-container">
       <div th:if="${metroAreas}" class="inputs-row">
         <div>
-          <label class="toggle-label">Metropolitan Area</label>
+          <label class="toggle-label" style="color: #806326;" >Metropolitan Area</label>
           <div
-            class="scrollable-list"
+            class="scrollable-list-metroarea"
             id="metroareaList"
-            style="background-color: #ffedc7"
           >
             <ul>
               <li th:each="metroArea : ${metroAreas}">
@@ -296,6 +324,36 @@
                   th:text="${metroArea.areaName}"
                 >
                 </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div th:if="${data != null and data.countyName == ''}" class="inputs-row">
+        <!-- when countyName empty refers to MetroArea-->
+        <div>
+          <label class="toggle-label" style="color: #806326;">Metropolitan Area / Zip Codes</label>
+          <div
+            class="scrollable-list-metroarea"
+            id="data"
+          >
+            <ul>
+              <li th:each="field : ${data}">
+                <div th:if="${field.smallAreaStatus}==1">
+                  <div th:each="rentObject, iterStat : ${field.basicdata}">
+                    <a
+                      th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=${iterStat.index})}"
+                      th:text=" ${rentObject.zipCode}"
+                    >
+                    </a>
+                  </div>
+                </div>
+                <div th:if="${field.smallAreaStatus}==0">
+                  <a
+                    th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=0)}"
+                    th:text="${field.metroName}"
+                  ></a>
+                </div>
               </li>
             </ul>
           </div>
@@ -334,37 +392,7 @@
           </div>
         </div>
       </div>
-      <div th:if="${data != null and data.countyName == ''}" class="inputs-row">
-        <!-- when countyName empty refers to MetroArea-->
-        <div>
-          <label class="toggle-label">Metropolitan Area / Zip Codes</label>
-          <div
-            class="scrollable-list"
-            id="data"
-            style="background-color: #ffedc7"
-          >
-            <ul>
-              <li th:each="field : ${data}">
-                <div th:if="${field.smallAreaStatus}==1">
-                  <div th:each="rentObject, iterStat : ${field.basicdata}">
-                    <a
-                      th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=${iterStat.index})}"
-                      th:text=" ${rentObject.zipCode}"
-                    >
-                    </a>
-                  </div>
-                </div>
-                <div th:if="${field.smallAreaStatus}==0">
-                  <a
-                    th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=0)}"
-                    th:text="${field.metroName}"
-                  ></a>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      
       <div th:if="${data != null and data.countyName != ''}" class="inputs-row">
         <!-- when countyName not empty refers to County-->
         <div>
@@ -393,8 +421,10 @@
         </div>
       </div>
     </div>
+
     <br />
-    <div
+    
+    <div th:if="${location}"
       class="form-container"
       style="flex-direction: column; align-items: center; height: auto"
     >
@@ -404,7 +434,7 @@
       </div>
     </div>
 
-    <div>
+    <div th:if="${location}">
       <br />
     </div>
 

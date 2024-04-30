@@ -15,6 +15,7 @@ import java.net.URI;
 
 @Service
 public class ApiServiceEnergyInfoAdmin {
+    // THIS IS THE SERVICE CLASS THAT WILL INTERACT WITH THE EIA API( TO GET THE ELECTRICITY RATES DATA)
     @Value("${eia.baseURL}")
     private String eiaBaseURL;
 
@@ -26,31 +27,45 @@ public class ApiServiceEnergyInfoAdmin {
 
 
     public Double getEnergyRateByStateDebug(String stateCode) {
-        RestTemplate restTemplate = new RestTemplate();
-        URI uri = UriComponentsBuilder.fromHttpUrl(eiaBaseURL)
-                .path("/v2/electricity/retail-sales/data")
-                .queryParam("api_key", eiaApiKey)
-                .queryParam("data[]", "price")
-                .queryParam("facets[sectorid][]", "RES")
-                .queryParam("facets[stateid][]", stateCode)
-                .queryParam("frequency", "monthly")
-                .queryParam("start", "2024-01")
-                .build()
-                .encode()
-                .toUri();
+        // elect rates for PR(Puerto Rico), AS(American Samoa), GU(Guam), VI(Virgin Islands) are hardcoded because
+        // the EIA API does not have data for them
+        if (stateCode.equalsIgnoreCase("PR")) {
+            return 22.57;
+        } else if (stateCode.equalsIgnoreCase("AS")) {
+            return 29.00;
+        } else if (stateCode.equalsIgnoreCase("GU")) {
+            return 26.20;
+        }else if (stateCode.equalsIgnoreCase("VI")) {
+            return 42.00;
+        } else{
+            RestTemplate restTemplate = new RestTemplate();
+            URI uri = UriComponentsBuilder.fromHttpUrl(eiaBaseURL)
+                    .path("/v2/electricity/retail-sales/data")
+                    .queryParam("api_key", eiaApiKey)
+                    .queryParam("data[]", "price")
+                    .queryParam("facets[sectorid][]", "RES")
+                    .queryParam("facets[stateid][]", stateCode)
+                    .queryParam("frequency", "monthly")
+                    .queryParam("start", "2024-01")
+                    .build()
+                    .encode()
+                    .toUri();
 
-        ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                ElectResponseData responseData = mapper.readValue(response.getBody(), ElectResponseData.class);
-                Double electRate = responseData.getElectData().getElectDataInfo().get(0).getPrice();
-                System.out.println();
-                return electRate;
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
+            ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    ElectResponseData responseData = mapper.readValue(response.getBody(), ElectResponseData.class);
+                    Double electRate = responseData.getElectData().getElectDataInfo().get(0).getPrice();
+                    System.out.println();
+                    return electRate;
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
+
         return null;
     }
 }

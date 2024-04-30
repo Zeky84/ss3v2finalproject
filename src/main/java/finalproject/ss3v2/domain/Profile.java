@@ -43,6 +43,6 @@ public class Profile {
     private Double wasteCost;
     private Double waterCost;
     private Double publicTransportCost;
-    private Boolean naturalGas;
+    private Double naturalGas;
     private Double internetCost;
 }

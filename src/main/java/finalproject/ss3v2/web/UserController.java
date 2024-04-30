@@ -116,14 +116,14 @@ public class UserController {
                 model.addAttribute("rentValues", basicData.get(id));
                 model.addAttribute("electRates", electRates);
                 model.addAttribute("stateCode", stateCodes);
-                model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                model.addAttribute("location", "MetroArea: "+apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName() + " / Zip Code: " + basicData.get(id).getZipCode());
             }
             if (basicData.size() == 1) {
                 model.addAttribute("rentValues", basicData.get(0));
                 model.addAttribute("electRates", electRates);
                 model.addAttribute("stateCode", stateCodes);
-                model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
+                model.addAttribute("location","MetroArea: "+apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
 
             }
             return "usersession";
