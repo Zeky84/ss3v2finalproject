@@ -171,22 +171,22 @@
         overflow-y: auto;
         overflow-x: auto;
         width: 300px;
-        background-color: #ffedc7;
+        background-color: #d6effd;
         border-radius: 10px;
         padding: 10px;
       }
 
       /* Styling the scrollbar track (part the thumb slides within) */
       .scrollable-list-metroarea::-webkit-scrollbar-track {
-        background-color: #ffedc7; /* Light grey track */
+        background-color: #d6effd;; /* Light grey track */
         border-radius: 10px; /* Optional: adds rounded corners to the track */
       }
 
       /* Styling the scrollbar thumb (draggable part) */
       .scrollable-list-metroarea::-webkit-scrollbar-thumb {
-        background-color: #b88f37; /* Dark blue thumb */
+        background-color: #306da6; /* Dark blue thumb */
         border-radius: 10px; /* Rounded corners on the thumb */
-        border: 3px solid #b88f37; /* Optional: adds a border around the thumb */
+        border: 3px solid #306da6; /* Optional: adds a border around the thumb */
       }
 
       .scrollable-list-metroarea::-webkit-scrollbar {
@@ -198,14 +198,15 @@
         overflow-y: auto;
         overflow-x: auto;
         width: 300px;
-        background-color: #d6effd;
+        background-color: #bee7ff;
         border-radius: 10px;
+        border-color:#306da6 ;
         padding: 10px;
       }
 
       /* Styling the scrollbar track (part the thumb slides within) */
       .scrollable-list::-webkit-scrollbar-track {
-        background-color: #d6effd; /* Light grey track */
+        background-color: #bee7ff; /* Light grey track */
         border-radius: 10px; /* Optional: adds rounded corners to the track */
       }
 
@@ -220,8 +221,7 @@
         width: 8px; /* Width of the vertical scrollbar */
         height: 8px; /* Height of the horizontal scrollbar */
       }
-      
-      
+
       .icon-row {
         display: flex;
         flex-direction: column;
@@ -244,7 +244,6 @@
         display: flex;
         flex-direction: column; /* Stack icon and text vertically */
         font-size: 10px;
-        
       }
     </style>
   </head>
@@ -312,11 +311,10 @@
     <div class="form-container">
       <div th:if="${metroAreas}" class="inputs-row">
         <div>
-          <label class="toggle-label" style="color: #806326;" >Metropolitan Area</label>
-          <div
-            class="scrollable-list-metroarea"
-            id="metroareaList"
+          <label class="toggle-label" style="color: #806326"
+            >Metropolitan Area</label
           >
+          <div class="scrollable-list-metroarea" id="metroareaList">
             <ul>
               <li th:each="metroArea : ${metroAreas}">
                 <a
@@ -332,17 +330,16 @@
       <div th:if="${data != null and data.countyName == ''}" class="inputs-row">
         <!-- when countyName empty refers to MetroArea-->
         <div>
-          <label class="toggle-label" style="color: #806326;">Metropolitan Area / Zip Codes</label>
-          <div
-            class="scrollable-list-metroarea"
-            id="data"
+          <label class="toggle-label" style="color: #806326"
+            >Metropolitan Area / Zip Codes</label
           >
+          <div class="scrollable-list-metroarea" id="data">
             <ul>
               <li th:each="field : ${data}">
                 <div th:if="${field.smallAreaStatus}==1">
                   <div th:each="rentObject, iterStat : ${field.basicdata}">
                     <a
-                      th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=${iterStat.index})}"
+                      th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
                       th:text=" ${rentObject.zipCode}"
                     >
                     </a>
@@ -392,7 +389,7 @@
           </div>
         </div>
       </div>
-      
+
       <div th:if="${data != null and data.countyName != ''}" class="inputs-row">
         <!-- when countyName not empty refers to County-->
         <div>
@@ -403,7 +400,7 @@
                 <div th:if="${field.smallAreaStatus}==1">
                   <div th:each="rentObject, iterStat : ${field.basicdata}">
                     <a
-                      th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, id=${iterStat.index})}"
+                      th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
                       th:text="'Index:' + ${iterStat.index}+' ' + ${rentObject.zipCode}"
                     >
                     </a>
@@ -423,8 +420,9 @@
     </div>
 
     <br />
-    
-    <div th:if="${location}"
+
+    <div
+      th:if="${location}"
       class="form-container"
       style="flex-direction: column; align-items: center; height: auto"
     >
@@ -442,14 +440,17 @@
       <div class="icon-row">
         <div class="icon-text-container-row">
           <div class="icon-text-container-column">
-            <label class="label">Rent  cost</label>
+            <label class="label">Rent cost</label>
             <img
               src="/images/1rentOFF.png"
               alt="Utility image representation"
               onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png')"
             />
           </div>
-          <div th:if="${rentValues}" style="padding-left: 10px; padding-top: 20px;">
+          <div
+            th:if="${rentValues}"
+            style="padding-left: 10px; padding-top: 20px"
+          >
             Efficiency: [[${rentValues.efficiency}]], One Bedroom:
             [[${rentValues.oneBedroom}]], Two Bedroom:
             [[${rentValues.twoBedroom}]], Three Bedroom:
@@ -469,30 +470,43 @@
 
         <div class="icon-text-container-row">
           <div class="icon-text-container-column">
-           <label class="label">Elect cost</label>
-          <img
-            src="/images/1electOFF.png"
-            alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png')"
-          /> 
+            <label class="label">Elect cost</label>
+            <img
+              src="/images/1electOFF.png"
+              alt="Utility image representation"
+              onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png')"
+            />
           </div>
-          <div th:if="${electRates}" style="padding-left: 10px; padding-top: 20px;">
+          <div
+            th:if="${electRates}"
+            style="padding-left: 10px; padding-top: 20px"
+          >
             <div th:each="electRate: ${electRates}">
-              State: [[${electRate.key}]]  Rate: [[${electRate.value}]]
+              State: [[${electRate.key}]] Rate: [[${electRate.value}]]
             </div>
           </div>
         </div>
 
-        <div class="icon-text-container-column">
-          <label class="label">Waste services cost</label>
-          <img
-            src="/images/1wasteOFF.png"
-            alt="Utility image representation "
-            onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png')"
-          />
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Waste cost</label>
+            <img
+              src="/images/1wasteOFF.png"
+              alt="Utility image representation "
+              onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png')"
+            />
+          </div>
+          <div
+            th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px"
+          >
+          <div th:each="utilities: ${othersUtilities}">
+            State: [[${utilities.key}]] cost: [[${utilities.value.monthlyWasteCost}]]
+          </div>
+          </div>
         </div>
         <div class="icon-text-container-column">
-          <label class="label">Water services cost</label>
+          <label class="label">Water cost</label>
           <img
             src="/images/1waterOFF.png"
             alt="Utility image representation"
@@ -516,7 +530,7 @@
           />
         </div>
         <div class="icon-text-container-column">
-          <label class="label">Internet Providers</label>
+          <label class="label">Internet cost</label>
           <img
             src="/images/1commOFF.png"
             alt="Utility image representation"

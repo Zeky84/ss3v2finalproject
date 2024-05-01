@@ -124,19 +124,21 @@ public class ApiServiceHudUser {
             JsonNode dataNode = rootNode.path("data");
             DataRent dataRent = new DataRent();
 
+            if (dataNode.isMissingNode() || dataNode.isNull()) {
+                // Handle case where no data node is found
+                return null;
+            }
+
             JsonNode basicDataNode = dataNode.path("basicdata");
             if (basicDataNode.isArray()) {
-                // It's an array, deserialize as list
-                List<BasicData> basicDataList = mapper.convertValue(basicDataNode, new TypeReference<List<BasicData>>() {
-                });
+                List<BasicData> basicDataList = mapper.convertValue(basicDataNode, new TypeReference<List<BasicData>>() {});
                 dataRent.setBasicdata(basicDataList);
             } else if (basicDataNode.isObject()) {
-                // It's a single object, deserialize and add to list
                 BasicData basicData = mapper.convertValue(basicDataNode, BasicData.class);
                 dataRent.setBasicdata(Collections.singletonList(basicData));
             }
 
-            // Deserializing others fields
+            // Deserializing other fields
             dataRent.setCountyName(dataNode.path("county_name").asText());
             dataRent.setCountiesMsa(dataNode.path("counties_msa").asText());
             dataRent.setTownName(dataNode.path("town_name").asText());
@@ -148,7 +150,7 @@ public class ApiServiceHudUser {
 
             return dataRent;
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to parse JSON", e);
         }
     }

@@ -29,7 +29,7 @@ public class Utilities {
     private double monthlyWaterCost;
     private double monthlyInternetCost;
     private double monthlyNaturalGasCost;
-    private double MonthlyWasteCost;
+    private double monthlyWasteCost;
     private double publicTransportationCost;
 
 }
