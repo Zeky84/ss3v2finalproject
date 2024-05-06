@@ -22,7 +22,6 @@ public class ApiServiceEnergyInfoAdmin {
     @Value("${eia.apiKey}")
     private String eiaApiKey;
 
-
     private ElectResponseData responseData;
 
 
@@ -40,7 +39,6 @@ public class ApiServiceEnergyInfoAdmin {
         } else{
             RestTemplate restTemplate = new RestTemplate();
             URI uri = UriComponentsBuilder.fromHttpUrl(eiaBaseURL)
-                    .path("/v2/electricity/retail-sales/data")
                     .queryParam("api_key", eiaApiKey)
                     .queryParam("data[]", "price")
                     .queryParam("facets[sectorid][]", "RES")
@@ -55,7 +53,7 @@ public class ApiServiceEnergyInfoAdmin {
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 ObjectMapper mapper = new ObjectMapper();
                 try {
-                    ElectResponseData responseData = mapper.readValue(response.getBody(), ElectResponseData.class);
+                    responseData = mapper.readValue(response.getBody(), ElectResponseData.class);
                     Double electRate = responseData.getElectData().getElectDataInfo().get(0).getPrice();
                     System.out.println();
                     return electRate;
@@ -64,8 +62,6 @@ public class ApiServiceEnergyInfoAdmin {
                 }
             }
         }
-
-
         return null;
     }
 }

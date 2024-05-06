@@ -6,11 +6,8 @@ import finalproject.ss3v2.domain.Utilities;
 import finalproject.ss3v2.dto.BasicData;
 
 import finalproject.ss3v2.repository.UtilitiesRepository;
-import finalproject.ss3v2.service.ApiServiceEnergyInfoAdmin;
-import finalproject.ss3v2.service.ApiServiceHudUser;
-import finalproject.ss3v2.service.RefreshTokenService;
+import finalproject.ss3v2.service.*;
 
-import finalproject.ss3v2.service.UserServiceImpl;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,17 +32,20 @@ public class UserController {
 
     private ApiServiceEnergyInfoAdmin apiServiceEnergyInfoAdmin;
 
+    private ApiServiceZipCodeStack apiServiceZipCodeStack;
+
     private UtilitiesRepository utilitiesRepository;
 
 
     public UserController(UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder,
                           ApiServiceHudUser apiServiceHudUser, ApiServiceEnergyInfoAdmin apiServiceEnergyInfoAdmin,
-                          UtilitiesRepository utilitiesRepository) {
+                          UtilitiesRepository utilitiesRepository, ApiServiceZipCodeStack apiServiceZipCodeStack) {
         this.userServiceImpl = userServiceImpl;
         this.refreshTokenService = refreshTokenService;
         this.passwordEncoder = passwordEncoder;
         this.apiServiceHudUser = apiServiceHudUser;
         this.apiServiceEnergyInfoAdmin = apiServiceEnergyInfoAdmin;
+        this.apiServiceZipCodeStack = apiServiceZipCodeStack;
         this.utilitiesRepository = utilitiesRepository;
     }
 
@@ -105,53 +105,45 @@ public class UserController {
 
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
-            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
+//            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
             model.addAttribute("entityCode", dataEntityCode);
             model.addAttribute("stateCodes", apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode));
 
-            // to manage when no data is found
+            // to handle when no data is found
             boolean dataFound = false;
             if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
                 //found a case where no data was found...
                 dataFound = true;
                 model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
             } else {
-                model.addAttribute("data", "no data found");
+                model.addAttribute("nodata", "no data found for this search");
             }
+            // Getting the basic data object that contains the rent values and others.
+            List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
 
-            // To manage the case when the metro area has more than one state code associated
-            List<String> stateCodes = apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode);
-            Map<String, Double> electRates = new HashMap<>();
-            Map<String, Utilities> utilities = new HashMap<>();
-            for (String stateCode : stateCodes) {
-                electRates.put(stateCode, apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
-                utilities.put(stateCode, utilitiesRepository.findByStateCode(stateCode));
+            if (basicData.size() > 1 && dataFound) {
+                //Getting the state code from the zip code to get EAI and utilities database data. Only works when the
+                // metro area has many zipcodes associated with it. If only one set of data, not zip code available so won't work
+                String stateCode = apiServiceZipCodeStack.getZipCodeData(basicData.get(dataindex).getZipCode());
+
+                model.addAttribute("rentValues", basicData.get(dataindex));
+                model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+                model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
+                model.addAttribute("stateCode", stateCode);
+                model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
             }
+            // to manage when the data has only one basic data object
+            if (basicData.size() == 1 && dataFound) {
+                String stateCode =apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode).get(0);
 
-            if (dataFound) {
-                // to manage when the data has more than one basic data object(the one that contains the rent values)
-                List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
-                if (basicData.size() > 1) {
-                    model.addAttribute("rentValues", basicData.get(dataindex));
-                    model.addAttribute("electRates", electRates);
-                    model.addAttribute("othersUtilities", utilities);
-                    model.addAttribute("stateCode", stateCodes);
-                    model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
-                            .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
-                }
-                // to manage when the data has only one basic data object
-                if (basicData.size() == 1) {
-                    model.addAttribute("rentValues", basicData.get(0));
-                    model.addAttribute("electRates", electRates);
-                    model.addAttribute("othersUtilities", utilities);
-                    model.addAttribute("stateCode", stateCodes);
-                    model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
-                    model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCodes.get(0)));
-
-                }
+                model.addAttribute("rentValues", basicData.get(0));
+                model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+                model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
+                model.addAttribute("stateCode", stateCode);
+                model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
             }
             return "usersession";
-
         }
         return "redirect:/signin";
     }
