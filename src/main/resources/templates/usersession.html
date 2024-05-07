@@ -341,10 +341,11 @@
               <li th:each="field : ${data}">
                 <div th:if="${field.smallAreaStatus}==1">
                   <div th:each="rentObject, iterStat : ${field.basicdata}">
-                    <a
+                    <!-- 88888 is a placeholder for no data -->
+                    <a th:if="${rentObject.zipCode} != '88888'" 
                       th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
-                      th:text=" ${rentObject.zipCode}"
-                    >
+                      th:text="${rentObject.zipCode}">
+                    </a>
                     </a>
                   </div>
                 </div>
