@@ -17,9 +17,7 @@ import java.time.YearMonth;
 @EqualsAndHashCode // from lombok
 @SuperBuilder // from lombok
 public class Profile {
-    // This table attempts to capture only the cost. The user needs to describe the profile, the variables involve in
-    // this table will display in the future which variables the user chose to include in the profile. but for now just
-    // the total cost of the adds of all the variables.
+    // This table attempts to capture the cost and profile description.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long profileId;
@@ -31,18 +29,16 @@ public class Profile {
     @JoinColumn(name = "user_id")//FetchType.EAGER is the default
     private User user;
 
+    private String stateBelongs;
     private String profileName;
-
     private String profileDescription;//this is a description of the profile()
-
     private Double totalCost;
-
     private Double rentCost;
     private Double fuelCost;
     private Double electricityCost;
     private Double wasteCost;
     private Double waterCost;
-    private Double publicTransportCost;
-    private Double naturalGas;
+    private Double publicTransportationCost;
+    private Double naturalGasCost;
     private Double internetCost;
 }

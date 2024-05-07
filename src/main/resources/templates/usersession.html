@@ -431,8 +431,9 @@
       style="flex-direction: column; align-items: center; height: auto"
     >
       <div th:if="${location}">
-        You have shownsen the following location:
+        You have chossen the following location:
         <h3 style="display: inline">[[${location}]]</h3>
+        Please select the utility cost icon below, to display the cost value
       </div>
     </div>
 
@@ -448,12 +449,12 @@
             <img
               src="/images/1rentOFF.png"
               alt="Utility image representation"
-              onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png')"
+              onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png', 'rentCostInfo')"
             />
           </div>
-          <div
+          <div id="rentCostInfo"
             th:if="${rentValues}"
-            style="padding-left: 10px; padding-top: 20px"
+            style="padding-left: 10px; padding-top: 20px; display: none;"
           >
             Efficiency: [[${rentValues.efficiency}]], One Bedroom:
             [[${rentValues.oneBedroom}]], Two Bedroom:
@@ -463,13 +464,24 @@
           </div>
         </div>
 
-        <div class="icon-text-container-column">
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
           <label class="label">Fuel cost</label>
           <img
             src="/images/1fuelOFF.png"
             alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1fuelON.png', '/images/1fuelOFF.png')"
+            onclick="toggleImage(this, '/images/1fuelON.png', '/images/1fuelOFF.png', 'fuelCostInfo')"
           />
+          </div>
+            <div id="fuelCostInfo"
+          th:if="${othersUtilities}"
+          style="padding-left: 10px; padding-top: 20px; display: none;"
+            >
+            gas regular: [[${othersUtilities.gasRegularCost}]],
+            gas midgrade::[[${othersUtilities.gasMidGradeCost}]],
+            gas premium: [[${othersUtilities.gasPremiumCost}]],
+            gas diesel: [[${othersUtilities.gasDieselCost}]]
+            </div>
         </div>
 
         <div class="icon-text-container-row">
@@ -478,12 +490,12 @@
             <img
               src="/images/1electOFF.png"
               alt="Utility image representation"
-              onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png')"
+              onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png', 'electCostInfo')"
             />
           </div>
-          <div
+          <div id="electCostInfo"
             th:if="${electRate}"
-            style="padding-left: 10px; padding-top: 20px"
+            style="padding-left: 10px; padding-top: 20px; display: none;"
           >
             State: [[${stateCode}]] Rate: [[${electRate}]]
           </div>
@@ -495,47 +507,83 @@
             <img
               src="/images/1wasteOFF.png"
               alt="Utility image representation "
-              onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png')"
+              onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png', 'wasteCostInfo')"
             />
           </div>
-          <div
+          <div id="wasteCostInfo"
             th:if="${othersUtilities}"
-            style="padding-left: 10px; padding-top: 20px"
+            style="padding-left: 10px; padding-top: 20px; display: none;"
           >
             State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWasteCost}]]
           </div>
         </div>
-        <div class="icon-text-container-column">
+
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
           <label class="label">Water cost</label>
           <img
             src="/images/1waterOFF.png"
             alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1waterON.png', '/images/1waterOFF.png')"
+            onclick="toggleImage(this, '/images/1waterON.png', '/images/1waterOFF.png', 'waterCostInfo')"
           />
+          </div>
+          <div id="waterCostInfo"
+            th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none;"
+          >
+            State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWaterCost}]]
+          </div>
         </div>
-        <div class="icon-text-container-column">
+
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
           <label class="label">Transportation</label>
           <img
             src="/images/1transpOFF.png"
             alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1transpON.png', '/images/1transpOFF.png')"
+            onclick="toggleImage(this, '/images/1transpON.png', '/images/1transpOFF.png', 'transportationCostInfo')"
           />
+          </div>
+          <div id="transportationCostInfo"
+            th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none;"
+          >
+            State: [[${stateCode}]] cost: [[${othersUtilities.publicTransportationCost}]]
+          </div>
         </div>
-        <div class="icon-text-container-column">
+
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
           <label class="label">Natural Gas</label>
           <img
             src="/images/1greenOFF.png"
             alt="Utility image representation "
-            onclick="toggleImage(this, '/images/1greenON.png', '/images/1greenOFF.png')"
+            onclick="toggleImage(this, '/images/1greenON.png', '/images/1greenOFF.png', 'naturalGasCostInfo')"
           />
+          </div>
+          <div id="naturalGasCostInfo"
+            th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none;"
+          >
+            State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]]
+          </div>
         </div>
-        <div class="icon-text-container-column">
+
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
           <label class="label">Internet cost</label>
           <img
             src="/images/1commOFF.png"
             alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1commON.png', '/images/1commOFF.png')"
+            onclick="toggleImage(this, '/images/1commON.png', '/images/1commOFF.png', 'internetCostInfo')"
           />
+          </div>
+          <div id="internetCostInfo"
+            th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none;"
+          >
+            State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]]
+          </div>
         </div>
       </div>
     </div>
@@ -620,14 +668,6 @@
           .catch((error) => console.error("Error:", error));
       }
 
-      function toggleImage(imgElement, onSrc, offSrc) {
-        if (imgElement.src.includes(offSrc)) {
-          imgElement.src = onSrc;
-        } else {
-          imgElement.src = offSrc;
-        }
-      }
-
       function clearLocalStorage() {
         localStorage.clear();
         sessionStorage.clear();
@@ -635,6 +675,18 @@
       function activityDetected() {
         checkRefreshToken();
       }
+      function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
+    console.log("toggleImage called"); // Check if function is called
+    var infoBlock = document.getElementById(infoBlockId);
+    if (imgElement.src.includes(offSrc)) {
+        imgElement.src = onSrc;
+        if (infoBlock) infoBlock.style.display = 'block'; // Show the info block
+    } else {
+        imgElement.src = offSrc;
+        if (infoBlock) infoBlock.style.display = 'none';  // Hide the info block
+    }
+}
+
     </script>
   </body>
 </html>

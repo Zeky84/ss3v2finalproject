@@ -11,10 +11,12 @@ import java.io.IOException;
 
 @Service
 public class CsvDataService {
-    // Because getting the rest of the fields to complete the cost living profile data can take to long, an exel file
-    // is being created to provide that data, this .csv is being created with info from Google. The fields feed from
+    // Because getting the rest of the fields to complete the cost living profile data can take to long, an Excel file
+    // is being created to provide that data, this .csv is being created with info from " the Bureau of Labor Statistics,
+    // the Energy Information Administration, Energy.gov and AAA gas prices". The fields feed from
     // this search are: fuel cost, waste services cost, water services cost, transportation cost, natural gas cost and
-    // internet cost
+    // internet cost.
+    //https://www.forbes.com/home-improvement/living/monthly-utility-costs-by-state/
 
     private final UtilitiesRepository utilitiesRepository;
 
