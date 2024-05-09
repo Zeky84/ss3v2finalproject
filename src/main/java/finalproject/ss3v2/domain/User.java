@@ -23,7 +23,7 @@ public class User implements UserDetails {
     private boolean isAdmin;
     private boolean isSuperUser;
     private boolean isUser;
-    @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Profile> profiles = new ArrayList<>();
     @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
     private List<Post> posts = new ArrayList<>();
@@ -168,4 +168,11 @@ public class User implements UserDetails {
         isUser = user;
     }
 
+    public List<Profile> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(List<Profile> profiles) {
+        this.profiles = profiles;
+    }
 }

@@ -23,22 +23,46 @@ public class Profile {
     private Long profileId;
 
     @Column(name = "date_profile_created", nullable = false)
-    private LocalDate dateProfileCreated;
+    private LocalDate dateProfileCreated = LocalDate.now();
 
     @ManyToOne
     @JoinColumn(name = "user_id")//FetchType.EAGER is the default
     private User user;
 
-    private String stateBelongs;
+    @Column( nullable = false)
+    private String location;
+
+    @Column( nullable = false)
+    private String stateCode;
+
+    @Column( nullable = false)
     private String profileName;
-    private String profileDescription;//this is a description of the profile()
+
     private Double totalCost;
+
+    @Column(nullable = true)
     private Double rentCost;
+
+    @Column(nullable = true)
     private Double fuelCost;
+
+    @Column(nullable = true)
     private Double electricityCost;
+
+    @Column(nullable = true)
     private Double wasteCost;
+
+    @Column(nullable = true)
     private Double waterCost;
+
+    @Column(nullable = true)
     private Double publicTransportationCost;
+
+    @Column(nullable = true)
     private Double naturalGasCost;
+
+    @Column(nullable = true)
     private Double internetCost;
+
+
 }

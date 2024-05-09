@@ -1,6 +1,7 @@
 package finalproject.ss3v2.web;
 
 
+import finalproject.ss3v2.domain.Profile;
 import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.domain.Utilities;
 import finalproject.ss3v2.dto.BasicData;
@@ -36,10 +37,13 @@ public class UserController {
 
     private UtilitiesRepository utilitiesRepository;
 
+    private ProfileService profileService;
+
 
     public UserController(UserServiceImpl userServiceImpl, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder,
                           ApiServiceHudUser apiServiceHudUser, ApiServiceEnergyInfoAdmin apiServiceEnergyInfoAdmin,
-                          UtilitiesRepository utilitiesRepository, ApiServiceZipCodeStack apiServiceZipCodeStack) {
+                          UtilitiesRepository utilitiesRepository, ApiServiceZipCodeStack apiServiceZipCodeStack,
+                          ProfileService profileService) {
         this.userServiceImpl = userServiceImpl;
         this.refreshTokenService = refreshTokenService;
         this.passwordEncoder = passwordEncoder;
@@ -47,6 +51,7 @@ public class UserController {
         this.apiServiceEnergyInfoAdmin = apiServiceEnergyInfoAdmin;
         this.apiServiceZipCodeStack = apiServiceZipCodeStack;
         this.utilitiesRepository = utilitiesRepository;
+        this.profileService = profileService;
     }
 
     @GetMapping("")
@@ -120,7 +125,7 @@ public class UserController {
             // Getting the basic data object that contains the rent values and others.
             List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
 
-            if(dataFound){
+            if (dataFound) {
                 if (basicData.size() > 1) {
                     //Getting the state code from the zip code to get EAI and utilities database data. Only works when the
                     // metro area has many zipcodes associated with it. If only one set of data, not zip code available so won't work
@@ -135,7 +140,7 @@ public class UserController {
                 }
                 // to manage when the data has only one basic data object
                 if (basicData.size() == 1) {
-                    String stateCode =apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode).get(0);
+                    String stateCode = apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode).get(0);
 
                     model.addAttribute("rentValues", basicData.get(0));
                     model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
@@ -187,18 +192,27 @@ public class UserController {
     @GetMapping("/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}")
     // EN-POINT STATE/COUNTY/ZIPCODE SEARCHING CRITERIA FINAL DATA
     public String getSpecificDataByCountyCode(@PathVariable Integer userId, @PathVariable String stateCode, @PathVariable String dataEntityCode,
-                                              Model model, @PathVariable Integer dataindex, Authentication authentication) {
+                                              @PathVariable Integer dataindex, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
+
+            //to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
+            Integer gallonsOfFuel=0;
+            Integer persons=0;
 
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
             model.addAttribute("stateCode", stateCode);
             model.addAttribute("entityCode", dataEntityCode);
+            model.addAttribute("dataindex", dataindex);
 
-            // to manage when no data is found
+            model.addAttribute("gallonsOfFuel",gallonsOfFuel);
+            model.addAttribute("personsLivingIn",persons);
+
+
+            //to manage when no data is found
             boolean dataFound = false;
             if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
                 //found a case where no data was found...
@@ -208,6 +222,12 @@ public class UserController {
                 model.addAttribute("data", "no data found");
             }
 
+            //Creating utilities profile, so the user will add values later to analyze and get total cost.
+            Profile profile = new Profile();
+            profile.setUser(userAuth);
+            profile.setStateCode(stateCode);
+
+
             List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
             if (dataFound) {
                 if (basicData.size() > 1) {
@@ -216,19 +236,47 @@ public class UserController {
                     model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
                     model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                             .getCountyName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
+
+                    //Setting the profile name and location when zip code is available
+                    profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                            .getCountyName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
+                    profile.setProfileName(userAuth.getFirstName()+"'s /Search Profile:"+apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                            .getCountyName()+ " / Zip Code: " + basicData.get(dataindex).getZipCode());
                 }
                 if (basicData.size() == 1) {
                     model.addAttribute("rentValues", basicData.get(0));
                     model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
                     model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
                     model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getCountyName());
+
+                    //Setting the profile name and location when zip code is not available
+                    profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                            .getCountyName());
+                    profile.setProfileName(userAuth.getFirstName()+"'s /Search Profile:"+apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                            .getCountyName());
+
                 }
             }
+            //Saving all the profile things once the is created and set with the user
+            userAuth.getProfiles().add(profile);
+            userServiceImpl.save(userAuth);
+            profileService.saveProfile(profile);
+            model.addAttribute("profile", profile);
 
             return "usersession";
         }
         return "redirect:/signin";
     }
+
+    @PostMapping("/createProfile/{stateCode}/{dataEntityCode}/{profile}")
+    public String saveProfile(@PathVariable Integer userId, Authentication authentication, Model model, Profile profile) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User userAuth = (User) authentication.getPrincipal();
+
+        }
+        return "redirect:/signin";
+    }
+
 
     @GetMapping("/{userId}/edituser")
     public String goToEditUser(@PathVariable Integer userId, Model model, Authentication authentication) {
