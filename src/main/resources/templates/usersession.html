@@ -550,11 +550,11 @@
             th:if="${electRate}"
             style="padding-left: 10px; padding-top: 20px; display: none;"
           >Select electric rate and number of persons in the home:
-          <label><input type="radio" name="electType" th:value="${electRate}" />Elect Rate for <h3 style="display: inline;">[[${othersUtilities.stateName}]]</h3> State</label>
+          <label><input type="radio" name="electType" th:value="${electRate}" />Elect Rate for (<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
 
           <p style="padding-left: 40px; display: inline;">Home Living Persons:</p>
           <input type="number" name="PersonsQTy" 
-           style="background-color: #e7f6ff; border: 1px solid #306da6; border-radius: 6px; box-shadow: 0 0 6px #306da6; width: 120px;"
+           style="background-color: #e7f6ff; border: 1px solid #306da6; border-radius: 6px; box-shadow: 0 0 6px #306da6; width: 40px;"
            th:value="${personsLivingIn}"/>
 
             <!-- State: [[${stateCode}]] Rate: [[${electRate}]] -->
@@ -580,7 +580,7 @@
             style="padding-left: 10px; padding-top: 20px; display: none;"
           >
           Select Waste Cost:
-          <label><input type="radio" name="wasteType" th:value="${othersUtilities.monthlyWasteCost}" />Waste cost for<h3 style="display: inline;">[[${othersUtilities.stateName}]]</h3> State</label>
+          <label><input type="radio" name="wasteType" th:value="${othersUtilities.monthlyWasteCost}" />Waste cost for (<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
             <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWasteCost}]] -->
           </div>
           <div id="wasteCostInfo"
@@ -603,7 +603,7 @@
             th:if="${othersUtilities}"
             style="padding-left: 10px; padding-top: 20px; display: none;"
           >Select Water Cost:
-          <label><input type="radio" name="waterType" th:value="${othersUtilities.monthlyWaterCost}" />Water cost for<h3 style="display: inline;">[[${othersUtilities.stateName}]]</h3> State</label>
+          <label><input type="radio" name="waterType" th:value="${othersUtilities.monthlyWaterCost}" />Water cost for (<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
             <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWaterCost}]] -->
           </div>
           <div id="waterCostInfo"
@@ -626,7 +626,7 @@
             th:if="${othersUtilities}"
             style="padding-left: 10px; padding-top: 20px; display: none;"
           >Select Transportation Cost:
-          <label><input type="radio" name="TranspType" th:value="${othersUtilities.publicTransportationCost}" />Waste cost for<h3 style="display: inline;">[[${othersUtilities.stateName}]]</h3> State</label>
+          <label><input type="radio" name="TranspType" th:value="${othersUtilities.publicTransportationCost}" />Premium public transportation cost(<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
             <!-- State: [[${stateCode}]] cost: [[${othersUtilities.publicTransportationCost}]] -->
           </div>
           <div id="transportationCostInfo"
@@ -649,7 +649,9 @@
             th:if="${othersUtilities}"
             style="padding-left: 10px; padding-top: 20px; display: none;"
           >
-            State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]]
+          Select Natural Gas Cost:
+          <label><input type="radio" name="GasType" th:value="${othersUtilities.monthlyNaturalGasCost}" />Natural Gas cost(<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
+            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]] -->
           </div>
           <div id="naturalGasCostInfo"
           th:if="${othersUtilities} == null"
@@ -671,7 +673,9 @@
             th:if="${othersUtilities}"
             style="padding-left: 10px; padding-top: 20px; display: none;"
           >
-            State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]]
+          Internet Cost:
+          <label><input type="radio" name="InternetType" th:value="${othersUtilities.monthlyInternetCost}" />Internet cost(<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
+            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]] -->
           </div>
           <div id="internetCostInfo"
           th:if="${othersUtilities} == null"
