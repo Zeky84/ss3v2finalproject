@@ -115,6 +115,24 @@
         width: 100px;
         line-height: 40px;
       }
+      .submit-button {
+        position: absolute;
+        background-color: #7dcfff;
+        box-shadow: 0 0 6px #7dcfff;
+        border: none;
+        color: #306da6;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 0.5s;
+        margin-left: 5px;
+        height: 30px;
+        width: 120px;
+      }
       .button-logout:hover {
         background-color: #b8b8b8ce;
         box-shadow: 0 0 4px #b8b8b8ce;
@@ -124,6 +142,11 @@
         background-color: #b8b8b8ce;
         box-shadow: 0 0 4px #b8b8b8ce;
         font-size: 18px;
+      }
+      .submit-button:hover {
+        background-color: #b8b8b8ce;
+        box-shadow: 0 0 4px #b8b8b8ce;
+        font-size: 16px;
       }
       .button-like1:hover {
         background-color: #b8b8b8ce;
@@ -248,21 +271,21 @@
         font-size: 10px;
       }
       #fuelCostInfo label {
-      display: inline-block;
-      margin-right: 10px;
-      white-space: nowrap;
-      width: 100px;
-      height: 20px;
-      border-radius: 6px;
+        display: inline-block;
+        margin-right: 10px;
+        white-space: nowrap;
+        width: 100px;
+        height: 20px;
+        border-radius: 6px;
       }
       #rentCostInfo label {
-      display: inline-block;
-      margin-right: 10px;
-      white-space: nowrap;
-      height: 20px;
-      border-radius: 6px;
-      width: 120px;
-      height: 20px;
+        display: inline-block;
+        margin-right: 10px;
+        white-space: nowrap;
+        height: 20px;
+        border-radius: 6px;
+        width: 120px;
+        height: 20px;
       }
     </style>
   </head>
@@ -346,9 +369,6 @@
           </div>
         </div>
       </div>
-      <div th:if="nodata">
-        [[${nodata}]]
-      </div>
       <div th:if="${data != null and data.countyName == ''}" class="inputs-row">
         <!-- when countyName empty refers to MetroArea-->
         <div>
@@ -360,11 +380,12 @@
               <li th:each="field : ${data}">
                 <div th:if="${field.smallAreaStatus}==1">
                   <div th:each="rentObject, iterStat : ${field.basicdata}">
-
                     <!-- 88888 is a placeholder for no data. zip code 88888 does not have any data asociated with, this code was writen to avoid getting this zipcode into the zipcodes list -->
-                    <a th:if="${rentObject.zipCode} != '88888'" 
+                    <a
+                      th:if="${rentObject.zipCode} != '88888'"
                       th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
-                      th:text="${rentObject.zipCode}">
+                      th:text="${rentObject.zipCode}"
+                    >
                     </a>
                   </div>
                 </div>
@@ -445,6 +466,14 @@
     <br />
 
     <div
+      class="form-container"
+      style="flex-direction: column; align-items: center; height: auto"
+      th:if="nodata"
+    >
+      <!-- If no data available, show this message -->
+      [[${nodata}]]
+    </div>
+    <div
       th:if="${location}"
       class="form-container"
       style="flex-direction: column; align-items: center; height: auto"
@@ -452,252 +481,423 @@
       <div th:if="${location}">
         You have chossen the following location:
         <h3 style="display: inline">[[${location}]].</h3>
-        Profile is already created. Select below the utilities cost to check for.
+        Profile is already created. Add desire utility cost to searching
+        profile.
       </div>
-      <!-- <div th:if="${profile}">
-        <form th:action="@{/createProfile/{stateCode}/{dataEntityCode}/{profile}( stateCode=${stateCode}, dataEntityCode=${dataEntityCode},profile=${profile})}" method="post">
-
-          <div>
-            <button type="submit">Create Profile</button>
-        </div>
-        </form>
-      </div> -->
     </div>
 
     <div th:if="${location}">
       <br />
     </div>
+    <div th:if="${nodata}">
+      <br />
+    </div>
 
     <div class="form-container-addvalues">
-      <div class="icon-row">
+      <form
+        th:action="@{/usersession/{userId}/addvalues(userId=${user.id})}"
+        method="post"
+      >
+        <div class="icon-row">
+          <div class="icon-text-container-row">
+            <div class="icon-text-container-column">
+              <label class="label">Rent cost</label>
+              <img
+                src="/images/1rentOFF.png"
+                alt="Utility image representation"
+                onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png', 'rentCostInfo')"
+              />
+            </div>
+            <div
+              id="rentCostInfo"
+              th:if="${rentValues}"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              Select the type of rent to pay for(house or apartment):
+              <label
+                style="
+                  background-color: #bfdbff;
+                  box-shadow: 0 0 6px #d3dff8;
+                  width: 150px;
+                "
+                ><input
+                  type="radio"
+                  name="rentType"
+                  th:value="${rentValues.efficiency}"
+                />
+                Efficiency/Studio</label
+              >
+              <label
+                style="background-color: #b4d4fd; box-shadow: 0 0 6px #c4d9ff"
+                ><input
+                  type="radio"
+                  name="rentType"
+                  th:value="${rentValues.oneBedroom}"
+                />
+                1-Bedroom</label
+              >
+              <label
+                style="background-color: #a3cbff; box-shadow: 0 0 6px #abcfff"
+                ><input
+                  type="radio"
+                  name="rentType"
+                  th:value="${rentValues.twoBedroom}"
+                />
+                2-Bedrooms</label
+              >
+              <label
+                style="background-color: #8fbfff; box-shadow: 0 0 6px #96b2ff"
+                ><input
+                  type="radio"
+                  name="rentType"
+                  th:value="${rentValues.threeBedroom}"
+                />3-Bedrooms</label
+              >
+              <label
+                style="background-color: #71afff; box-shadow: 0 0 6px #86a4f8"
+                ><input
+                  type="radio"
+                  name="rentType"
+                  th:value="${rentValues.fourBedroom}"
+                />4-Bedrooms</label
+              >
 
-
-        <div class="icon-text-container-row">
-          <div class="icon-text-container-column">
-            <label class="label">Rent cost</label>
-            <img
-              src="/images/1rentOFF.png"
-              alt="Utility image representation"
-              onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png', 'rentCostInfo')"
-            />
-          </div>
-          <div id="rentCostInfo"
-            th:if="${rentValues}"
-            style="padding-left: 10px; padding-top: 20px; display: none;"
-          >Select the type of rent to pay for(house or apartment):
-          <label style="background-color: #bfdbff;box-shadow: 0 0 6px #d3dff8; width: 150px;"><input type="radio" name="rentType" th:value="${rentValues.efficiency}" /> Efficiency/Studio</label>
-          <label style="background-color: #b4d4fd;box-shadow: 0 0 6px #c4d9ff;"><input type="radio" name="rentType" th:value="${rentValues.oneBedroom}" /> 1-Bedroom</label>
-          <label style="background-color: #a3cbff;box-shadow: 0 0 6px #abcfff;"><input type="radio" name="rentType" th:value="${rentValues.twoBedroom}" /> 2-Bedrooms</label>
-          <label style="background-color: #8fbfff;box-shadow: 0 0 6px #96b2ff;"><input type="radio" name="rentType" th:value="${rentValues.threeBedroom}" />3-Bedrooms</label>
-          <label style="background-color: #71afff;box-shadow: 0 0 6px #86a4f8;"><input type="radio" name="rentType" th:value="${rentValues.fourBedroom}" />4-Bedrooms</label>
-
-            <!-- Efficiency: [[${rentValues.efficiency}]], One Bedroom:
+              <!-- Efficiency: [[${rentValues.efficiency}]], One Bedroom:
             [[${rentValues.oneBedroom}]], Two Bedroom:
             [[${rentValues.twoBedroom}]], Three Bedroom:
             [[${rentValues.threeBedroom}]] , Four Bedroom:
             [[${rentValues.fourBedroom}]] -->
-          </div>
-          <div id="rentCostInfo"
-          th:if="${rentValues} == null"
-          style="padding-left: 10px; padding-top: 20px; display: none;">
-            No data available yet. Please define the searching profile first.
-          </div>
-        </div>
-
-
-        <div class="icon-text-container-row">
-          <div class="icon-text-container-column">
-          <label class="label">Fuel cost</label>
-          <img
-            src="/images/1fuelOFF.png"
-            alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1fuelON.png', '/images/1fuelOFF.png', 'fuelCostInfo')"
-          />
-          </div>
-            <div id="fuelCostInfo"
-          th:if="${othersUtilities}"
-          style="padding-left: 10px; padding-top: 20px; display: none;"
-            > Select Fuel Grade and Monthly Quantity in Gallons(<h3 style="display:inline">[[${stateCode}]]</h3>):
-              <label style="background-color: #f18e8e;box-shadow: 0 0 6px #ffb5b5;"><input type="radio" name="fuelType" th:value="${othersUtilities.gasRegularCost}" /> Regular</label>
-              <label style="background-color: #f37272;box-shadow: 0 0 6px #f88c8c;"><input type="radio" name="fuelType" th:value="${othersUtilities.gasMidGradeCost}" /> Midgrade</label>
-              <label style="background-color: #ec5b5b;box-shadow: 0 0 6px #f37272;"><input type="radio" name="fuelType" th:value="${othersUtilities.gasPremiumCost}" /> Premium</label>
-              <label style="background-color: #ecbe3e;box-shadow: 0 0 6px #f5c55c;"><input type="radio" name="fuelType" th:value="${othersUtilities.gasDieselCost}" /> Diesel</label>
-
-              <p style="padding-left: 40px; display: inline;">Aproximate Monthly Quantity in Gallons:</p>
-              <input type="number" name="fuelQTy" 
-              style="background-color: #e7f6ff; border: 1px solid #306da6; border-radius: 6px; box-shadow: 0 0 6px #306da6; width: 50px;"
-              th:value="${gallonsOfFuel}"/>
-               
             </div>
-            <div id="fuelCostInfo"
-          th:if="${othersUtilities} == null"
-          style="padding-left: 10px; padding-top: 20px; display: none;">
-            No data available yet. Please define the searching profile first.
+            <div
+              id="rentCostInfo"
+              th:if="${rentValues} == null"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              No data available yet. Please define the searching profile first.
+            </div>
+          </div>
+
+          <div class="icon-text-container-row">
+            <div class="icon-text-container-column">
+              <label class="label">Fuel cost</label>
+              <img
+                src="/images/1fuelOFF.png"
+                alt="Utility image representation"
+                onclick="toggleImage(this, '/images/1fuelON.png', '/images/1fuelOFF.png', 'fuelCostInfo')"
+              />
+            </div>
+            <div
+              id="fuelCostInfo"
+              th:if="${othersUtilities}"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              Select Fuel Grade and Monthly Quantity in Gallons(
+              <h3 style="display: inline">[[${stateCode}]]</h3>
+              ):
+              <label
+                style="background-color: #f18e8e; box-shadow: 0 0 6px #ffb5b5"
+                ><input
+                  type="radio"
+                  name="fuelType"
+                  th:value="${othersUtilities.gasRegularCost}"
+                />
+                Regular</label
+              >
+              <label
+                style="background-color: #f37272; box-shadow: 0 0 6px #f88c8c"
+                ><input
+                  type="radio"
+                  name="fuelType"
+                  th:value="${othersUtilities.gasMidGradeCost}"
+                />
+                Midgrade</label
+              >
+              <label
+                style="background-color: #ec5b5b; box-shadow: 0 0 6px #f37272"
+                ><input
+                  type="radio"
+                  name="fuelType"
+                  th:value="${othersUtilities.gasPremiumCost}"
+                />
+                Premium</label
+              >
+              <label
+                style="background-color: #ecbe3e; box-shadow: 0 0 6px #f5c55c"
+                ><input
+                  type="radio"
+                  name="fuelType"
+                  th:value="${othersUtilities.gasDieselCost}"
+                />
+                Diesel</label
+              >
+
+              <p style="padding-left: 40px; display: inline">
+                Aproximate Monthly Quantity in Gallons:
+              </p>
+              <input
+                type="number"
+                name="fuelQTy"
+                style="
+                  background-color: #e7f6ff;
+                  border: 1px solid #306da6;
+                  border-radius: 6px;
+                  box-shadow: 0 0 6px #306da6;
+                  width: 50px;
+                "
+                th:value="${gallonsOfFuel}"
+              />
+            </div>
+            <div
+              id="fuelCostInfo"
+              th:if="${othersUtilities} == null"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              No data available yet. Please define the searching profile first.
+            </div>
+          </div>
+
+          <div class="icon-text-container-row">
+            <div class="icon-text-container-column">
+              <label class="label">Elect cost</label>
+              <img
+                src="/images/1electOFF.png"
+                alt="Utility image representation"
+                onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png', 'electCostInfo')"
+              />
+            </div>
+            <div
+              id="electCostInfo"
+              th:if="${electRate}"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              Select electric rate and number of persons in the home:
+              <label
+                ><input
+                  type="radio"
+                  name="electType"
+                  th:value="${electRate}"
+                />Elect Rate for (
+                <h3 style="display: inline">[[${stateCode}]]</h3>
+                ) State</label
+              >
+
+              <p style="padding-left: 40px; display: inline">
+                Home Living Persons:
+              </p>
+              <input
+                type="number"
+                name="PersonsQTy"
+                style="
+                  background-color: #e7f6ff;
+                  border: 1px solid #306da6;
+                  border-radius: 6px;
+                  box-shadow: 0 0 6px #306da6;
+                  width: 40px;
+                "
+                th:value="${personsLivingIn}"
+              />
+
+              <!-- State: [[${stateCode}]] Rate: [[${electRate}]] -->
+            </div>
+            <div
+              id="electCostInfo"
+              th:if="${othersUtilities} == null"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              No data available yet. Please define the searching profile first.
+            </div>
+          </div>
+
+          <div class="icon-text-container-row">
+            <div class="icon-text-container-column">
+              <label class="label">Waste cost</label>
+              <img
+                src="/images/1wasteOFF.png"
+                alt="Utility image representation "
+                onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png', 'wasteCostInfo')"
+              />
+            </div>
+            <div
+              id="wasteCostInfo"
+              th:if="${othersUtilities}"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              Select Waste Cost:
+              <label
+                ><input
+                  type="radio"
+                  name="wasteType"
+                  th:value="${othersUtilities.monthlyWasteCost}"
+                />Waste cost for (
+                <h3 style="display: inline">[[${stateCode}]]</h3>
+                ) State</label
+              >
+              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWasteCost}]] -->
+            </div>
+            <div
+              id="wasteCostInfo"
+              th:if="${othersUtilities} == null"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              No data available yet. Please define the searching profile first.
+            </div>
+          </div>
+
+          <div class="icon-text-container-row">
+            <div class="icon-text-container-column">
+              <label class="label">Water cost</label>
+              <img
+                src="/images/1waterOFF.png"
+                alt="Utility image representation"
+                onclick="toggleImage(this, '/images/1waterON.png', '/images/1waterOFF.png', 'waterCostInfo')"
+              />
+            </div>
+            <div
+              id="waterCostInfo"
+              th:if="${othersUtilities}"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              Select Water Cost:
+              <label
+                ><input
+                  type="radio"
+                  name="waterType"
+                  th:value="${othersUtilities.monthlyWaterCost}"
+                />Water cost for (
+                <h3 style="display: inline">[[${stateCode}]]</h3>
+                ) State</label
+              >
+              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWaterCost}]] -->
+            </div>
+            <div
+              id="waterCostInfo"
+              th:if="${othersUtilities} == null"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              No data available yet. Please define the searching profile first.
+            </div>
+          </div>
+
+          <div class="icon-text-container-row">
+            <div class="icon-text-container-column">
+              <label class="label">Transportation</label>
+              <img
+                src="/images/1transpOFF.png"
+                alt="Utility image representation"
+                onclick="toggleImage(this, '/images/1transpON.png', '/images/1transpOFF.png', 'transportationCostInfo')"
+              />
+            </div>
+            <div
+              id="transportationCostInfo"
+              th:if="${othersUtilities}"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              Select Transportation Cost:
+              <label
+                ><input
+                  type="radio"
+                  name="TranspType"
+                  th:value="${othersUtilities.publicTransportationCost}"
+                />Premium public transportation cost(
+                <h3 style="display: inline">[[${stateCode}]]</h3>
+                ) State</label
+              >
+              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.publicTransportationCost}]] -->
+            </div>
+            <div
+              id="transportationCostInfo"
+              th:if="${othersUtilities} == null"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              No data available yet. Please define the searching profile first.
+            </div>
+          </div>
+
+          <div class="icon-text-container-row">
+            <div class="icon-text-container-column">
+              <label class="label">Natural Gas</label>
+              <img
+                src="/images/1greenOFF.png"
+                alt="Utility image representation "
+                onclick="toggleImage(this, '/images/1greenON.png', '/images/1greenOFF.png', 'naturalGasCostInfo')"
+              />
+            </div>
+            <div
+              id="naturalGasCostInfo"
+              th:if="${othersUtilities}"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              Select Natural Gas Cost:
+              <label
+                ><input
+                  type="radio"
+                  name="GasType"
+                  th:value="${othersUtilities.monthlyNaturalGasCost}"
+                />Natural Gas cost(
+                <h3 style="display: inline">[[${stateCode}]]</h3>
+                ) State</label
+              >
+              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]] -->
+            </div>
+            <div
+              id="naturalGasCostInfo"
+              th:if="${othersUtilities} == null"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              No data available yet. Please define the searching profile first.
+            </div>
+          </div>
+
+          <div class="icon-text-container-row">
+            <div class="icon-text-container-column">
+              <label class="label">Internet cost</label>
+              <img
+                src="/images/1commOFF.png"
+                alt="Utility image representation"
+                onclick="toggleImage(this, '/images/1commON.png', '/images/1commOFF.png', 'internetCostInfo')"
+              />
+            </div>
+            <div
+              id="internetCostInfo"
+              th:if="${othersUtilities}"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              Internet Cost:
+              <label
+                ><input
+                  type="radio"
+                  name="InternetType"
+                  th:value="${othersUtilities.monthlyInternetCost}"
+                />Internet cost(
+                <h3 style="display: inline">[[${stateCode}]]</h3>
+                ) State</label
+              >
+              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]] -->
+            </div>
+            <div
+              id="internetCostInfo"
+              th:if="${othersUtilities} == null"
+              style="padding-left: 10px; padding-top: 20px; display: none"
+            >
+              No data available yet. Please define the searching profile first.
+            </div>
           </div>
         </div>
-
-
-        <div class="icon-text-container-row">
-          <div class="icon-text-container-column">
-            <label class="label">Elect cost</label>
-            <img
-              src="/images/1electOFF.png"
-              alt="Utility image representation"
-              onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png', 'electCostInfo')"
-            />
-          </div>
-          <div id="electCostInfo"
-            th:if="${electRate}"
-            style="padding-left: 10px; padding-top: 20px; display: none;"
-          >Select electric rate and number of persons in the home:
-          <label><input type="radio" name="electType" th:value="${electRate}" />Elect Rate for (<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
-
-          <p style="padding-left: 40px; display: inline;">Home Living Persons:</p>
-          <input type="number" name="PersonsQTy" 
-           style="background-color: #e7f6ff; border: 1px solid #306da6; border-radius: 6px; box-shadow: 0 0 6px #306da6; width: 40px;"
-           th:value="${personsLivingIn}"/>
-
-            <!-- State: [[${stateCode}]] Rate: [[${electRate}]] -->
-          </div>
-          <div id="electCostInfo"
-          th:if="${othersUtilities} == null"
-          style="padding-left: 10px; padding-top: 20px; display: none;">
-            No data available yet. Please define the searching profile first.
-          </div>
-        </div>
-
-        <div class="icon-text-container-row">
-          <div class="icon-text-container-column">
-            <label class="label">Waste cost</label>
-            <img
-              src="/images/1wasteOFF.png"
-              alt="Utility image representation "
-              onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png', 'wasteCostInfo')"
-            />
-          </div>
-          <div id="wasteCostInfo"
-            th:if="${othersUtilities}"
-            style="padding-left: 10px; padding-top: 20px; display: none;"
+        <div style="padding: 20px">
+          <!-- If profile is created, show the submit button -->
+          <button
+            type="submit"
+            class="submit-button"
+            id="submitBtn"
+            style="display: none"
           >
-          Select Waste Cost:
-          <label><input type="radio" name="wasteType" th:value="${othersUtilities.monthlyWasteCost}" />Waste cost for (<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
-            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWasteCost}]] -->
-          </div>
-          <div id="wasteCostInfo"
-          th:if="${othersUtilities} == null"
-          style="padding-left: 10px; padding-top: 20px; display: none;">
-            No data available yet. Please define the searching profile first.
-          </div>
+            Submit Costs
+          </button>
         </div>
-
-        <div class="icon-text-container-row">
-          <div class="icon-text-container-column">
-          <label class="label">Water cost</label>
-          <img
-            src="/images/1waterOFF.png"
-            alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1waterON.png', '/images/1waterOFF.png', 'waterCostInfo')"
-          />
-          </div>
-          <div id="waterCostInfo"
-            th:if="${othersUtilities}"
-            style="padding-left: 10px; padding-top: 20px; display: none;"
-          >Select Water Cost:
-          <label><input type="radio" name="waterType" th:value="${othersUtilities.monthlyWaterCost}" />Water cost for (<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
-            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWaterCost}]] -->
-          </div>
-          <div id="waterCostInfo"
-          th:if="${othersUtilities} == null"
-          style="padding-left: 10px; padding-top: 20px; display: none;">
-            No data available yet. Please define the searching profile first.
-          </div>
-        </div>
-
-        <div class="icon-text-container-row">
-          <div class="icon-text-container-column">
-          <label class="label">Transportation</label>
-          <img
-            src="/images/1transpOFF.png"
-            alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1transpON.png', '/images/1transpOFF.png', 'transportationCostInfo')"
-          />
-          </div>
-          <div id="transportationCostInfo"
-            th:if="${othersUtilities}"
-            style="padding-left: 10px; padding-top: 20px; display: none;"
-          >Select Transportation Cost:
-          <label><input type="radio" name="TranspType" th:value="${othersUtilities.publicTransportationCost}" />Premium public transportation cost(<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
-            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.publicTransportationCost}]] -->
-          </div>
-          <div id="transportationCostInfo"
-          th:if="${othersUtilities} == null"
-          style="padding-left: 10px; padding-top: 20px; display: none;">
-            No data available yet. Please define the searching profile first.
-          </div>
-        </div>
-
-        <div class="icon-text-container-row">
-          <div class="icon-text-container-column">
-          <label class="label">Natural Gas</label>
-          <img
-            src="/images/1greenOFF.png"
-            alt="Utility image representation "
-            onclick="toggleImage(this, '/images/1greenON.png', '/images/1greenOFF.png', 'naturalGasCostInfo')"
-          />
-          </div>
-          <div id="naturalGasCostInfo"
-            th:if="${othersUtilities}"
-            style="padding-left: 10px; padding-top: 20px; display: none;"
-          >
-          Select Natural Gas Cost:
-          <label><input type="radio" name="GasType" th:value="${othersUtilities.monthlyNaturalGasCost}" />Natural Gas cost(<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
-            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]] -->
-          </div>
-          <div id="naturalGasCostInfo"
-          th:if="${othersUtilities} == null"
-          style="padding-left: 10px; padding-top: 20px; display: none;">
-            No data available yet. Please define the searching profile first.
-          </div>
-        </div>
-
-        <div class="icon-text-container-row">
-          <div class="icon-text-container-column">
-          <label class="label">Internet cost</label>
-          <img
-            src="/images/1commOFF.png"
-            alt="Utility image representation"
-            onclick="toggleImage(this, '/images/1commON.png', '/images/1commOFF.png', 'internetCostInfo')"
-          />
-          </div>
-          <div id="internetCostInfo"
-            th:if="${othersUtilities}"
-            style="padding-left: 10px; padding-top: 20px; display: none;"
-          >
-          Internet Cost:
-          <label><input type="radio" name="InternetType" th:value="${othersUtilities.monthlyInternetCost}" />Internet cost(<h3 style="display: inline;">[[${stateCode}]]</h3>) State</label>
-            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]] -->
-          </div>
-          <div id="internetCostInfo"
-          th:if="${othersUtilities} == null"
-          style="padding-left: 10px; padding-top: 20px; display: none;">
-            No data available yet. Please define the searching profile first.
-          </div>
-        </div>
-      </div>
+      </form>
     </div>
+
     <script>
-      window.onload = function () {
-        // Clear all input fields in forms
-        var inputs = document.getElementsByTagName("input");
-        for (var i = 0; i < inputs.length; i++) {
-          if (
-            inputs[i].type.toLowerCase() == "text" ||
-            inputs[i].type.toLowerCase() == "password"
-          ) {
-            inputs[i].value = "";
-          }
-        }
-      };
       function refreshTokenExpCount() {
         fetch(`/tokens/refreshtokenexptime`)
           .then((response) => response.text())
@@ -738,9 +938,9 @@
           })
           .catch((error) => console.error("Error fetching countdown:", error));
       }
+
       let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
       refreshTokenExpCount();
-
       function checkRefreshToken() {
         fetch("/tokens/newrefreshtoken")
           .then((response) => {
@@ -773,18 +973,45 @@
       function activityDetected() {
         checkRefreshToken();
       }
-      function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
-    console.log("toggleImage called"); // Check if function is called
-    var infoBlock = document.getElementById(infoBlockId);
-    if (imgElement.src.includes(offSrc)) {
-        imgElement.src = onSrc;
-        if (infoBlock) infoBlock.style.display = 'block'; // Show the info block
-    } else {
-        imgElement.src = offSrc;
-        if (infoBlock) infoBlock.style.display = 'none';  // Hide the info block
-    }
-}
 
+      // Function to toggle the image and show/hide the info block  // Chat GPT 3.5 code
+      function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
+        console.log("toggleImage called"); // Check if function is called
+        var infoBlock = document.getElementById(infoBlockId);
+        if (imgElement.src.includes(offSrc)) {
+          imgElement.src = onSrc;
+          if (infoBlock) infoBlock.style.display = "block"; // Show the info block
+        } else {
+          imgElement.src = offSrc;
+          if (infoBlock) infoBlock.style.display = "none"; // Hide the info block
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // to display the submit button only when a radio button is selected
+        // Chat GPT 3.5 code
+        // Get all radio inputs
+        const radios = document.querySelectorAll('input[type="radio"]');
+        const submitBtn = document.getElementById("submitBtn");
+
+        // Function to update the visibility of the submit button
+        function updateSubmitButtonVisibility() {
+          // Check if any radio button is selected
+          const isAnySelected = Array.from(radios).some(
+            (radio) => radio.checked
+          );
+          // Show or hide the submit button based on whether any radio is selected
+          submitBtn.style.display = isAnySelected ? "block" : "none"; // Use 'inline', 'inline-block', or 'block' as needed
+        }
+
+        // Initialize button visibility on load
+        updateSubmitButtonVisibility();
+
+        // Add change event listener to all radio buttons
+        radios.forEach((radio) => {
+          radio.addEventListener("change", updateSubmitButtonVisibility);
+        });
+      });
     </script>
   </body>
 </html>

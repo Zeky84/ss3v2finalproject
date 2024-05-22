@@ -64,5 +64,4 @@ public class Profile {
     @Column(nullable = true)
     private Double internetCost;
 
-
 }

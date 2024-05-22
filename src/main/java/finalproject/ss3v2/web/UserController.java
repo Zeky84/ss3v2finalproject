@@ -88,12 +88,16 @@ public class UserController {
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("entityCode", dataEntityCode);
-            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
-
+            if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
+                model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
+            } else {
+                //found a case where no data was found... for example Arecibo, PR
+                model.addAttribute("nodata", "no data found for this search");
+            }
             // Metro Data does not offer a State code cause some metro areas are associated with more than one state
             // and state code is need it to call to the EIA API and get  the elect rates by state. So we need to obtain
             // the state or states codes from metro_name.(CHANGE THIS FOR THE ZIP CODE STACK API when zip code is available)
-            model.addAttribute("stateCodes", apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode));
+//            model.addAttribute("stateCodes", apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode));
             return "usersession";
         }
         return "redirect:/signin";
@@ -103,52 +107,93 @@ public class UserController {
 // ENDPOINT METroAREA SEARCH CRITERIA FINAL DATA
     public String getSpecificDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model,
                                                  @PathVariable Integer dataindex, Authentication authentication) {
+        String stateCode;
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
+
+            User user = userServiceImpl.findUserById(userId).get();// we don't want to use the user from the security context
+            // we used the user from the security context to make sure when accessing the view and editing the fields to
+            // avoid any possible manipulation of the URL. But when creating the profile we need to use the user from the db
+
+            //to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
+            Integer gallonsOfFuel = 0;
+            Integer persons = 0;
 
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("entityCode", dataEntityCode);
             model.addAttribute("stateCodes", apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode));
+            model.addAttribute("dataindex", dataindex);
 
-            // to handle when no data is found(it looks like this only happens with metro areas search)
-            boolean dataFound = false;
-            if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
-                //found a case where no data was found...
-                dataFound = true;
-                model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
-            } else {
-                model.addAttribute("nodata", "no data found for this search");
-            }
+            model.addAttribute("gallonsOfFuel", gallonsOfFuel);
+            model.addAttribute("personsLivingIn", persons);
 
-            // Getting the basic data object that contains the rent values and others.
+
+            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
+
+            //Creating utilities profile, so the user will add values later to analyze and get total cost.
+            Profile profile = new Profile();
+            profile.setUser(user);
+
+
+            // Getting the basic data object that contains the rent values from HudUser api.
             List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
 
-            if (dataFound) {
-                if (basicData.size() > 1) {
-                    //Getting the state code from the zip code to get EAI and utilities database data. Only works when the
-                    // metro area has many zipcodes associated with it. If only one set of data, not zip code available so won't work
-                    String stateCode = apiServiceZipCodeStack.getZipCodeData(basicData.get(dataindex).getZipCode());
 
-                    model.addAttribute("rentValues", basicData.get(dataindex));
-                    model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
-                    model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
-                    model.addAttribute("stateCode", stateCode);
-                    model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
-                            .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
-                }
-                // to manage when the data has only one basic data object
-                if (basicData.size() == 1) {
-                    String stateCode = apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode).get(0);
+            if (basicData.size() > 1) {
+                //Getting the state code from the zip code to get EAI and utilities database data using zipCodeStack api. Only works when the
+                // metro area has many zipcodes associated with it. If only one set of data, not zip code available so won't work
+                // todo: NEED TO IMPLEMENT TO WHEN MANY STATES ARE ASSOCIATED WITH THE METRO AREA but no zip code available. Need to create a form so the user will select the state
 
-                    model.addAttribute("rentValues", basicData.get(0));
-                    model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
-                    model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
-                    model.addAttribute("stateCode", stateCode);
-                    model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
-                }
+                stateCode = apiServiceZipCodeStack.getZipCodeData(basicData.get(dataindex).getZipCode());//getting the state code from the zip code, zip code stack api
+
+                model.addAttribute("rentValues", basicData.get(dataindex));
+                model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+                model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
+                model.addAttribute("stateCode", stateCode);
+                model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
+
+                //Setting the profile state code from the zip code(zip code stack api)
+                profile.setStateCode(stateCode);
+
+                //Setting the profile name and location when zip code is available
+                profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
+                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
             }
+            // to manage when the data has only one basic data object
+            if (basicData.size() == 1) {
+                stateCode = apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode).get(0);
+
+                model.addAttribute("rentValues", basicData.get(0));
+                model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+                model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
+                model.addAttribute("stateCode", stateCode);
+                model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
+
+                //Setting the profile state code from the hud user api(original to get a list of states associated with the metro area)
+                // now taken the first state code from the list. Because here only exists one set of data
+                profile.setStateCode(stateCode);
+
+                profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getMetroName());
+                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getMetroName());
+            }
+
+            //Saving all the profile things once the profile is created and set with the user
+            user.getProfiles().add(profile);
+            // this is not user from security context. when using the one from sc it was adding a token to the authority db(wrong)
+            // don't know if using the user from db is the best approach but, it works for now. I fixed this before when updating user data, DON'T REMEMBER HOW
+            userServiceImpl.save(user);
+
+            profileService.saveProfile(profile);
+            model.addAttribute("profile", profile);
+            model.addAttribute("profileId", profile.getProfileId());
+
 
             return "usersession";
         }
@@ -191,15 +236,19 @@ public class UserController {
 
     @GetMapping("/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}")
     // EN-POINT STATE/COUNTY/ZIPCODE SEARCHING CRITERIA FINAL DATA
-    public String getSpecificDataByCountyCode(@PathVariable Integer userId, @PathVariable String stateCode, @PathVariable String dataEntityCode,
-                                              @PathVariable Integer dataindex, Model model, Authentication authentication) {
+    public String getSpecificDataByCountyCodeAndCreateProfile(@PathVariable Integer userId, @PathVariable String stateCode, @PathVariable String dataEntityCode,
+                                                              @PathVariable Integer dataindex, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
 
+            User user = userServiceImpl.findUserById(userId).get();// we don't want to use the user from the security context
+            // we used the user from the security context to make sure when accessing the view and editing the fields to
+            // avoid any possible manipulation of the URL. But when creating the profile we need to use the user from the db
+
             //to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
-            Integer gallonsOfFuel=0;
-            Integer persons=0;
+            Integer gallonsOfFuel = 0;
+            Integer persons = 0;
 
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("states", apiServiceHudUser.getStatesList());
@@ -208,73 +257,92 @@ public class UserController {
             model.addAttribute("entityCode", dataEntityCode);
             model.addAttribute("dataindex", dataindex);
 
-            model.addAttribute("gallonsOfFuel",gallonsOfFuel);
-            model.addAttribute("personsLivingIn",persons);
+            model.addAttribute("gallonsOfFuel", gallonsOfFuel);
+            model.addAttribute("personsLivingIn", persons);
 
+            // Using to know if the data is coming from metroArea or state/county/zipCode(data.countyName empty means metroArea)
+            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
 
-            //to manage when no data is found
-            boolean dataFound = false;
-            if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
-                //found a case where no data was found...
-                dataFound = true;
-                model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
-            } else {
-                model.addAttribute("data", "no data found");
-            }
 
             //Creating utilities profile, so the user will add values later to analyze and get total cost.
             Profile profile = new Profile();
-            profile.setUser(userAuth);
+            profile.setUser(user);
             profile.setStateCode(stateCode);
 
 
+            // Getting the basic data object that contains the rent values from HudUser api.
             List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
-            if (dataFound) {
-                if (basicData.size() > 1) {
-                    model.addAttribute("rentValues", basicData.get(dataindex));
-                    model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
-                    model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
-                    model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
-                            .getCountyName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
 
-                    //Setting the profile name and location when zip code is available
-                    profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
-                            .getCountyName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
-                    profile.setProfileName(userAuth.getFirstName()+"'s /Search Profile:"+apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
-                            .getCountyName()+ " / Zip Code: " + basicData.get(dataindex).getZipCode());
-                }
-                if (basicData.size() == 1) {
-                    model.addAttribute("rentValues", basicData.get(0));
-                    model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
-                    model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
-                    model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getCountyName());
+            if (basicData.size() > 1) {
+                // basicData.size() > 1 means that the county has many zipcodes associated with it, so many data sets
+                model.addAttribute("rentValues", basicData.get(dataindex));
+                model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+                model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
+                model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getCountyName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
 
-                    //Setting the profile name and location when zip code is not available
-                    profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
-                            .getCountyName());
-                    profile.setProfileName(userAuth.getFirstName()+"'s /Search Profile:"+apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
-                            .getCountyName());
-
-                }
+                //Setting the profile name and location when zip code is available
+                profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getCountyName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
+                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getCountyName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
             }
-            //Saving all the profile things once the is created and set with the user
-            userAuth.getProfiles().add(profile);
-            userServiceImpl.save(userAuth);
+            if (basicData.size() == 1) {
+                // basicData.size() == 1 means that the county has only one zipcode associated with it, so only one data set
+                model.addAttribute("rentValues", basicData.get(0));
+                model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+                model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
+                model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getCountyName());
+
+                //Setting the profile name and location when zip code is not available
+                profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getCountyName());
+                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                        .getCountyName());
+
+            }
+
+            //Saving all the profile things once the profile is created and set with the user
+            user.getProfiles().add(profile);
+            // this is not user from security context. when using the one from sc it was adding a token to the authority db(wrong)
+            // don't know if using the user from db is the best approach but, it works for now. I fixed this before when updating user data, DON'T REMEMBER HOW
+            userServiceImpl.save(user);
+
             profileService.saveProfile(profile);
             model.addAttribute("profile", profile);
+            model.addAttribute("profileId", profile.getProfileId());
 
             return "usersession";
         }
         return "redirect:/signin";
     }
 
-    @PostMapping("/createProfile/{stateCode}/{dataEntityCode}/{profile}")
-    public String saveProfile(@PathVariable Integer userId, Authentication authentication, Model model, Profile profile) {
+    @PostMapping("/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}/updateProfile")
+    public String updateProfileCostValuesState(@PathVariable Integer userId, @PathVariable String stateCode, @PathVariable String dataEntityCode,
+                                               @PathVariable Integer dataindex, Profile profile, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
+            model.addAttribute("user", userAuth);
 
+            User user = userServiceImpl.findUserById(userId).get();// we don't want to use the user from the security context
+            // we used the user from the security context to make sure when accessing the view and editing the fields to
+            // avoid any possible manipulation of the URL. But when creating the profile we need to use the user from the db
+
+            //to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
+            Integer gallonsOfFuel = 0;
+            Integer persons = 0;
+
+            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+            model.addAttribute("states", apiServiceHudUser.getStatesList());
+            model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
+            model.addAttribute("stateCode", stateCode);
+            model.addAttribute("entityCode", dataEntityCode);
+            model.addAttribute("dataindex", dataindex);
+
+            model.addAttribute("gallonsOfFuel", gallonsOfFuel);
+            model.addAttribute("personsLivingIn", persons);
         }
-        return "redirect:/signin";
+        return "usersession";
     }
 
 

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -111,49 +112,66 @@ public class ApiServiceHudUser {
         // The data response has a field basicdata that can be either an object or an array of objectslo, that's why we need to
         // handle it differently creating a CUSTOM DESERIALIZER, instead of using the mapper.readValue method
         // directly. CHAT GPT_4 HELP!!!
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = createHeaders();
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        URI uri = buildUri("/data/" + code);
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeaders();
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            URI uri = buildUri("/data/" + code);
 
-        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            JsonNode rootNode = mapper.readTree(response.getBody());
-            JsonNode dataNode = rootNode.path("data");
-            DataRent dataRent = new DataRent();
-
-            if (dataNode.isMissingNode() || dataNode.isNull()) {
-                // Handle case where no data node is found
-                return null;
+            ResponseEntity<String> response = null;
+            try {
+                response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            } catch (RestClientException e) {
+                // Log the exception or handle it as necessary
+                System.err.println("Failed to make the HTTP request: " + e.getMessage());
+                return null; // Return or handle error as appropriate
             }
 
-            JsonNode basicDataNode = dataNode.path("basicdata");
-            if (basicDataNode.isArray()) {
-                List<BasicData> basicDataList = mapper.convertValue(basicDataNode, new TypeReference<List<BasicData>>() {});
-                dataRent.setBasicdata(basicDataList);
-            } else if (basicDataNode.isObject()) {
-                BasicData basicData = mapper.convertValue(basicDataNode, BasicData.class);
-                dataRent.setBasicdata(Collections.singletonList(basicData));
+            ObjectMapper mapper = new ObjectMapper();
+
+            try {
+                JsonNode rootNode = mapper.readTree(response.getBody());
+
+                // Check if the error key exists
+                if (rootNode.has("error")) {
+                    String errorMessage = rootNode.get("error").asText();
+                    // Log the error or handle it as needed
+                    System.out.println("Error received: " + errorMessage);
+                    return null;
+                }
+
+                JsonNode dataNode = rootNode.path("data");
+                DataRent dataRent = new DataRent();
+
+                if (dataNode.isMissingNode() || dataNode.isNull()) {
+                    // Handle case where no data node is found
+                    return null;
+                }
+
+                JsonNode basicDataNode = dataNode.path("basicdata");
+                if (basicDataNode.isArray()) {
+                    List<BasicData> basicDataList = mapper.convertValue(basicDataNode, new TypeReference<List<BasicData>>() {});
+                    dataRent.setBasicdata(basicDataList);
+                } else if (basicDataNode.isObject()) {
+                    BasicData basicData = mapper.convertValue(basicDataNode, BasicData.class);
+                    dataRent.setBasicdata(Collections.singletonList(basicData));
+                }
+
+                // Deserializing other fields
+                dataRent.setCountyName(dataNode.path("county_name").asText());
+                dataRent.setCountiesMsa(dataNode.path("counties_msa").asText());
+                dataRent.setTownName(dataNode.path("town_name").asText());
+                dataRent.setMetroStatus(dataNode.path("metro_status").asText());
+                dataRent.setMetroName(dataNode.path("metro_name").asText());
+                dataRent.setAreaName(dataNode.path("area_name").asText());
+                dataRent.setSmallAreaStatus(dataNode.path("smallarea_status").asText());
+                dataRent.setYear(dataNode.path("year").asText());
+
+                return dataRent;
+
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Failed to parse JSON", e);
             }
-
-            // Deserializing other fields
-            dataRent.setCountyName(dataNode.path("county_name").asText());
-            dataRent.setCountiesMsa(dataNode.path("counties_msa").asText());
-            dataRent.setTownName(dataNode.path("town_name").asText());
-            dataRent.setMetroStatus(dataNode.path("metro_status").asText());
-            dataRent.setMetroName(dataNode.path("metro_name").asText());
-            dataRent.setAreaName(dataNode.path("area_name").asText());
-            dataRent.setSmallAreaStatus(dataNode.path("smallarea_status").asText());
-            dataRent.setYear(dataNode.path("year").asText());
-
-            return dataRent;
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to parse JSON", e);
         }
-    }
 
     private HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
