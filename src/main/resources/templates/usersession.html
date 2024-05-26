@@ -569,6 +569,7 @@
             [[${rentValues.fourBedroom}]] -->
             </div>
             <div
+              id="rentCostInfo"
               th:if="${rentValues} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -647,6 +648,7 @@
               />
             </div>
             <div
+              id="fuelCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -698,6 +700,7 @@
               <!-- State: [[${stateCode}]] Rate: [[${electRate}]] -->
             </div>
             <div
+              id="electCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -732,6 +735,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWasteCost}]] -->
             </div>
             <div
+              id="wasteCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -766,6 +770,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWaterCost}]] -->
             </div>
             <div
+              id="waterCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -800,6 +805,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.publicTransportationCost}]] -->
             </div>
             <div
+              id="transportationCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -834,6 +840,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]] -->
             </div>
             <div
+              id="naturalGasCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -868,6 +875,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]] -->
             </div>
             <div
+              id="internetCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >

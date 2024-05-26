@@ -317,30 +317,19 @@ public class UserController {
         return "redirect:/signin";
     }
 
-    @PostMapping("/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}/updateProfile")
+    @PostMapping("/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}/profile/{profileId}")
     public String updateProfileCostValuesState(@PathVariable Integer userId, @PathVariable String stateCode, @PathVariable String dataEntityCode,
-                                               @PathVariable Integer dataindex, Profile profile, Model model, Authentication authentication) {
+                                               @PathVariable Integer dataindex, Profile profile, Model model, Authentication authentication,
+                                               @RequestParam(required = false) Integer gallonsOfFuel, @RequestParam(required = false) Integer personsLivingIn,
+                                               @PathVariable Integer profileId) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
 
             User user = userServiceImpl.findUserById(userId).get();// we don't want to use the user from the security context
-            // we used the user from the security context to make sure when accessing the view and editing the fields to
-            // avoid any possible manipulation of the URL. But when creating the profile we need to use the user from the db
 
-            //to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
-            Integer gallonsOfFuel = 0;
-            Integer persons = 0;
 
-            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
-            model.addAttribute("states", apiServiceHudUser.getStatesList());
-            model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
-            model.addAttribute("stateCode", stateCode);
-            model.addAttribute("entityCode", dataEntityCode);
-            model.addAttribute("dataindex", dataindex);
 
-            model.addAttribute("gallonsOfFuel", gallonsOfFuel);
-            model.addAttribute("personsLivingIn", persons);
         }
         return "usersession";
     }
