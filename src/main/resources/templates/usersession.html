@@ -445,7 +445,7 @@
                   <div th:each="rentObject, iterStat : ${field.basicdata}">
                     <a
                       th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
-                      th:text="'Index:' + ${iterStat.index}+' ' + ${rentObject.zipCode}"
+                      th:text="${rentObject.zipCode}"
                     >
                     </a>
                   </div>
@@ -484,7 +484,7 @@
       <div th:if="${location}">
         You have chossen the following location:
         <h3 style="display: inline">[[${location}]].</h3>
-        Profile is already created. Add desire utility cost to searching
+        Profile is already created. Add desire utilities cost to searching
         profile.
       </div>
     </div>
@@ -896,6 +896,13 @@
         </div>
       </form>
     </div>
+    <div th:if="${profiles} !=null">
+      <br />
+    </div>
+    <diV th:if="${profiles} !=null" class="form-container">
+        <h3>User profile's list:</h3>
+
+    </diV>
 
     <script>
       function refreshTokenExpCount() {

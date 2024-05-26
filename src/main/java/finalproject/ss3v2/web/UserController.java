@@ -18,9 +18,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 
 @Controller
 @RequestMapping("/usersession")
@@ -68,11 +68,18 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             // the user from the auth object instead from the to avoid any possible manipulation of the URL
             User userAuth = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId).get();
             model.addAttribute("user", userAuth);
 
             // Adding the states and metro areas to the html view
             modelMap.put("states", apiServiceHudUser.getStatesList());
             modelMap.put("metroAreas", apiServiceHudUser.getMetroAreasList());
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
 
             return "usersession";
         }
@@ -83,7 +90,14 @@ public class UserController {
     public String getDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId).get();
             model.addAttribute("user", userAuth);
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
 
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
@@ -107,6 +121,7 @@ public class UserController {
 // ENDPOINT METroAREA SEARCH CRITERIA FINAL DATA
     public String getSpecificDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model,
                                                  @PathVariable Integer dataindex, Authentication authentication) {
+
         String stateCode;
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
@@ -115,6 +130,13 @@ public class UserController {
             User user = userServiceImpl.findUserById(userId).get();// we don't want to use the user from the security context
             // we used the user from the security context to make sure when accessing the view and editing the fields to
             // avoid any possible manipulation of the URL. But when creating the profile we need to use the user from the db
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
+
 
             //to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
             Integer gallonsOfFuel = 0;
@@ -161,7 +183,7 @@ public class UserController {
                 //Setting the profile name and location when zip code is available
                 profile.setLocation("Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
-                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" +" Metro Area: " +  apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" + " Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
             }
             // to manage when the data has only one basic data object
@@ -178,9 +200,9 @@ public class UserController {
                 // now taken the first state code from the list. Because here only exists one set of data
                 profile.setStateCode(stateCode);
 
-                profile.setLocation("Metro Area: " +apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                profile.setLocation("Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName());
-                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" +"Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" + "Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName());
             }
 
@@ -191,7 +213,6 @@ public class UserController {
             userServiceImpl.save(user);
 
             profileService.saveProfile(profile);
-            model.addAttribute("profile", profile);
             model.addAttribute("profileId", profile.getProfileId());
 
 
@@ -204,7 +225,14 @@ public class UserController {
     public String getCountiesByState(@PathVariable Integer userId, @PathVariable String stateCode, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId).get();
             model.addAttribute("user", userAuth);
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
 
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
@@ -220,7 +248,14 @@ public class UserController {
                                    @PathVariable String dataEntityCode, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId).get();
             model.addAttribute("user", userAuth);
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
 
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("states", apiServiceHudUser.getStatesList());
@@ -240,11 +275,19 @@ public class UserController {
                                                               @PathVariable Integer dataindex, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
-            model.addAttribute("user", userAuth);
 
             User user = userServiceImpl.findUserById(userId).get();// we don't want to use the user from the security context
             // we used the user from the security context to make sure when accessing the view and editing the fields to
-            // avoid any possible manipulation of the URL. But when creating the profile we need to use the user from the db
+            // avoid any possible security risk. But when creating the profile we need to use the user from the db
+
+            model.addAttribute("user", userAuth);
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
+
 
             //to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
             Integer gallonsOfFuel = 0;
@@ -309,7 +352,6 @@ public class UserController {
             userServiceImpl.save(user);
 
             profileService.saveProfile(profile);
-//            model.addAttribute("profile", profile);
             model.addAttribute("profileId", profile.getProfileId());
 
             return "usersession";
@@ -320,48 +362,89 @@ public class UserController {
     @PostMapping("/{userId}/profile/{profileId}/update")
     public String updateProfileCreated(@PathVariable Integer userId, @PathVariable Long profileId, @RequestParam(required = false) Double rentType,
                                        @RequestParam(required = false) Double fuelType, @RequestParam(required = false) Double electType,
-                                        @RequestParam(required = false) Double wasteType, @RequestParam(required = false) Double waterType,
-                                        @RequestParam(required = false) Double transpType, @RequestParam(required = false) Double gasType,
+                                       @RequestParam(required = false) Double wasteType, @RequestParam(required = false) Double waterType,
+                                       @RequestParam(required = false) Double transpType, @RequestParam(required = false) Double gasType,
                                        @RequestParam(required = false) Double internetType, @RequestParam(required = false) Integer fuelQty,
                                        @RequestParam(required = false) Integer personsQty, Model model, Authentication authentication) {
 
+
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId).get();
+            model.addAttribute("user", userAuth);
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
+
+        //Checking no null values before updating the profile(null values are set to 0)
+        if (rentType == null) {
+            rentType = 0.0;
+        }
+        if (fuelType == null) {
+            fuelType = 0.0;
+        }
+        if (electType == null) {
+            electType = 0.0;
+        }
+        if (wasteType == null) {
+            wasteType = 0.0;
+        }
+        if (waterType == null) {
+            waterType = 0.0;
+        }
+        if (transpType == null) {
+            transpType = 0.0;
+        }
+        if (gasType == null) {
+            gasType = 0.0;
+        }
+        if (internetType == null) {
+            internetType = 0.0;
+        }
 
             Profile profile = profileService.getProfileById(profileId);
 
             profile.setRentCost(rentType);
             profile.setFuelCost(fuelType * fuelQty);
 
-            // Setting the elect cost is complicated based in all the aspects to consider, and this approach is not
+            // Setting the elect cost is complicated based in all the aspects to consider and this approach is not
             // the objective of this project, however we did try our best to provide approximated values based on household
             // members
-            if( personsQty == 1) {
-                profile.setElectricityCost(electType * 850 * 0.01);}
-            if( personsQty == 2) {
-                profile.setElectricityCost(electType * 960 * 0.01);}
-            if( personsQty == 3) {
-                profile.setElectricityCost(electType * 1160 * 0.01);}
-            if( personsQty == 4) {
-                profile.setElectricityCost(electType * 1320 * 0.01);}
-            if( personsQty >= 5) {
-                profile.setElectricityCost(electType * 1500 * 0.01);}
+            if (personsQty == 0) {
+                profile.setElectricityCost(0.0);
+            }
+            if (personsQty == 1) {
+                profile.setElectricityCost(electType * 850 * 0.01);
+            }
+            if (personsQty == 2) {
+                profile.setElectricityCost(electType * 960 * 0.01);
+            }
+            if (personsQty == 3) {
+                profile.setElectricityCost(electType * 1160 * 0.01);
+            }
+            if (personsQty == 4) {
+                profile.setElectricityCost(electType * 1320 * 0.01);
+            }
+            if (personsQty >= 5) {
+                profile.setElectricityCost(electType * 1500 * 0.01);
+            }
 
             profile.setWasteCost(wasteType);
             profile.setWaterCost(waterType);
             profile.setPublicTransportationCost(transpType);
             profile.setNaturalGasCost(gasType);
             profile.setInternetCost(internetType);
+            profile.setTotalCost(rentType + (fuelType * fuelQty) + profile.getElectricityCost() + wasteType + waterType + transpType + gasType + internetType);
             profileService.saveProfile(profile);
 
-
+            return "redirect:/usersession/" + userId;
         }
-
-        System.out.println("rentType: " + rentType);
 
         return "redirect:/signin";
     }
-
 
 
     @GetMapping("/{userId}/edituser")
@@ -380,6 +463,12 @@ public class UserController {
                              Authentication authentication, Model model) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User authenticatedUser = (User) authentication.getPrincipal();
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = authenticatedUser.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
 
             // Check if the authenticated user's ID matches the user ID from the URL to avoid unauthorized updates. just in case
             if (!authenticatedUser.getId().equals(userId)) {
