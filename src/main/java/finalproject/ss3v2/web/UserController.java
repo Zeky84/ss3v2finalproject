@@ -324,27 +324,44 @@ public class UserController {
                                         @RequestParam(required = false) Double transpType, @RequestParam(required = false) Double gasType,
                                        @RequestParam(required = false) Double internetType, @RequestParam(required = false) Integer fuelQty,
                                        @RequestParam(required = false) Integer personsQty, Model model, Authentication authentication) {
+
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User userAuth = (User) authentication.getPrincipal();
+
+            Profile profile = profileService.getProfileById(profileId);
+
+            profile.setRentCost(rentType);
+            profile.setFuelCost(fuelType * fuelQty);
+
+            // Setting the elect cost is complicated based in all the aspects to consider, and this approach is not
+            // the objective of this project, however we did try our best to provide approximated values based on household
+            // members
+            if( personsQty == 1) {
+                profile.setElectricityCost(electType * 850 * 0.01);}
+            if( personsQty == 2) {
+                profile.setElectricityCost(electType * 960 * 0.01);}
+            if( personsQty == 3) {
+                profile.setElectricityCost(electType * 1160 * 0.01);}
+            if( personsQty == 4) {
+                profile.setElectricityCost(electType * 1320 * 0.01);}
+            if( personsQty >= 5) {
+                profile.setElectricityCost(electType * 1500 * 0.01);}
+
+            profile.setWasteCost(wasteType);
+            profile.setWaterCost(waterType);
+            profile.setPublicTransportationCost(transpType);
+            profile.setNaturalGasCost(gasType);
+            profile.setInternetCost(internetType);
+            profileService.saveProfile(profile);
+
+
+        }
+
         System.out.println("rentType: " + rentType);
 
         return "redirect:/signin";
     }
 
-//    @PostMapping("/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}/profile/{profileId}")
-//    public String updateProfileCostValuesState(@PathVariable Integer userId, @PathVariable String stateCode, @PathVariable String dataEntityCode,
-//                                               @PathVariable Integer dataindex, Profile profile, Model model, Authentication authentication,
-//                                               @RequestParam(required = false) Integer gallonsOfFuel, @RequestParam(required = false) Integer personsLivingIn,
-//                                               @PathVariable Integer profileId) {
-//        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-//            User userAuth = (User) authentication.getPrincipal();
-//            model.addAttribute("user", userAuth);
-//
-//            User user = userServiceImpl.findUserById(userId).get();// we don't want to use the user from the security context
-//
-//
-//
-//        }
-//        return "usersession";
-//    }
 
 
     @GetMapping("/{userId}/edituser")

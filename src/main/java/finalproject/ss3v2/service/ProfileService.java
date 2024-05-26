@@ -15,4 +15,7 @@ public class ProfileService {
     public Profile saveProfile(Profile profile) {
         return profileRespository.save(profile);
     }
+    public Profile getProfileById(Long id) {
+        return profileRespository.findById(id).orElse(null);
+    }
 }
