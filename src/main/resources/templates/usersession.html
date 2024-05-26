@@ -495,7 +495,7 @@
 
     <div class="form-container-addvalues">
       <form
-        th:action="@{/usersession/{userId}/addvalues(userId=${user.id})}"
+        th:action="@{/usersession/{userId}/profile/{profileId}/update(userId=${user.id}, profileId=${profileId})}"
         method="post"
       >
         <div class="icon-row">
@@ -569,6 +569,7 @@
             [[${rentValues.fourBedroom}]] -->
             </div>
             <div
+              id="rentCostInfo"
               th:if="${rentValues} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -635,7 +636,7 @@
               </p>
               <input
                 type="number"
-                name="fuelQTy"
+                name="fuelQty"
                 style="
                   background-color: #e7f6ff;
                   border: 1px solid #306da6;
@@ -647,6 +648,7 @@
               />
             </div>
             <div
+              id="fuelCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -684,7 +686,7 @@
               </p>
               <input
                 type="number"
-                name="PersonsQTy"
+                name="personsQty"
                 style="
                   background-color: #e7f6ff;
                   border: 1px solid #306da6;
@@ -698,6 +700,7 @@
               <!-- State: [[${stateCode}]] Rate: [[${electRate}]] -->
             </div>
             <div
+              id="electCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -732,6 +735,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWasteCost}]] -->
             </div>
             <div
+              id="wasteCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -766,6 +770,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWaterCost}]] -->
             </div>
             <div
+              id="waterCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -791,7 +796,7 @@
               <label
                 ><input
                   type="radio"
-                  name="TranspType"
+                  name="transpType"
                   th:value="${othersUtilities.publicTransportationCost}"
                 />Premium public transportation cost(
                 <h3 style="display: inline">[[${stateCode}]]</h3>
@@ -800,6 +805,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.publicTransportationCost}]] -->
             </div>
             <div
+              id="transportationCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -825,7 +831,7 @@
               <label
                 ><input
                   type="radio"
-                  name="GasType"
+                  name="gasType"
                   th:value="${othersUtilities.monthlyNaturalGasCost}"
                 />Natural Gas cost(
                 <h3 style="display: inline">[[${stateCode}]]</h3>
@@ -834,6 +840,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]] -->
             </div>
             <div
+              id="naturalGasCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -859,7 +866,7 @@
               <label
                 ><input
                   type="radio"
-                  name="InternetType"
+                  name="internetType"
                   th:value="${othersUtilities.monthlyInternetCost}"
                 />Internet cost(
                 <h3 style="display: inline">[[${stateCode}]]</h3>
@@ -868,6 +875,7 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]] -->
             </div>
             <div
+              id="internetCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
