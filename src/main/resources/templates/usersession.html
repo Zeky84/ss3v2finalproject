@@ -465,13 +465,16 @@
 
     <br />
 
-    <div
+    <div th:if="${nodata}"
       class="form-container"
       style="flex-direction: column; align-items: center; height: auto"
-      th:if="nodata"
+      
     >
       <!-- If no data available, show this message -->
       [[${nodata}]]
+    </div>
+    <div th:if="${nodata}">
+      <br />
     </div>
     <div
       th:if="${location}"
@@ -487,9 +490,6 @@
     </div>
 
     <div th:if="${location}">
-      <br />
-    </div>
-    <div th:if="${nodata}">
       <br />
     </div>
 
@@ -569,7 +569,6 @@
             [[${rentValues.fourBedroom}]] -->
             </div>
             <div
-              id="rentCostInfo"
               th:if="${rentValues} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -595,7 +594,7 @@
               <h3 style="display: inline">[[${stateCode}]]</h3>
               ):
               <label
-                style="background-color: #f18e8e; box-shadow: 0 0 6px #ffb5b5"
+                style="background-color: #ecbe3e; box-shadow: 0 0 6px f1df8e#ecbe3e"
                 ><input
                   type="radio"
                   name="fuelType"
@@ -604,7 +603,7 @@
                 Regular</label
               >
               <label
-                style="background-color: #f37272; box-shadow: 0 0 6px #f88c8c"
+                style="background-color: #ca9d22; box-shadow: 0 0 6px #ca9d22"
                 ><input
                   type="radio"
                   name="fuelType"
@@ -613,7 +612,7 @@
                 Midgrade</label
               >
               <label
-                style="background-color: #ec5b5b; box-shadow: 0 0 6px #f37272"
+                style="background-color: #b1860f; box-shadow: 0 0 6px #b1860f"
                 ><input
                   type="radio"
                   name="fuelType"
@@ -622,7 +621,7 @@
                 Premium</label
               >
               <label
-                style="background-color: #ecbe3e; box-shadow: 0 0 6px #f5c55c"
+                style="background-color: #51c035; box-shadow: 0 0 6px #50c035"
                 ><input
                   type="radio"
                   name="fuelType"
@@ -648,7 +647,6 @@
               />
             </div>
             <div
-              id="fuelCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -700,7 +698,6 @@
               <!-- State: [[${stateCode}]] Rate: [[${electRate}]] -->
             </div>
             <div
-              id="electCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -735,7 +732,6 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWasteCost}]] -->
             </div>
             <div
-              id="wasteCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -770,7 +766,6 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWaterCost}]] -->
             </div>
             <div
-              id="waterCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -805,7 +800,6 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.publicTransportationCost}]] -->
             </div>
             <div
-              id="transportationCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -840,7 +834,6 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]] -->
             </div>
             <div
-              id="naturalGasCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >
@@ -875,7 +868,6 @@
               <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]] -->
             </div>
             <div
-              id="internetCostInfo"
               th:if="${othersUtilities} == null"
               style="padding-left: 10px; padding-top: 20px; display: none"
             >

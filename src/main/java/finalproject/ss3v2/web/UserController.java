@@ -159,9 +159,9 @@ public class UserController {
                 profile.setStateCode(stateCode);
 
                 //Setting the profile name and location when zip code is available
-                profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                profile.setLocation("Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
-                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" +" Metro Area: " +  apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
             }
             // to manage when the data has only one basic data object
@@ -178,9 +178,9 @@ public class UserController {
                 // now taken the first state code from the list. Because here only exists one set of data
                 profile.setStateCode(stateCode);
 
-                profile.setLocation(apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                profile.setLocation("Metro Area: " +apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName());
-                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" +"Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName());
             }
 
