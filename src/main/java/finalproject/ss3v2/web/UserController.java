@@ -63,7 +63,7 @@ public class UserController {
         return "redirect:/error";
     }
 
-    @GetMapping("/{userId}") // END-POINT FOR STARTING SEARCHING CRITERIA, SEARCH BY STATE OR METRO AREA
+    @GetMapping("/{userId}") // END-POINT FOR START SEARCHING CRITERIA, SEARCH BY STATE OR METRO AREA
     public String goToUserSession(@PathVariable Integer userId, Model model, ModelMap modelMap, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             // the user from the auth object instead from the to avoid any possible manipulation of the URL
@@ -443,6 +443,26 @@ public class UserController {
             return "redirect:/usersession/" + userId;
         }
 
+        return "redirect:/signin";
+    }
+
+    @GetMapping("/{userId}/profile/{profileId}/delete")
+    public String deleteProfile(@PathVariable Integer userId, @PathVariable Long profileId, Model model, Authentication authentication) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User userAuth = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId).get();
+            model.addAttribute("user", userAuth);
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
+
+            profileService.deleteProfileById(profileId);
+
+            return "redirect:/usersession/" + userId;
+        }
         return "redirect:/signin";
     }
 

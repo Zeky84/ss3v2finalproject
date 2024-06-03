@@ -6,6 +6,7 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <script src="https://kit.fontawesome.com/17e9292b04.js" crossorigin="anonymous"></script>
     <style>
       body {
         font-family: "Roboto", sans-serif;
@@ -933,15 +934,35 @@
           <ul>
             <li th:each="profile : ${profiles}">
               <div th:if="${profile.totalCost} != null">
-                [[${profile.profileName}]]->Total Cost by Utilities selected: $[[${profile.totalCost}]]
-              </div>
+                <span style="display: inline-block; vertical-align: middle;">
+                    [[${profile.profileName}]] -> Total Cost by Utilities selected: $[[${profile.totalCost}]]
+                </span>
+                <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
+                    <i class="fa-solid fa-trash-can"
+                       style="
+                          display: inline-block;
+                          vertical-align: middle;
+                          margin-left: 10px;
+                          cursor: pointer;
+                          color: #306da6;
+                       "></i>
+                </a>
+            </div>
               <div th:if="${profile.totalCost} == null">
-                [[${profile.profileName}]]-> Please add utilities cost to calculate the total cost
+                <span style="display: inline-block; vertical-align: middle;">
+                  [[${profile.profileName}]]-> Please add utilities cost to calculate the total cost or remove empty profile.
+              </span>
+              <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
+                  <i class="fa-solid fa-trash-can"
+                     style="
+                        display: inline-block;
+                        vertical-align: middle;
+                        margin-left: 10px;
+                        cursor: pointer;
+                        color: #306da6;
+                     "></i>
+              </a>
               </div>
-              <div th:if="${profile.totalCost} == 0">
-                [[${profile.profileName}]]-> Have not values asociated with. No profile Cost analysis available
-              </div>
-              
               </a>
             </li>
           </ul>

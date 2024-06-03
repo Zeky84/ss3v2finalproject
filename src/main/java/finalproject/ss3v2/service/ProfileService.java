@@ -18,4 +18,8 @@ public class ProfileService {
     public Profile getProfileById(Long id) {
         return profileRespository.findById(id).orElse(null);
     }
+
+    public void deleteProfileById(Long profileId) {
+        profileRespository.deleteById(profileId);
+    }
 }
