@@ -6,7 +6,12 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <script src="https://kit.fontawesome.com/17e9292b04.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/17e9292b04.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
     <style>
       body {
         font-family: "Roboto", sans-serif;
@@ -20,16 +25,24 @@
         flex-direction: row;
         align-items: top;
         width: 1500px;
-        height: 260px;
+        height: 240px;
         margin: auto;
         padding: 20px;
         box-shadow: 0 0 6px #e7f6ff;
         border-radius: 13px;
         background-color: #e7f6ff;
       }
+      .form-container-inner {
+        /* For PieChart */
+        display: flex;
+        flex-direction: row;
+        width: 1500px;
+        height: 220px;
+        justify-content: space-between;
+      }
 
       .form-container-addvalues {
-        /* GPT help */
+        /* Adding values widget */
         display: flex;
         flex-direction: column;
         width: 1500px;
@@ -44,7 +57,7 @@
         font-size: 30px;
         top: 0;
         left: 50%;
-        transform: translateX(-50%); /* Adjust horizontal position */
+        transform: translateX(-50%);
         color: #c3e9ff;
       }
       .button-logout {
@@ -191,7 +204,7 @@
         width: 100%;
       }
       .scrollable-list-metroarea {
-        max-height: 220px;
+        max-height: 200px;
         overflow-y: auto;
         overflow-x: auto;
         width: 300px;
@@ -204,15 +217,15 @@
 
       /* Styling the scrollbar track (part the thumb slides within) */
       .scrollable-list-metroarea::-webkit-scrollbar-track {
-        background-color: #d6effd; /* Light grey track */
-        border-radius: 10px; /* Optional: adds rounded corners to the track */
+        background-color: #d6effd;
+        border-radius: 10px;
       }
 
       /* Styling the scrollbar thumb (draggable part) */
       .scrollable-list-metroarea::-webkit-scrollbar-thumb {
-        background-color: #306da6; /* Dark blue thumb */
-        border-radius: 10px; /* Rounded corners on the thumb */
-        border: 3px solid #306da6; /* Optional: adds a border around the thumb */
+        background-color: #306da6;
+        border-radius: 10px;
+        border: 3px solid #306da6;
       }
 
       .scrollable-list-metroarea::-webkit-scrollbar {
@@ -220,7 +233,7 @@
         height: 8px; /* Height of the horizontal scrollbar */
       }
       .scrollable-list {
-        max-height: 220px;
+        max-height: 200px;
         overflow-y: auto;
         overflow-x: auto;
         width: 300px;
@@ -230,50 +243,46 @@
         padding: 10px;
       }
 
-      /* Styling the scrollbar track (part the thumb slides within) */
       .scrollable-list::-webkit-scrollbar-track {
-        background-color: #bee7ff; /* Light grey track */
-        border-radius: 10px; /* Optional: adds rounded corners to the track */
+        background-color: #bee7ff;
+        border-radius: 10px;
       }
 
-      /* Styling the scrollbar thumb (draggable part) */
       .scrollable-list::-webkit-scrollbar-thumb {
-        background-color: #306da6; /* Dark blue thumb */
-        border-radius: 10px; /* Rounded corners on the thumb */
-        border: 3px solid #306da6; /* Optional: adds a border around the thumb */
+        background-color: #306da6;
+        border-radius: 10px;
+        border: 3px solid #306da6;
       }
 
       .scrollable-list::-webkit-scrollbar {
-        width: 8px; /* Width of the vertical scrollbar */
-        height: 8px; /* Height of the horizontal scrollbar */
+        width: 8px;
+        height: 8px;
       }
       .scrollable-list-profile {
-        max-height: 220px;
+        height: 220px;
         overflow-y: auto;
         overflow-x: auto;
-        width: 1000px;
+        width: 970px;
         background-color: #bee7ff;
         border-radius: 10px;
         border-color: #306da6;
         padding: 10px;
       }
 
-      /* Styling the scrollbar track (part the thumb slides within) */
       .scrollable-list-profile::-webkit-scrollbar-track {
-        background-color: #bee7ff; /* Light grey track */
-        border-radius: 10px; /* Optional: adds rounded corners to the track */
+        background-color: #bee7ff;
+        border-radius: 10px;
       }
 
-      /* Styling the scrollbar thumb (draggable part) */
       .scrollable-list-profile::-webkit-scrollbar-thumb {
-        background-color: #306da6; /* Dark blue thumb */
-        border-radius: 10px; /* Rounded corners on the thumb */
-        border: 3px solid #306da6; /* Optional: adds a border around the thumb */
+        background-color: #306da6;
+        border-radius: 10px;
+        border: 3px solid #306da6;
       }
 
       .scrollable-list-profile::-webkit-scrollbar {
-        width: 8px; /* Width of the vertical scrollbar */
-        height: 8px; /* Height of the horizontal scrollbar */
+        width: 8px;
+        height: 8px;
       }
 
       .icon-row {
@@ -315,6 +324,13 @@
         border-radius: 6px;
         width: 120px;
         height: 20px;
+      }
+      .plot-container {
+        display: flex;
+        justify-content: right;
+        align-items: top;
+        width: 500px;
+        height: 260px;
       }
     </style>
   </head>
@@ -492,12 +508,14 @@
       </div>
     </div>
 
-    <br />
+    <div th:if="${location}">
+      <br />
+    </div>
 
-    <div th:if="${nodata}"
+    <div
+      th:if="${nodata}"
       class="form-container"
       style="flex-direction: column; align-items: center; height: auto"
-      
     >
       <!-- If no data available, show this message -->
       [[${nodata}]]
@@ -522,7 +540,7 @@
       <br />
     </div>
 
-    <div class="form-container-addvalues">
+    <div th:if="${location}" class="form-container-addvalues">
       <form
         th:action="@{/usersession/{userId}/profile/{profileId}/update(userId=${user.id}, profileId=${profileId})}"
         method="post"
@@ -590,12 +608,6 @@
                   th:value="${rentValues.fourBedroom}"
                 />4-Bedrooms</label
               >
-
-              <!-- Efficiency: [[${rentValues.efficiency}]], One Bedroom:
-            [[${rentValues.oneBedroom}]], Two Bedroom:
-            [[${rentValues.twoBedroom}]], Three Bedroom:
-            [[${rentValues.threeBedroom}]] , Four Bedroom:
-            [[${rentValues.fourBedroom}]] -->
             </div>
             <div
               id="rentCostInfo"
@@ -624,7 +636,10 @@
               <h3 style="display: inline">[[${stateCode}]]</h3>
               ):
               <label
-                style="background-color: #ecbe3e; box-shadow: 0 0 6px f1df8e#ecbe3e"
+                style="
+                  background-color: #ecbe3e;
+                  box-shadow: 0 0 6px f1df8e#ecbe3e;
+                "
                 ><input
                   type="radio"
                   name="fuelType"
@@ -928,48 +943,86 @@
     <div th:if="${profiles} !=null">
       <br />
     </div>
-    <diV th:if="${profiles} !=null" class="form-container" style="flex-direction: column; padding-top: 5px;">
-        <h3>User profile's list:</h3>
+
+    <div
+      th:if="${profiles} !=null"
+      class="form-container"
+      style="flex-direction: column; padding-top: 10px; height: 260px"
+    >
+      [[${user.firstName}]]'s profile's list:
+      <div class="form-container-inner">
         <div class="scrollable-list-profile" id="profileList">
           <ul>
             <li th:each="profile : ${profiles}">
-              <div th:if="${profile.totalCost} != null">
-                <span style="display: inline-block; vertical-align: middle;">
-                    [[${profile.profileName}]] -> Total Cost by Utilities selected: $[[${profile.totalCost}]]
+              <div
+                th:if="${profile.totalCost} != null"
+                style="padding-bottom: 10px"
+              >
+                <span style="display: inline-block; vertical-align: middle">
+                  Profile:
+                  <h3 style="display: inline">[[${profile.profileName}]]</h3>
+                  Total Cost by Utilities selected:
+                  <h3 style="display: inline">$[[${profile.totalCost}]]</h3>
                 </span>
-                <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
-                    <i class="fa-solid fa-trash-can"
-                       style="
-                          display: inline-block;
-                          vertical-align: middle;
-                          margin-left: 10px;
-                          cursor: pointer;
-                          color: #306da6;
-                       "></i>
+                <a
+                  th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}"
+                >
+                  <i
+                    class="fa-solid fa-trash-can"
+                    style="
+                      display: inline-block;
+                      vertical-align: middle;
+                      margin-left: 35px;
+                      cursor: pointer;
+                      color: #306da6;
+                    "
+                  ></i>
                 </a>
-            </div>
-              <div th:if="${profile.totalCost} == null">
-                <span style="display: inline-block; vertical-align: middle;">
-                  [[${profile.profileName}]]-> Please add utilities cost to calculate the total cost or remove empty profile.
-              </span>
-              <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
-                  <i class="fa-solid fa-trash-can"
-                     style="
-                        display: inline-block;
-                        vertical-align: middle;
-                        margin-left: 10px;
-                        cursor: pointer;
-                        color: #306da6;
-                     "></i>
-              </a>
+                <a
+                  th:href="@{/usersession/{userId}/profile/{profileId}/piechart(userId=${user.id}, profileId=${profile.profileId})}"
+                >
+                  <i
+                    class="fa-solid fa-chart-pie"
+                    style="
+                      display: inline-block;
+                      vertical-align: middle;
+                      margin-left: 10px;
+                      cursor: pointer;
+                      color: #306da6;
+                    "
+                  ></i>
+                </a>
               </div>
-              </a>
+              <div th:if="${profile.totalCost} == null">
+                <span style="display: inline-block; vertical-align: middle">
+                  Profile:
+                  <h3 style="display: inline">[[${profile.profileName}]]</h3>
+                  Please add utilities cost to calculate the total cost or
+                  remove empty profile.
+                </span>
+                <a
+                  th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}"
+                >
+                  <i
+                    class="fa-solid fa-trash-can"
+                    style="
+                      display: inline-block;
+                      vertical-align: middle;
+                      margin-left: 35px;
+                      cursor: pointer;
+                      color: #306da6;
+                    "
+                  ></i>
+                </a>
+              </div>
             </li>
           </ul>
         </div>
-    </diV>
+        <div th:if="${pieData}" id="myDiv" class="plot-container"></div>
+      </div>
+    </div>
 
-    <script>
+    <script th:inline="javascript">
       function refreshTokenExpCount() {
         fetch(`/tokens/refreshtokenexptime`)
           .then((response) => response.text())
@@ -1083,6 +1136,37 @@
         radios.forEach((radio) => {
           radio.addEventListener("change", updateSubmitButtonVisibility);
         });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const pieData = /*[[${pieData}]]*/ {};
+
+        const labels = Object.keys(pieData);
+        const values = Object.values(pieData).map((value) =>
+          parseFloat(value.toFixed(2))
+        );
+
+        // Apply border-radius to the plot container
+        const plotContainer = document.getElementById("myDiv");
+        plotContainer.style.borderRadius = "6px"; // Rounded borders
+
+        const data = [
+          {
+            values: values,
+            labels: labels,
+            type: "pie",
+          },
+        ];
+
+        const layout = {
+          height: 240,
+          width: 470,
+          margin: { t: 10, b: 10, l: 10, r: 10 },
+          paper_bgcolor: "transparent",
+          plot_bgcolor: "transparent",
+        };
+
+        Plotly.newPlot("myDiv", data, layout);
       });
     </script>
   </body>
