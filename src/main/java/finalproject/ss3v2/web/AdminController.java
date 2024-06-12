@@ -50,6 +50,7 @@ public class AdminController {
         Authority adminAuth = new Authority("ROLE_ADMIN", adminUser);
         adminUser.setAuthorities(Collections.singletonList(adminAuth));
         adminUser.setAdmin(true);// added to the original code
+        adminUser.setUser(true);// added to the original code
         userServiceImpl.save(adminUser);
     }
 

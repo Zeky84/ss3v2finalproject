@@ -91,7 +91,7 @@ public class UserController {
             User user = userServiceImpl.findUserById(userId).get();
             model.addAttribute("user", userAuth);
 
-            // Adding list of profiles created by the user if they exists
+            // Adding list of profiles created by the user if they exist(this was added later)
             List<Profile> profiles = user.getProfiles();
             if (!profiles.isEmpty()) {
                 model.addAttribute("profiles", profiles);

@@ -382,7 +382,7 @@
       style="flex-direction: column; align-items: center; height: auto"
     >
       <h2 style="flex-direction: column; align-items: center; height: auto">
-        Cost Living Profile Search
+        Cost Living Profile Search Monthly
       </h2>
       <div>
         Please select
@@ -509,6 +509,10 @@
     </div>
 
     <div th:if="${location}">
+      <br />
+    </div>
+
+    <div th:if="${nodata}">
       <br />
     </div>
 
@@ -1019,6 +1023,9 @@
           </ul>
         </div>
         <div th:if="${pieData}" id="myDiv" class="plot-container"></div>
+        <!-- <div th:if="${user.isSuperUser.equals(true)}">
+          [[${user.firstName}]] is a Super User or Admin
+        </div> -->
       </div>
     </div>
 
