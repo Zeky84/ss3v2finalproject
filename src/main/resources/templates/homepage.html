@@ -6,6 +6,10 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <script
+      src="https://kit.fontawesome.com/17e9292b04.js"
+      crossorigin="anonymous"
+    ></script>
     <style>
       body {
         font-family: "Roboto", sans-serif;
@@ -79,7 +83,6 @@
         font-size: 30px;
         color: #c3e9ff;
         margin-left: 1px;
-
       }
 
       .image {
@@ -87,10 +90,30 @@
         flex-direction: row;
         justify-content: left;
         margin-top: 10px;
-        margin-left: 25px;
+        margin-left: 15px;
         height: 30px;
       }
-      
+      .icon {
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        margin-left: 25px;
+        margin-top: 5px;
+        color: #ffffff;
+        height: 50px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .icon:hover {
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        margin-left: 25px;
+        margin-top: 5px;
+        color: #b8b8b8ce;
+        height: 50px;
+        text-decoration: none;
+      }
     </style>
   </head>
 
@@ -133,9 +156,13 @@
         alt="GIF Image"
       />
     </div>
-    <div class="image-container-column" >
-      <div class="image">
-        <span class="image-paragraph" style="font-size: 10px; padding-right: 10px;">POWERED BY:</span>
+    <div class="image-container-column">
+      <div class="image" style="padding-left: 650px">
+        <span
+          class="image-paragraph"
+          style="font-size: 10px; padding-right: 10px"
+          >POWERED BY:</span
+        >
         <span class="image-paragraph"></span
         ><img src="/images/poweredByCC.png" />
       </div>
@@ -153,6 +180,20 @@
         <img src="/images/poweredByZCS.png" /><span class="image-paragraph"
           >API</span
         >
+      </div>
+      <div class="icon" style="padding-left: 500px">
+        <span >
+          <a class="icon" href="https://github.com/Zeky84/ss3v2finalproject" target="_blank"
+            ><i class="fa-brands fa-github fa-2x"></i
+          ></a>
+        </span>
+        <span >
+          <a class="icon"
+            href="https://www.linkedin.com/in/ezequiel-fernandez-76134110a/"
+            target="_blank"
+            ><i class="fa-brands fa-linkedin fa-2x"></i>
+          </a>
+        </span>
       </div>
     </div>
 

@@ -274,6 +274,7 @@
           ></i>
         </div>
         <div id="passwordMatchMessage" style="color: red"></div>
+        <div id="emailValidMessage" style="color: red"></div>
         <div class="form-group">
           <button type="submit">Create User Account</button>
         </div>
@@ -282,6 +283,11 @@
     </div>
 
     <script type="text/javascript">
+      function validateEmail(email) {
+        var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+      }
+
       window.onload = function () {
         // Clear all input fields in forms
         var inputs = document.getElementsByTagName("input");
@@ -294,22 +300,32 @@
           }
         }
       };
+
       document
         .getElementById("registrationForm")
         .addEventListener("submit", function (event) {
+          var email = document.getElementById("email").value;
           var password = document.getElementById("password").value;
           var confirmPassword =
             document.getElementById("confirmPassword").value;
           var passwordMatchMessage = document.getElementById(
             "passwordMatchMessage"
           );
+          var emailValidMessage = document.getElementById("emailValidMessage");
 
           if (password !== confirmPassword) {
             passwordMatchMessage.textContent = "Passwords do not match!";
-            // alert('Passwords do not match!');
             event.preventDefault(); // Prevent form submission
           } else {
             passwordMatchMessage.textContent = ""; // Clear previous message
+          }
+
+          if (!validateEmail(email)) {
+            emailValidMessage.textContent =
+              "Please enter a valid email address!";
+            event.preventDefault(); // Prevent form submission
+          } else {
+            emailValidMessage.textContent = ""; // Clear previous message
           }
         });
 
