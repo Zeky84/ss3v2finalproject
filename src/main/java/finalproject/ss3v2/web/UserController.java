@@ -516,7 +516,9 @@ public class UserController {
                 if (!profiles.isEmpty()) {
                     model.addAttribute("profiles", profiles);
                 }
-                profileService.deleteProfileById(profileId);
+                user.getProfiles().remove(profileService.getProfileById(profileId));
+                profileService.deleteProfileById(profileId);//todo: can't remove the profile from the user's profile list, before i could and now i can't
+
 
                 return "redirect:/usersession/" + userId;
             }

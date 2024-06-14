@@ -23,7 +23,7 @@ public class User implements UserDetails {
     private boolean isAdmin;
     private boolean isSuperUser;
     private boolean isUser;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Profile> profiles = new ArrayList<>();
     @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
     private List<Post> posts = new ArrayList<>();

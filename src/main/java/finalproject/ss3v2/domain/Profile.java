@@ -14,8 +14,8 @@ public class Profile {
     @Column(name = "date_profile_created", nullable = false)
     private LocalDate dateProfileCreated = LocalDate.now();
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")//FetchType.EAGER is the default
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false)//FetchType.EAGER is the default
     private User user;
 
     @Column( nullable = false)
