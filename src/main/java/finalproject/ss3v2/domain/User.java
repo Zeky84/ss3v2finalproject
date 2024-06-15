@@ -23,11 +23,13 @@ public class User implements UserDetails {
     private boolean isAdmin;
     private boolean isSuperUser;
     private boolean isUser;
+    private boolean userAskedForSuperUser;// this is to be used in the front to notify the admin that a user asked for superuser privileges(6/15/2024)
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Profile> profiles = new ArrayList<>();
     @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
     private List<Post> posts = new ArrayList<>();
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("user")
     private List<Authority> authorities = new ArrayList<>();
 
@@ -174,5 +176,13 @@ public class User implements UserDetails {
 
     public void setProfiles(List<Profile> profiles) {
         this.profiles = profiles;
+    }
+
+    public boolean isUserAskedForSuperUser() {
+        return userAskedForSuperUser;
+    }
+
+    public void setUserAskedForSuperUser(boolean userAskedForSuperUser) {
+        this.userAskedForSuperUser = userAskedForSuperUser;
     }
 }

@@ -6,11 +6,15 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <script
+      src="https://kit.fontawesome.com/17e9292b04.js"
+      crossorigin="anonymous"
+    ></script>
     <style>
       body {
         font-family: "Roboto", sans-serif;
-        background-color: #1c3955; 
-        color: #306da6; 
+        background-color: #1c3955;
+        color: #306da6;
       }
       .form-container {
         /* GPT help */
@@ -40,8 +44,8 @@
         color: #306da6;
       }
       .button-logout {
-        position: absolute; 
-        top: 10px; 
+        position: absolute;
+        top: 10px;
         right: 10px;
         font-family: "Roboto", sans-serif;
         background-color: #ffffff;
@@ -128,14 +132,15 @@
       }
       span {
         display: inline-block;
-        margin-right: 10px; 
+        margin-right: 10px;
       }
     </style>
   </head>
 
   <body>
     <div class="form-container">
-      <h2>Admin Dashboard. /Admin user: [[${adminname}]]</h2><h2></h2>
+      <h2>Admin Dashboard. /Admin user: [[${adminname}]]</h2>
+      <h2></h2>
 
       <table>
         <thead>
@@ -146,6 +151,7 @@
             <th>Email</th>
             <th>Roles</th>
             <th>Action</th>
+            <th>Asked Priviledge</th>
           </tr>
         </thead>
         <tbody>
@@ -155,21 +161,18 @@
             <td th:text="${user.firstName}"></td>
             <td th:text="${user.lastName}"></td>
             <td th:text="${user.email}"></td>
-            <!-- <td th:text="${user.authorities}"></td> -->
             <td>
-              <!-- Iterate over the list of authorities for the user -->
               <span
                 th:each="authority : ${user.authorities}"
                 th:text="${authority.getAuthority()} + '  '"
               ></span>
             </td>
             <td>
-              <!-- Display buttons if need it-->
               <span th:if="${user.isAdmin.equals(false)}">
                 <form th:action="@{/admin/makeAdmin}" th:method="post">
                   <input type="hidden" th:name="userId" th:value="${user.id}" />
                   <button type="submit" class="elevate-button">
-                    Elevate to Admin
+                    <i class="fa-solid fa-user-plus"></i>Admin
                   </button>
                 </form>
               </span>
@@ -177,7 +180,7 @@
                 <form th:action="@{/admin/removeAdmin}" th:method="post">
                   <input type="hidden" th:name="userId" th:value="${user.id}" />
                   <button type="submit" class="remove-button">
-                    Remove Admin priviledges
+                    <i class="fa-solid fa-user-slash"></i>Admin
                   </button>
                 </form>
               </span>
@@ -185,7 +188,7 @@
                 <form th:action="@{/admin/makeSuperUser}" th:method="post">
                   <input type="hidden" th:name="userId" th:value="${user.id}" />
                   <button type="submit" class="elevate-button">
-                    Elevate to SuperUser
+                    <i class="fa-solid fa-user-plus"></i>SuperUser
                   </button>
                 </form>
               </span>
@@ -193,7 +196,7 @@
                 <form th:action="@{/admin/removeSuperUser}" th:method="post">
                   <input type="hidden" th:name="userId" th:value="${user.id}" />
                   <button type="submit" class="remove-button">
-                    Remove SuperUser priviledges
+                    <i class="fa-solid fa-user-slash"></i>SuperUser
                   </button>
                 </form>
               </span>
@@ -201,9 +204,15 @@
                 <form th:action="@{/admin/deleteUser}" th:method="post">
                   <input type="hidden" th:name="userId" th:value="${user.id}" />
                   <button type="submit" class="remove-button">
-                    Delete User
+                    <i class="fa-solid fa-trash-can"></i>
                   </button>
                 </form>
+              </span>
+            </td>
+            <td>
+              <span th:if="${user.userAskedForSuperUser.equals(true)}"
+                ><!--To notifie the admin when a user request superuser priviledges-->
+                User request for SuperUser priviledge
               </span>
             </td>
           </tr>
@@ -211,7 +220,7 @@
       </table>
     </div>
     <form action="/logout" method="post">
-      <button class= "button-logout" type="submit">Logout</button>
+      <button class="button-logout" type="submit">Logout</button>
     </form>
   </body>
 </html>

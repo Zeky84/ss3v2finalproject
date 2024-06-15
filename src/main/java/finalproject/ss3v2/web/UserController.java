@@ -1,6 +1,7 @@
 package finalproject.ss3v2.web;
 
 
+import finalproject.ss3v2.domain.Authority;
 import finalproject.ss3v2.domain.Profile;
 import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.dto.BasicData;
@@ -82,6 +83,37 @@ public class UserController {
             return "usersession";
         }
         return "redirect:/signin";
+    }
+    @PostMapping("/{userId}/asKForSuperUser")
+    public String askForSuperUser(@PathVariable Integer userId, Model model, Authentication authentication) {
+        // This code was helped by Chat GPT... I was stuck in this part for a while
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User userAuth = (User) authentication.getPrincipal();
+            userAuth.setUserAskedForSuperUser(true);
+
+            // Clean up the user object before saving
+            cleanUpUserBeforeSave(userAuth);
+
+            userServiceImpl.save(userAuth);
+            Authentication updatedAuth = new UsernamePasswordAuthenticationToken(userAuth, authentication.getCredentials(), userAuth.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(updatedAuth);
+            model.addAttribute("user", userAuth);
+
+            // Log for debugging
+            System.out.println("Redirecting to /usersession/" + userId);
+
+            return "redirect:/usersession/" + userId; // Ensure this is a redirect
+        }
+        return "redirect:/signin";
+    }
+    private void cleanUpUserBeforeSave(User user) {
+        // Remove or reset any fields that should not be persisted
+        user.getAuthorities().removeIf(auth -> !isValidAuthority(auth));
+    }
+
+    private boolean isValidAuthority(Authority authority) {
+        // Ensure it doesn't contain token data
+        return !authority.getAuthority().contains("eyJhbGciOiJIUzI1NiJ9");
     }
 
     @GetMapping("/{userId}/metroarea/data/{dataEntityCode}") // ENDPOINT METRO AREA SEARCHING CRITERIA
@@ -516,8 +548,12 @@ public class UserController {
                 if (!profiles.isEmpty()) {
                     model.addAttribute("profiles", profiles);
                 }
+
+                //Removing the profile from the user's profile list and deleting the profile(6/15/2024)
+                //Need to understand better this part. Ins't supposed to has the need to remove from the user's profile list
+                // too. Shouldn't be enough to delete the profile from the profile table?
                 user.getProfiles().remove(profileService.getProfileById(profileId));
-                profileService.deleteProfileById(profileId);//todo: can't remove the profile from the user's profile list, before i could and now i can't
+                profileService.deleteProfileById(profileId);
 
 
                 return "redirect:/usersession/" + userId;

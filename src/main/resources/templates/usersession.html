@@ -53,7 +53,8 @@
       }
       .paragraph {
         position: absolute;
-        font-size: 30px;
+        text-align: center;
+        font-size: 20px;
         top: 0;
         left: 50%;
         transform: translateX(-50%);
@@ -341,7 +342,24 @@
         alt="this is the app logo"
         aspect-ratio="1/1"
       />
-      <p class="paragraph">[[${user.firstName}]]'s Session</p>
+      <div class="paragraph">
+        <p>[[${user.firstName}]]'s Session</p>
+        <!--The rest of this div is for the user to interact with the admin when asking for SuperUser priviledges -->
+        <p th:if="${user.isAdmin.equals(true)}">You are an admin user, no need for upgrading privileges</p>
+        <p th:if="${user.isUser.equals(true) && user.isAdmin.equals(false) && user.userAskedForSuperUser.equals(false)}" style="display:inline;">
+            You are a regular user, for extended functionalities ask for SuperUser privileges
+            <form th:action="@{/usersession/{userId}/asKForSuperUser(userId=${user.id})}" method="post" style="display:inline;">
+                <button th:if="${user.isUser.equals(true) && user.isAdmin.equals(false) && user.userAskedForSuperUser.equals(false)}" style="background: none; border: none; padding: 0; cursor: pointer; display: inline; margin-left: 5px;" type="submit">
+                    <i class="fa-solid fa-user-plus fa-2x" style="color: #bee7ff;"></i>
+                </button>
+            </form>
+        </p>
+        <p th:if="${user.isUser.equals(true) && user.userAskedForSuperUser.equals(true) && user.isAdmin.equals(false)}">
+            You requested SuperUser privileges. Wait for admin to authorize
+        </p>
+        <p th:if="${user.isSuperUser.equals(true)}">You are a SuperUser</p>
+    </div>
+
       <div>
         <form action="/logout" method="post">
           <button class="button-logout" type="submit">Logout</button>
@@ -377,8 +395,8 @@
 
     <div
       class="form-container"
-      style="flex-direction: column; align-items: center; height: auto"
-    >
+      style="flex-direction: column; align-items: center; height: auto">
+    
       <h2 style="flex-direction: column; align-items: center; height: auto">
         Cost Living Profile Search Monthly
       </h2>

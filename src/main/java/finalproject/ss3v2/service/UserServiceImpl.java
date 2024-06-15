@@ -149,7 +149,9 @@ public class UserServiceImpl implements UserService {
                 logger.info("Added ROLE_SUPERUSER/ removed ROLE_USER for user: " + user.getId() + ", " + user.getEmail());
 
                 user.setSuperUser(true);
-                user.setUser(false);
+                user.setUser(false); // this is only for the regular user
+
+                user.setUserAskedForSuperUser(false);// because the user is now a superuser so no need to ask for superuser(6/15/2024)
                 // Save the updated user
                 userRepository.save(user);
             }
