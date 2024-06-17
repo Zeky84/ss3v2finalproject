@@ -5,6 +5,8 @@ import finalproject.ss3v2.repository.ProfileRespository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProfileService {
     ProfileRespository profileRespository;
@@ -25,4 +27,7 @@ public class ProfileService {
         profileRespository.deleteById(profileId);
     }
 
+    public List<Profile> getProfilesByIds(List<Long> selectedProfileIds) {
+        return profileRespository.findAllById(selectedProfileIds);
+    }
 }
