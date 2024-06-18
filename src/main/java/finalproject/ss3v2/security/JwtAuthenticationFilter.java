@@ -28,14 +28,17 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
+    private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    private static final int MAX_LOGIN_ATTEMPTS = 5;
+
     private final JwtServiceImpl jwtService;
     private final UserServiceImpl userService;
     private final RefreshTokenService refreshTokenService;
-    private Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    private final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     public JwtAuthenticationFilter(JwtServiceImpl jwtService, UserServiceImpl userService,
                                    RefreshTokenService refreshTokenService) {
-        super();
         this.jwtService = jwtService;
         this.userService = userService;
         this.refreshTokenService = refreshTokenService;
@@ -45,70 +48,77 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
+        Cookie accessTokenCookie = getCookie(request, ACCESS_TOKEN_COOKIE_NAME);
+        Cookie refreshTokenCookie = getCookie(request, REFRESH_TOKEN_COOKIE_NAME);
 
-        Cookie accessTokenCookie = null;
-        Cookie refreshTokenCookie = null;
+        if (accessTokenCookie != null) {
+            processAccessToken(accessTokenCookie, refreshTokenCookie, response);
+        } else {
+            logger.error("Access token is missing.");
+        }
 
+        logger.debug("Request URI: {}", request.getRequestURI());
+        filterChain.doFilter(request, response);
+    }
+
+    private Cookie getCookie(HttpServletRequest request, String name) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("accessToken")) {
-                    accessTokenCookie = cookie;
-                } else if (cookie.getName().equals("refreshToken")) {
-                    refreshTokenCookie = cookie;
+                if (cookie.getName().equals(name)) {
+                    return cookie;
                 }
             }
         }
+        return null;
+    }
 
-        if  (accessTokenCookie != null ) {
+    private void processAccessToken(Cookie accessTokenCookie, Cookie refreshTokenCookie, HttpServletResponse response) {
+        int loginAttempt = 0;
 
-            int loginAttempt = 0;
+        while (loginAttempt <= MAX_LOGIN_ATTEMPTS) {
+            String token = accessTokenCookie.getValue();
+            try {
+                String subject = jwtService.extractUserName(token);
+                if (StringUtils.hasText(subject) && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = userService.userDetailsService().loadUserByUsername(subject);
 
-            while (loginAttempt <= 5) {
-                String token = accessTokenCookie.getValue();
-
-                try {
-                    String subject = jwtService.extractUserName(token);
-                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-                    if (StringUtils.hasText(subject) && authentication == null) {
-                        UserDetails userDetails = userService.userDetailsService().loadUserByUsername(subject);
-
-                        if (jwtService.isTokenValid(token, userDetails)) {
-                            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken (userDetails,
-                                    userDetails.getPassword(),
-                                    userDetails.getAuthorities());
-                            securityContext.setAuthentication(authToken);
-                            SecurityContextHolder.setContext(securityContext);
-
-                            // if successful login occurs:
-                            break;
-                        }
-                    }
-                } catch (ExpiredJwtException e) {
-                    try {
-                        token = refreshTokenService.createNewAccessToken(new RefreshTokenRequest(refreshTokenCookie.getValue()));
-                        accessTokenCookie = CookieUtils.createAccessTokenCookie(token);
-
-                        response.addCookie(accessTokenCookie);
-                        e.printStackTrace();
-                    } catch (Exception e1) {
-
-                        e1.printStackTrace();
+                    if (jwtService.isTokenValid(token, userDetails)) {
+                        setAuthentication(userDetails);
+                        break;
                     }
                 }
-                loginAttempt++;
+            } catch (ExpiredJwtException e) {
+                if (refreshTokenCookie != null) {
+                    token = refreshAccessToken(refreshTokenCookie, response);
+                    if (token == null) {
+                        break;
+                    }
+                    accessTokenCookie = CookieUtils.createAccessTokenCookie(token);
+                    response.addCookie(accessTokenCookie);
+                } else {
+                    logger.error("Refresh token is missing.");
+                    break;
+                }
             }
+            loginAttempt++;
         }
-        logger.debug("Request URI: {}", request.getRequestURI());
-        logger.debug("Auth Header: {}", authHeader);
-        logger.debug("Access Token Cookie: {}", accessTokenCookie);
-        logger.debug("Refresh Token Cookie: {}", refreshTokenCookie);
+    }
 
-        filterChain.doFilter(request, response);
+    private void setAuthentication(UserDetails userDetails) {
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+        securityContext.setAuthentication(authToken);
+        SecurityContextHolder.setContext(securityContext);
+    }
 
+    private String refreshAccessToken(Cookie refreshTokenCookie, HttpServletResponse response) {
+        try {
+            return refreshTokenService.createNewAccessToken(new RefreshTokenRequest(refreshTokenCookie.getValue()));
+        } catch (Exception e) {
+            logger.error("Failed to refresh access token", e);
+            return null;
+        }
     }
 }
+
