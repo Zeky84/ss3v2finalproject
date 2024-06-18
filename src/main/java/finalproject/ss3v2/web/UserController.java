@@ -84,9 +84,11 @@ public class UserController {
         }
         return "redirect:/signin";
     }
+
+
     @PostMapping("/{userId}/asKForSuperUser")
     public String askForSuperUser(@PathVariable Integer userId, Model model, Authentication authentication) {
-        // This code was helped by Chat GPT... I was stuck in this part for a while
+        // This code was helped by Chat GPT4... I was stuck in this part for a while
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             userAuth.setUserAskedForSuperUser(true);
@@ -106,6 +108,7 @@ public class UserController {
         }
         return "redirect:/signin";
     }
+
     private void cleanUpUserBeforeSave(User user) {
         // Remove or reset any fields that should not be persisted
         user.getAuthorities().removeIf(auth -> !isValidAuthority(auth));
@@ -115,6 +118,7 @@ public class UserController {
         // Ensure it doesn't contain token data
         return !authority.getAuthority().contains("eyJhbGciOiJIUzI1NiJ9");
     }
+
 
     @GetMapping("/{userId}/metroarea/data/{dataEntityCode}") // ENDPOINT METRO AREA SEARCHING CRITERIA
     public String getDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model, Authentication authentication) {
@@ -232,7 +236,7 @@ public class UserController {
 
                 profile.setLocation("Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName());
-                profile.setProfileName( "Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                profile.setProfileName("Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName());
             }
 
@@ -390,12 +394,12 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/profile/{profileId}/update")
-    public String updateProfileCreated(@PathVariable Integer userId, @PathVariable Long profileId, @RequestParam(required = false) Double rentType,
-                                       @RequestParam(required = false) Double fuelType, @RequestParam(required = false) Double electType,
-                                       @RequestParam(required = false) Double wasteType, @RequestParam(required = false) Double waterType,
-                                       @RequestParam(required = false) Double transpType, @RequestParam(required = false) Double gasType,
-                                       @RequestParam(required = false) Double internetType, @RequestParam(required = false) Integer fuelQty,
-                                       @RequestParam(required = false) Integer personsQty, Model model, Authentication authentication) {
+    public String addValuesToProfileCreated(@PathVariable Integer userId, @PathVariable Long profileId, @RequestParam(required = false) Double rentType,
+                                            @RequestParam(required = false) Double fuelType, @RequestParam(required = false) Double electType,
+                                            @RequestParam(required = false) Double wasteType, @RequestParam(required = false) Double waterType,
+                                            @RequestParam(required = false) Double transpType, @RequestParam(required = false) Double gasType,
+                                            @RequestParam(required = false) Double internetType, @RequestParam(required = false) Integer fuelQty,
+                                            @RequestParam(required = false) Integer personsQty, Model model, Authentication authentication) {
 
 
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
@@ -477,8 +481,33 @@ public class UserController {
         return "redirect:/signin";
     }
 
+    @GetMapping("/{userId}/profile/{profileId}/delete")
+    public String deleteProfile(@PathVariable Integer userId, @PathVariable Long profileId, Model
+            model, Authentication authentication) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User userAuth = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId).get();
+            model.addAttribute("user", userAuth);
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
+
+            //Removing the profile from the user's profile list and deleting the profile(6/15/2024)
+            //Need to understand better this part. Ins't supposed to has the need to remove from the user's profile list
+            // too. Shouldn't be enough to delete the profile from the profile table?
+            user.getProfiles().remove(profileService.getProfileById(profileId));
+            profileService.deleteProfileById(profileId);
+
+
+            return "redirect:/usersession/" + userId;
+        }
+        return "redirect:/signin";
+    }
+
     @GetMapping("/{userId}/profile/{profileId}/piechart")
-    public String goToPieChart(@PathVariable Integer userId, @PathVariable Long profileId, Model model, Authentication authentication) {
+    public String generatePieChart(@PathVariable Integer userId, @PathVariable Long profileId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             User user = userServiceImpl.findUserById(userId).get();
@@ -499,28 +528,28 @@ public class UserController {
             Map<String, Double> pieData = new HashMap<>();
             if (profile.getTotalCost() != null && profile.getTotalCost() > 0) {
                 if (profile.getRentCost() > 0) {
-                    pieData.put("RentCost: "+"$"+ profile.getRentCost(), (profile.getRentCost() / profile.getTotalCost()) * 100);
+                    pieData.put("RentCost: " + "$" + profile.getRentCost(), (profile.getRentCost() / profile.getTotalCost()) * 100);
                 }
                 if (profile.getFuelCost() > 0) {
-                    pieData.put("FuelCost: " +"$"+ profile.getFuelCost(), (profile.getFuelCost() / profile.getTotalCost()) * 100);
+                    pieData.put("FuelCost: " + "$" + profile.getFuelCost(), (profile.getFuelCost() / profile.getTotalCost()) * 100);
                 }
                 if (profile.getElectricityCost() > 0) {
-                    pieData.put("ElectCost: " +"$"+ profile.getElectricityCost(), (profile.getElectricityCost() / profile.getTotalCost()) * 100);
+                    pieData.put("ElectCost: " + "$" + profile.getElectricityCost(), (profile.getElectricityCost() / profile.getTotalCost()) * 100);
                 }
                 if (profile.getWasteCost() > 0) {
-                    pieData.put("WasteCost: " +"$"+ profile.getWasteCost(), (profile.getWasteCost() / profile.getTotalCost()) * 100);
+                    pieData.put("WasteCost: " + "$" + profile.getWasteCost(), (profile.getWasteCost() / profile.getTotalCost()) * 100);
                 }
                 if (profile.getWaterCost() > 0) {
-                    pieData.put("WaterCost: " +"$"+ profile.getWaterCost(), (profile.getWaterCost() / profile.getTotalCost()) * 100);
+                    pieData.put("WaterCost: " + "$" + profile.getWaterCost(), (profile.getWaterCost() / profile.getTotalCost()) * 100);
                 }
                 if (profile.getPublicTransportationCost() > 0) {
-                    pieData.put("TransCost: " +"$"+ profile.getPublicTransportationCost(), (profile.getPublicTransportationCost() / profile.getTotalCost()) * 100);
+                    pieData.put("TransCost: " + "$" + profile.getPublicTransportationCost(), (profile.getPublicTransportationCost() / profile.getTotalCost()) * 100);
                 }
                 if (profile.getNaturalGasCost() > 0) {
-                    pieData.put("NatGasCost: " +"$"+ profile.getNaturalGasCost(), (profile.getNaturalGasCost() / profile.getTotalCost()) * 100);
+                    pieData.put("NatGasCost: " + "$" + profile.getNaturalGasCost(), (profile.getNaturalGasCost() / profile.getTotalCost()) * 100);
                 }
                 if (profile.getInternetCost() > 0) {
-                    pieData.put("InternetCost: " +"$"+ profile.getInternetCost(), (profile.getInternetCost() / profile.getTotalCost()) * 100);
+                    pieData.put("InternetCost: " + "$" + profile.getInternetCost(), (profile.getInternetCost() / profile.getTotalCost()) * 100);
                 }
                 model.addAttribute("pieData", pieData);
 
@@ -531,90 +560,101 @@ public class UserController {
             System.out.println("No data to create the pie chart");
             model.addAttribute("error", "No data to create the pie chart");
 
-            return "/usersession" ;
+            return "/usersession";
         }
         return "redirect:/signin";
     }
 
-        @GetMapping("/{userId}/profile/{profileId}/delete")
-        public String deleteProfile (@PathVariable Integer userId, @PathVariable Long profileId, Model
-        model, Authentication authentication){
-            if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-                User userAuth = (User) authentication.getPrincipal();
-                User user = userServiceImpl.findUserById(userId).get();
-                model.addAttribute("user", userAuth);
-                // Adding list of profiles created by the user if they exists
-                List<Profile> profiles = user.getProfiles();
-                if (!profiles.isEmpty()) {
-                    model.addAttribute("profiles", profiles);
-                }
 
-                //Removing the profile from the user's profile list and deleting the profile(6/15/2024)
-                //Need to understand better this part. Ins't supposed to has the need to remove from the user's profile list
-                // too. Shouldn't be enough to delete the profile from the profile table?
-                user.getProfiles().remove(profileService.getProfileById(profileId));
-                profileService.deleteProfileById(profileId);
+    @PostMapping("/{userId}/generateBarChart")
+    public String processSelectedProfiles(@PathVariable Integer userId, @RequestParam("selectedProfiles") List<Long> selectedProfileIds, Model model,
+                                          Authentication authentication) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User userAuth = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId).get();
+            model.addAttribute("user", userAuth);
 
+            // Fetch profiles based on selectedProfileIds
+            List<Profile> selectedProfiles = profileService.getProfilesByIds(selectedProfileIds);
 
-                return "redirect:/usersession/" + userId;
+            // Adding the states and metro areas to the html view
+            model.addAttribute("states", apiServiceHudUser.getStatesList());
+            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = user.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
             }
-            return "redirect:/signin";
-        }
 
-
-        @GetMapping("/{userId}/edituser")
-        public String goToEditUser (@PathVariable Integer userId, Model model, Authentication authentication){
-            if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-                User userAuth = (User) authentication.getPrincipal();
-                model.addAttribute("user", userAuth);
-                return "edituser";
+            // Process data to generate bar chart (pseudo-code, adjust accordingly)
+            Map<String, Double> barChartData = new HashMap<>();
+            for (Profile profile : selectedProfiles) {
+                barChartData.put(profile.getProfileName(), profile.getTotalCost());
             }
-            return "redirect:/signin";
+
+            // Add data to the model to be used in the view
+            model.addAttribute("barChartData", barChartData);
+
+            return "usersession";
         }
-
-        @PostMapping("/{userId}/edituser")
-        public String updateUser (@PathVariable Integer userId, User userFields,
-                @RequestParam(required = false) String newPassword,
-                Authentication authentication, Model model){
-            if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-                User authenticatedUser = (User) authentication.getPrincipal();
-
-                // Adding list of profiles created by the user if they exists
-                List<Profile> profiles = authenticatedUser.getProfiles();
-                if (!profiles.isEmpty()) {
-                    model.addAttribute("profiles", profiles);
-                }
-
-                // Check if the authenticated user's ID matches the user ID from the URL to avoid unauthorized updates. just in case
-                if (!authenticatedUser.getId().equals(userId)) {
-                    // Redirect to an error page or a 'forbidden' page
-                    return "redirect:/error"; //todo: make a nice desing view for this like the one pending for unauthorized and unauthenticated in the security config
-                }
-
-                User existingUser = userServiceImpl.findUserById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-
-                // Update user details
-                existingUser.setEmail(userFields.getEmail());
-                existingUser.setFirstName(userFields.getFirstName());
-                existingUser.setLastName(userFields.getLastName());
-
-                if (newPassword != null && !newPassword.isBlank()) {
-                    String encodedPassword = passwordEncoder.encode(newPassword);
-                    existingUser.setPassword(encodedPassword);
-                }
-
-                userServiceImpl.save(existingUser);
-
-                // Update the security context. This is necessary because the user's email and password have changed and the
-                // user we're working with is the one from the authentication object not the one from the database. If we the
-                // one from the database, we will have security issues.
-                Authentication newAuth = new UsernamePasswordAuthenticationToken(existingUser, existingUser.getPassword(), existingUser.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(newAuth);
-
-                return "redirect:/usersession/" + userId;
-            }
-            return "redirect:/signin";
-        }
-
+        return "redirect:/signin";
     }
+
+
+    @GetMapping("/{userId}/edituser")
+    public String goToEditUser(@PathVariable Integer userId, Model model, Authentication authentication) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User userAuth = (User) authentication.getPrincipal();
+            model.addAttribute("user", userAuth);
+            return "edituser";
+        }
+        return "redirect:/signin";
+    }
+
+    @PostMapping("/{userId}/edituser")
+    public String updateUser(@PathVariable Integer userId, User userFields,
+                             @RequestParam(required = false) String newPassword,
+                             Authentication authentication, Model model) {
+        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+            User authenticatedUser = (User) authentication.getPrincipal();
+
+            // Adding list of profiles created by the user if they exists
+            List<Profile> profiles = authenticatedUser.getProfiles();
+            if (!profiles.isEmpty()) {
+                model.addAttribute("profiles", profiles);
+            }
+
+            // Check if the authenticated user's ID matches the user ID from the URL to avoid unauthorized updates. just in case
+            if (!authenticatedUser.getId().equals(userId)) {
+                // Redirect to an error page or a 'forbidden' page
+                return "redirect:/error"; //todo: make a nice desing view for this like the one pending for unauthorized and unauthenticated in the security config
+            }
+
+            User existingUser = userServiceImpl.findUserById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+            // Update user details
+            existingUser.setEmail(userFields.getEmail());
+            existingUser.setFirstName(userFields.getFirstName());
+            existingUser.setLastName(userFields.getLastName());
+
+            if (newPassword != null && !newPassword.isBlank()) {
+                String encodedPassword = passwordEncoder.encode(newPassword);
+                existingUser.setPassword(encodedPassword);
+            }
+
+            userServiceImpl.save(existingUser);
+
+            // Update the security context. This is necessary because the user's email and password have changed and the
+            // user we're working with is the one from the authentication object not the one from the database. If we the
+            // one from the database, we will have security issues.
+            Authentication newAuth = new UsernamePasswordAuthenticationToken(existingUser, existingUser.getPassword(), existingUser.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+            return "redirect:/usersession/" + userId;
+        }
+        return "redirect:/signin";
+    }
+
+}
