@@ -587,13 +587,23 @@ public class UserController {
                 model.addAttribute("profiles", profiles);
             }
 
-            // Process data to generate bar chart (pseudo-code, adjust accordingly)
-            Map<String, Double> barChartData = new HashMap<>();
+
+            Map<String, Map<String, Double>> barChartData = new HashMap<>();
             for (Profile profile : selectedProfiles) {
-                barChartData.put(profile.getProfileName(), profile.getTotalCost());
+                Map<String, Double> profileData = new HashMap<>();
+                profileData.put("rentCost", profile.getRentCost() != null ? profile.getRentCost() : 0.0);
+                profileData.put("fuelCost", profile.getFuelCost() != null ? profile.getFuelCost() : 0.0);
+                profileData.put("electricityCost", profile.getElectricityCost() != null ? profile.getElectricityCost() : 0.0);
+                profileData.put("wasteCost", profile.getWasteCost() != null ? profile.getWasteCost() : 0.0);
+                profileData.put("waterCost", profile.getWaterCost() != null ? profile.getWaterCost() : 0.0);
+                profileData.put("publicTransportationCost", profile.getPublicTransportationCost() != null ? profile.getPublicTransportationCost() : 0.0);
+                profileData.put("naturalGasCost", profile.getNaturalGasCost() != null ? profile.getNaturalGasCost() : 0.0);
+                profileData.put("internetCost", profile.getInternetCost() != null ? profile.getInternetCost() : 0.0);
+                profileData.put("totalCost", profile.getTotalCost() != null ? profile.getTotalCost() : 0.0);
+
+                barChartData.put(profile.getProfileName(), profileData);
             }
 
-            // Add data to the model to be used in the view
             model.addAttribute("barChartData", barChartData);
 
             return "usersession";

@@ -347,7 +347,7 @@
         <!--The rest of this div is for the user to interact with the admin when asking for SuperUser priviledges -->
         <p th:if="${user.isAdmin.equals(true)}">You are an admin user, no need for upgrading privileges</p>
         <p th:if="${user.isUser.equals(true) && user.isAdmin.equals(false) && user.userAskedForSuperUser.equals(false)}" style="display:inline;">
-            <span style="font-size: 15px;">You are a regular user, you can search upto to 3 profiles, for extended functionalities ask for SuperUser privileges</span>
+            <span style="font-size: 15px;">Regular user don't have visualization privileges. Request SuperUser upgrade to access all app functionabilities</span>
             <form th:action="@{/usersession/{userId}/asKForSuperUser(userId=${user.id})}" method="post" style="display:inline;">
                 <button th:if="${user.isUser.equals(true) && user.isAdmin.equals(false) && user.userAskedForSuperUser.equals(false)}" style="background: none; border: none; padding: 0; cursor: pointer; display: inline; margin-left: 5px;" type="submit">
                     <i class="fa-solid fa-user-plus fa-2x" style="color: #bee7ff;"></i>
@@ -996,25 +996,26 @@
                   <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
                     <i class="fa-solid fa-trash-can" style="display: inline-block; vertical-align: middle; margin-left: 35px; cursor: pointer; color: #306da6;"></i>
                   </a>
-                  <a th:href="@{/usersession/{userId}/profile/{profileId}/piechart(userId=${user.id}, profileId=${profile.profileId})}">
+                  <a th:if="${user.isSuperUser || user.isAdmin}" th:href="@{/usersession/{userId}/profile/{profileId}/piechart(userId=${user.id}, profileId=${profile.profileId})}">
                     <i class="fa-solid fa-chart-pie" style="display: inline-block; vertical-align: middle; margin-left: 10px; cursor: pointer; color: #306da6;"></i>
                   </a>
-                  <input th:if="${#lists.size(profiles) > 1}" type="checkbox" name="selectedProfiles" th:value="${profile.profileId}" style="margin-left: 15px;" />
+                  <input th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="checkbox" name="selectedProfiles" th:value="${profile.profileId}" style="margin-left: 15px;" />
                 </div>
 
               </li>
             </ul>
-            <button th:if="${#lists.size(profiles) > 1}" type="submit" style="background: none; border: none; padding: 0; cursor: pointer;"
+            <button th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="submit" style="background: none; border: none; padding: 0; cursor: pointer;"
             ><h3 style="display: inline; color: #306da6">Generate</h3> <i class="fa-solid fa-chart-column fa-2x" style="color: #306da6;"></i></button>
           </form>
         </div>
         <div th:if="${pieData}" id="myDiv" class="plot-container"></div><!-- Plotly chart will be rendered here -->
       </div>
     </div>
-    <div th:if="${barChart} != null">
+    <div th:if="${barChartData} != null">
       <br />
     </div>
-    <div id="barChartDiv" class="plot-container"></div>
+    <div th:if="${barChartData} != null" id="barChartDiv" class="form-container"
+    style="flex-direction: column; padding-top: 10px; height: 260px"></div>
 
     <script th:inline="javascript">
       function refreshTokenExpCount() {
@@ -1132,14 +1133,13 @@
         });
       });
 
+
       document.addEventListener("DOMContentLoaded", function () {
         const pieData = /*[[${pieData}]]*/ {};
-
         const labels = Object.keys(pieData);
         const values = Object.values(pieData).map((value) =>
           parseFloat(value.toFixed(2))
         );
-
         // Apply border-radius to the plot container
         const plotContainer = document.getElementById("myDiv");
         plotContainer.style.borderRadius = "6px"; // Rounded borders
@@ -1151,7 +1151,6 @@
             type: "pie",
           },
         ];
-
         const layout = {
           height: 240,
           width: 470,
@@ -1159,36 +1158,43 @@
           paper_bgcolor: "transparent",
           plot_bgcolor: "transparent",
         };
-
         Plotly.newPlot("myDiv", data, layout);
       });
 
+
       document.addEventListener("DOMContentLoaded", function () {
-      const barChartData = /*[[${barChartData}]]*/ {};
+  const barChartData = /*[[${barChartData}]]*/ {};
+  if (Object.keys(barChartData).length > 0) {
+    const profileNames = Object.keys(barChartData);
+    const costTypes = Object.keys(barChartData[profileNames[0]]);
+    const data = [];
 
-      if (Object.keys(barChartData).length > 0) {
-        const labels = Object.keys(barChartData);
-        const values = Object.values(barChartData).map((value) => parseFloat(value.toFixed(2)));
-
-        const data = [
-          {
-            x: labels,
-            y: values,
-            type: "bar",
-          },
-        ];
-
-        const layout = {
-          height: 400,
-          width: 600,
-          margin: { t: 10, b: 40, l: 40, r: 10 },
-          paper_bgcolor: "transparent",
-          plot_bgcolor: "transparent",
-        };
-
-        Plotly.newPlot("barChartDiv", data, layout);
-      }
+    // Create traces for each cost type
+    costTypes.forEach(costType => {
+      const trace = {
+        x: profileNames,
+        y: profileNames.map(profileName => barChartData[profileName][costType]),
+        name: costType,
+        type: 'bar'
+      };
+      data.push(trace);
     });
+
+    const layout = {
+      barmode: 'group',
+      xaxis: { title: 'Profiles' },
+      yaxis: { title: 'Cost $' },
+      bargap: 0.12,
+      height: 240,
+      width: 1500,
+      margin: { t: 10, b: 40, l: 70, r: 20 },
+      paper_bgcolor: "transparent",
+      plot_bgcolor: "transparent"
+    };
+
+    Plotly.newPlot("barChartDiv", data, layout);
+  }
+});
 
     </script>
   </body>
