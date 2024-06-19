@@ -987,6 +987,7 @@
                           </div>
 
                           <div th:if="${profile.totalCost} != null" style="padding-bottom: 10px">
+                              <input th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="checkbox" name="selectedProfiles" th:value="${profile.profileId}" style="margin-left: 15px;" />
                               <span style="display: inline-block; vertical-align: middle">
                                   Profile:
                                   <h3 style="display: inline">[[${profile.profileName}]]</h3>
@@ -999,7 +1000,7 @@
                               <a th:if="${user.isSuperUser || user.isAdmin}" th:href="@{/usersession/{userId}/profile/{profileId}/piechart(userId=${user.id}, profileId=${profile.profileId})}">
                                   <i class="fa-solid fa-chart-pie" style="display: inline-block; vertical-align: middle; margin-left: 10px; cursor: pointer; color: #306da6;"></i>
                               </a>
-                              <input th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="checkbox" name="selectedProfiles" th:value="${profile.profileId}" style="margin-left: 15px;" />
+                              
                           </div>
                       </li>
                   </ul>
@@ -1009,14 +1010,14 @@
                   <p id="error-message" style="color: red; display: none;">Please select at least one profile.</p>
               </form>
           </div>
-          <div th:if="${pieData}" id="myDiv" class="plot-container"></div><!-- Plotly chart will be rendered here -->
+          <div th:if="${pieData}" id="myDiv" class="plot-container"></div><!-- Pie chart will be rendered here -->
       </div>
     </div>
     <div th:if="${barChartData} != null">
       <br />
     </div>
     <div th:if="${barChartData!= null} " id="barChartDiv" class="form-container"
-    style="flex-direction: column; padding-top: 10px; height: 260px"></div>
+    style="flex-direction: column; padding-top: 10px; height: 260px"></div><!-- Pie chart will be rendered here -->
 
     <script th:inline="javascript">
 

@@ -57,7 +57,7 @@
         <p>It seems there was an issue with your session. Please try again or contact support if the issue persists.</p>
         <a href="/signin" class="btn">Go to Login</a>
         <a href="/registration" class="btn">Create an Account</a>
-        <a th:if="${#authorization.expression('isAuthenticated()')}" href="/usersession" class="btn">Go back to your session</a>
+        <a th:if="${#authorization.expression('isAuthenticated()') && !param.sessionexpired}" href="/usersession" class="btn">Go back to your session</a>
     </div>
     <script src="" async defer></script>
 </body>
