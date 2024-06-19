@@ -1,23 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org">
-  <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
-        <div th:if(unAuthorize)>
-                <h2>No estas autorizado</h2>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - MyCostLiving</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c3955; /* Blue background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #e74c3c;
+        }
+        h2, h3 {
+            color: #555;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Oops! Something went wrong.</h1>
+        <div th:if="${param.unAuthorized}">
+            <h2>You are not authorized to access this page.</h2>
         </div>
-        <div th:if(unAuthenticated)>
-            <h2>Aun no eres usuarion, create an account to have access</h2>
+        <div th:if="${param.unAuthenticated}">
+            <h2>You are not authenticated. Please create an account to access.</h2>
         </div>
-        <h1>Registration / Login Error</h1>
-        <h3>Hello World BLA BLA BLA</h3>
-
-        <script src="" async defer></script>
-    </body>
+        <p>It seems there was an issue with your session. Please try again or contact support if the issue persists.</p>
+        <a href="/signin" class="btn">Go to Login</a>
+        <a href="/registration" class="btn">Create an Account</a>
+        <a th:if="${#authorization.expression('isAuthenticated()')}" href="/usersession" class="btn">Go back to your session</a>
+    </div>
+    <script src="" async defer></script>
+</body>
 </html>
+ 

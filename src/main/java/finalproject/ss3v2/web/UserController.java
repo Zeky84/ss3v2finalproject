@@ -638,7 +638,7 @@ public class UserController {
             // Check if the authenticated user's ID matches the user ID from the URL to avoid unauthorized updates. just in case
             if (!authenticatedUser.getId().equals(userId)) {
                 // Redirect to an error page or a 'forbidden' page
-                return "redirect:/error"; //todo: make a nice desing view for this like the one pending for unauthorized and unauthenticated in the security config
+                return "redirect:/error?unAuthenticated"; // Redirect to an error page
             }
 
             User existingUser = userServiceImpl.findUserById(userId)

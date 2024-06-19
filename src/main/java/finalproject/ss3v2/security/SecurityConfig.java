@@ -67,12 +67,12 @@ public class SecurityConfig {
                 // Redirecting to denied page for unauthorized access user and unauthenticated users
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((request, response, authException) -> {
-                            // Redirect to signin for unauthenticated access
-                            response.sendRedirect("/homepage?unAuthenticated");// todo: change to nice desing page
+                            // Redirect to error for unauthenticated access
+                            response.sendRedirect("/error?unAuthenticated=true"); // redirect to error page(no controller)
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            // Redirect to homepage for unauthorized access
-                            response.sendRedirect("/homepage?unAuthorized");// todo: change to nice desing page
+                            // Redirect to error for unauthorized access
+                            response.sendRedirect("/error?unAuthorized=true"); // redirect to error page(no controller)
                         })
                 )
                 //-------------------------------------------------------------------------------------------

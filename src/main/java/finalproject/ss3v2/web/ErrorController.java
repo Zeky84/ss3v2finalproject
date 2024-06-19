@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ErrorController {
 // THIS CONTROLLER IS FOR TESTING PURPOSES
 
-    @GetMapping("error")
+    @GetMapping("/error")
     public String getErrorMessage () {
         return "error";
     }
 
-    @GetMapping("userExists")
+    @GetMapping("/userExists")
     public String getUserExistsMessage (Model model) {
         model.addAttribute("userExists",true);
         return "error";
