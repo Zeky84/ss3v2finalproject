@@ -965,59 +965,61 @@
     </div>
 
     <div
-      th:if="${profiles} !=null"
-      class="form-container"
-      style="flex-direction: column; padding-top: 10px; height: 260px"
+    th:if="${profiles} != null"
+    class="form-container"
+    style="flex-direction: column; padding-top: 10px; height: 260px"
     >
       <span>[[${user.firstName}]]'s profile's list:</span>
       <div class="form-container-inner">
-        <div class="scrollable-list-profile" id="profileList">
-          <form th:action="@{/usersession/{userId}/generateBarChart(userId=${user.id})}" method="post" id="profileSelectionForm">
-            <ul>
-              <li th:each="profile : ${profiles}">
-                <div th:if="${profile.totalCost} == null" style="padding-bottom: 10px">
-                  <span style="display: inline-block; vertical-align: middle">
-                    Profile:
-                    <h3 style="display: inline">[[${profile.profileName}]]</h3>
-                    Profile incomplete. Completed it or remove it.
-                  </span>
-                  <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
-                    <i class="fa-solid fa-trash-can" style="display: inline-block; vertical-align: middle; margin-left: 35px; cursor: pointer; color: #306da6;"></i>
-                  </a>
-                </div>
+          <div class="scrollable-list-profile" id="profileList">
+              <form th:action="@{/usersession/{userId}/generateBarChart(userId=${user.id})}" method="post" id="profileSelectionForm" onsubmit="return validateForm()">
+                  <ul>
+                      <li th:each="profile : ${profiles}">
+                          <div th:if="${profile.totalCost} == null" style="padding-bottom: 10px">
+                              <span style="display: inline-block; vertical-align: middle">
+                                  Profile:
+                                  <h3 style="display: inline">[[${profile.profileName}]]</h3>
+                                  Profile incomplete. Complete it or remove it.
+                              </span>
+                              <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
+                                  <i class="fa-solid fa-trash-can" style="display: inline-block; vertical-align: middle; margin-left: 35px; cursor: pointer; color: #306da6;"></i>
+                              </a>
+                          </div>
 
-                <div th:if="${profile.totalCost} != null" style="padding-bottom: 10px">
-                  <span style="display: inline-block; vertical-align: middle">
-                    Profile:
-                    <h3 style="display: inline">[[${profile.profileName}]]</h3>
-                    Total Cost by Utilities selected:
-                    <h3 style="display: inline">$[[${profile.totalCost}]]</h3>
-                  </span>
-                  <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
-                    <i class="fa-solid fa-trash-can" style="display: inline-block; vertical-align: middle; margin-left: 35px; cursor: pointer; color: #306da6;"></i>
-                  </a>
-                  <a th:if="${user.isSuperUser || user.isAdmin}" th:href="@{/usersession/{userId}/profile/{profileId}/piechart(userId=${user.id}, profileId=${profile.profileId})}">
-                    <i class="fa-solid fa-chart-pie" style="display: inline-block; vertical-align: middle; margin-left: 10px; cursor: pointer; color: #306da6;"></i>
-                  </a>
-                  <input th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="checkbox" name="selectedProfiles" th:value="${profile.profileId}" style="margin-left: 15px;" />
-                </div>
-
-              </li>
-            </ul>
-            <button th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="submit" style="background: none; border: none; padding: 0; cursor: pointer;"
-            ><h3 style="display: inline; color: #306da6">Generate</h3> <i class="fa-solid fa-chart-column fa-2x" style="color: #306da6;"></i></button>
-          </form>
-        </div>
-        <div th:if="${pieData}" id="myDiv" class="plot-container"></div><!-- Plotly chart will be rendered here -->
+                          <div th:if="${profile.totalCost} != null" style="padding-bottom: 10px">
+                              <span style="display: inline-block; vertical-align: middle">
+                                  Profile:
+                                  <h3 style="display: inline">[[${profile.profileName}]]</h3>
+                                  Total Cost by Utilities selected:
+                                  <h3 style="display: inline">$&nbsp;[[${profile.totalCost}]]</h3>
+                              </span>
+                              <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
+                                  <i class="fa-solid fa-trash-can" style="display: inline-block; vertical-align: middle; margin-left: 35px; cursor: pointer; color: #306da6;"></i>
+                              </a>
+                              <a th:if="${user.isSuperUser || user.isAdmin}" th:href="@{/usersession/{userId}/profile/{profileId}/piechart(userId=${user.id}, profileId=${profile.profileId})}">
+                                  <i class="fa-solid fa-chart-pie" style="display: inline-block; vertical-align: middle; margin-left: 10px; cursor: pointer; color: #306da6;"></i>
+                              </a>
+                              <input th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="checkbox" name="selectedProfiles" th:value="${profile.profileId}" style="margin-left: 15px;" />
+                          </div>
+                      </li>
+                  </ul>
+                  <button th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+                      <h3 style="display: inline; color: #306da6">Generate</h3> <i class="fa-solid fa-chart-column fa-2x" style="color: #306da6;"></i>
+                  </button>
+                  <p id="error-message" style="color: red; display: none;">Please select at least one profile.</p>
+              </form>
+          </div>
+          <div th:if="${pieData}" id="myDiv" class="plot-container"></div><!-- Plotly chart will be rendered here -->
       </div>
     </div>
     <div th:if="${barChartData} != null">
       <br />
     </div>
-    <div th:if="${barChartData} != null" id="barChartDiv" class="form-container"
+    <div th:if="${barChartData!= null} " id="barChartDiv" class="form-container"
     style="flex-direction: column; padding-top: 10px; height: 260px"></div>
 
     <script th:inline="javascript">
+
       function refreshTokenExpCount() {
         fetch(`/tokens/refreshtokenexptime`)
           .then((response) => response.text())
@@ -1058,9 +1060,10 @@
           })
           .catch((error) => console.error("Error fetching countdown:", error));
       }
-
       let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
       refreshTokenExpCount();
+
+
       function checkRefreshToken() {
         fetch("/tokens/newrefreshtoken")
           .then((response) => {
@@ -1086,6 +1089,7 @@
           .catch((error) => console.error("Error:", error));
       }
 
+
       function clearLocalStorage() {
         localStorage.clear();
         sessionStorage.clear();
@@ -1093,6 +1097,7 @@
       function activityDetected() {
         checkRefreshToken();
       }
+
 
       // Function to toggle the image and show/hide the info block  // Chat GPT 3.5 code
       function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
@@ -1106,6 +1111,7 @@
           if (infoBlock) infoBlock.style.display = "none"; // Hide the info block
         }
       }
+
 
       document.addEventListener("DOMContentLoaded", function () {
         // to display the submit button only when a radio button is selected
@@ -1163,38 +1169,48 @@
 
 
       document.addEventListener("DOMContentLoaded", function () {
-  const barChartData = /*[[${barChartData}]]*/ {};
-  if (Object.keys(barChartData).length > 0) {
-    const profileNames = Object.keys(barChartData);
-    const costTypes = Object.keys(barChartData[profileNames[0]]);
-    const data = [];
+      const barChartData = /*[[${barChartData}]]*/ {};
+      if (Object.keys(barChartData).length > 0) {
+        const profileNames = Object.keys(barChartData);
+        const costTypes = Object.keys(barChartData[profileNames[0]]);
+        const data = [];
 
-    // Create traces for each cost type
-    costTypes.forEach(costType => {
-      const trace = {
-        x: profileNames,
-        y: profileNames.map(profileName => barChartData[profileName][costType]),
-        name: costType,
-        type: 'bar'
-      };
-      data.push(trace);
+        // Create traces for each cost type
+        costTypes.forEach(costType => {
+          const trace = {
+            x: profileNames,
+            y: profileNames.map(profileName => barChartData[profileName][costType]),
+            name: costType,
+            type: 'bar'
+          };
+          data.push(trace);
+        });
+        const layout = {
+          barmode: 'group',
+          xaxis: { title: 'Profiles' },
+          yaxis: { title: 'Cost $' },
+          bargap: 0.12,
+          height: 240,
+          width: 1500,
+          margin: { t: 10, b: 40, l: 70, r: 20 },
+          paper_bgcolor: "transparent",
+          plot_bgcolor: "transparent"
+        };
+
+        Plotly.newPlot("barChartDiv", data, layout);
+      }
     });
 
-    const layout = {
-      barmode: 'group',
-      xaxis: { title: 'Profiles' },
-      yaxis: { title: 'Cost $' },
-      bargap: 0.12,
-      height: 240,
-      width: 1500,
-      margin: { t: 10, b: 40, l: 70, r: 20 },
-      paper_bgcolor: "transparent",
-      plot_bgcolor: "transparent"
-    };
-
-    Plotly.newPlot("barChartDiv", data, layout);
-  }
-});
+    function validateForm() {
+        const checkboxes = document.querySelectorAll('input[name="selectedProfiles"]:checked');
+        const errorMessage = document.getElementById('error-message');
+        if (checkboxes.length === 0) {
+            errorMessage.style.display = 'block';
+            return false; // Prevent form submission
+        }
+        errorMessage.style.display = 'none';
+        return true; // Allow form submission
+    }
 
     </script>
   </body>
