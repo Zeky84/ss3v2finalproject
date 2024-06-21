@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-
 @Table(name = "users")
 public class User implements UserDetails {
     private static final long serialVersionUID = 2025389852147750927L;
