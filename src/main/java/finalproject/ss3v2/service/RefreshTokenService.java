@@ -52,16 +52,16 @@ public class RefreshTokenService {
         //Note: Because i was having a list of tokens when requesting for the refresh token, i did have an error
         // when trying to get that token (many of them with the same user id), so i had to delete all the tokens before
         // the latest one
-        if (tokens.size() > 1) {
-            // Sort tokens by expiryDate
-            tokens.sort(Comparator.comparing(RefreshToken::getExpiryDate));
-
-            // Remove the newest token from the list (last item after sorting)
-            tokens.remove(tokens.size() - 1);
-
-            // Delete the older tokens
-            refreshTokenRepository.deleteAll(tokens);
-        }
+//        if (tokens.size() > 1) {
+//            // Sort tokens by expiryDate
+//            tokens.sort(Comparator.comparing(RefreshToken::getExpiryDate));
+//
+//            // Remove the newest token from the list (last item after sorting)
+//            tokens.remove(tokens.size() - 1);
+//
+//            // Delete the older tokens
+//            refreshTokenRepository.deleteAll(tokens);
+//        }
         return refreshToken;
     }
 
