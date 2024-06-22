@@ -107,8 +107,15 @@ public class RefreshTokenService {
         return timeLeft.getSeconds() <= secondsBeforeExpiry && !timeLeft.isNegative();
     }
     public RefreshToken findByUserId(Integer userId) {
-        // Find the refresh token by the user id so we can check if it's expired or not
-        return refreshTokenRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
+        // Find the refresh token by the user id, so we can check if it's expired or not
+        List<RefreshToken> tokens = refreshTokenRepository.findAllByUserId(userId);
+        if (tokens.isEmpty()) {
+            throw new IllegalArgumentException("Refresh token not found");
+        }
+        // Sort tokens by expiryDate
+        tokens.sort(Comparator.comparing(RefreshToken::getExpiryDate));
+        // Return the last token (most recent one)
+        return tokens.get(tokens.size() - 1);
     }
     public String refreshTokenExpirationTimeLeft(RefreshToken refreshToken) {
         // Returns the time left until the refresh token expires
