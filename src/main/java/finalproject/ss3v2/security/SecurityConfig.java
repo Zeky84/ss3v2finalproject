@@ -67,21 +67,21 @@ public class SecurityConfig {
                 // Redirecting to denied page for unauthorized access user and unauthenticated users
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((request, response, authException) -> {
-                            // Redirect to error for unauthenticated access
-                            response.sendRedirect("/error?unAuthenticated=true"); // redirect to error page(no controller)
+                            logger.error("Unauthenticated access attempt: " + authException.getMessage(), authException);
+                            response.sendRedirect("/error?unAuthenticated=true");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            // Redirect to error for unauthorized access
-                            response.sendRedirect("/error?unAuthorized=true"); // redirect to error page(no controller)
+                            logger.error("Unauthorized access attempt: " + accessDeniedException.getMessage(), accessDeniedException);
+                            response.sendRedirect("/error?unAuthorized=true");
                         })
                 )
                 //-------------------------------------------------------------------------------------------
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers("/homepage", "/registration", "/signin", "/error", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/usersession/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                         .requestMatchers("/edituser").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                         .requestMatchers("/success").authenticated()
-                        .requestMatchers("homepage", "/registration","/api/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .headers(header -> header.frameOptions(frameOption -> frameOption.disable()))

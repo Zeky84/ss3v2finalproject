@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -55,11 +55,11 @@
             <h2>You are not authenticated. Please create an account to access.</h2>
         </div>
         <p>It seems there was an issue with your session. Please try again or contact support if the issue persists.</p>
+        <a href="/homepage" class="btn">Go to Home</a>
         <a href="/signin" class="btn">Go to Login</a>
         <a href="/registration" class="btn">Create an Account</a>
-        <!-- <a th:if="${#authorization.expression('isAuthenticated()')} && ${param.sessionexpired != null ? !param.sessionexpired : true}" href="/usersession" class="btn">Go back to your session</a> -->
     </div>
     <script src="" async defer></script>
 </body>
-</html> -->
+</html>
  
