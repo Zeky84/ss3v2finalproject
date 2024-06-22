@@ -526,9 +526,9 @@ public class UserController {
             // Getting the profile to get the data to create the pie chart
             Profile profile = profileService.getProfileById(profileId);
             Map<String, Double> pieData = new HashMap<>();
+
             if (profile.getTotalCost() != null && profile.getTotalCost() > 0) {
                 double totalCost = profile.getTotalCost();
-
                 Map<String, Double> costMap = Map.of(
                         "RentCost", profile.getRentCost() != null ? profile.getRentCost() : 0.0,
                         "FuelCost", profile.getFuelCost() != null ? profile.getFuelCost() : 0.0,
@@ -539,7 +539,6 @@ public class UserController {
                         "NatGasCost", profile.getNaturalGasCost() != null ? profile.getNaturalGasCost() : 0.0,
                         "InternetCost", profile.getInternetCost() != null ? profile.getInternetCost() : 0.0
                 );
-
                 for (Map.Entry<String, Double> entry : costMap.entrySet()) {
                     Double cost = entry.getValue();
                     if (cost > 0) {

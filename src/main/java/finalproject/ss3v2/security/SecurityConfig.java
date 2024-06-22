@@ -68,11 +68,11 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((request, response, authException) -> {
                             // Redirect to error for unauthenticated access
-                            response.sendRedirect("/homepage?unAuthenticated=true"); // redirect to error page(no controller)todo: change to /error back
+                            response.sendRedirect("/error?unAuthenticated=true"); // redirect to error page(no controller)
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             // Redirect to error for unauthorized access
-                            response.sendRedirect("/homepage?unAuthorized=true"); // redirect to error page(no controller)todo: change to /error back
+                            response.sendRedirect("/error?unAuthorized=true"); // redirect to error page(no controller)
                         })
                 )
                 //-------------------------------------------------------------------------------------------
