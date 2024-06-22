@@ -1154,7 +1154,7 @@
         });
       });
 
-
+      // Plotly pie chart
       document.addEventListener("DOMContentLoaded", function () {
         const pieData = /*[[${pieData}]]*/ {};
         const labels = Object.keys(pieData);
@@ -1183,6 +1183,7 @@
       });
 
 
+      // Plotly bar chart
       document.addEventListener("DOMContentLoaded", function () {
       const barChartData = /*[[${barChartData}]]*/ {};
       if (Object.keys(barChartData).length > 0) {
@@ -1190,7 +1191,7 @@
         const costTypes = Object.keys(barChartData[profileNames[0]]);
         const data = [];
 
-        // Create traces for each cost type
+        //Bar chart data
         costTypes.forEach(costType => {
           const trace = {
             x: profileNames,

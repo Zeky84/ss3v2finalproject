@@ -527,33 +527,27 @@ public class UserController {
             Profile profile = profileService.getProfileById(profileId);
             Map<String, Double> pieData = new HashMap<>();
             if (profile.getTotalCost() != null && profile.getTotalCost() > 0) {
-                if (profile.getRentCost() > 0) {
-                    pieData.put("RentCost: " + "$" + profile.getRentCost(), (profile.getRentCost() / profile.getTotalCost()) * 100);
+                double totalCost = profile.getTotalCost();
+
+                Map<String, Double> costMap = Map.of(
+                        "RentCost", profile.getRentCost() != null ? profile.getRentCost() : 0.0,
+                        "FuelCost", profile.getFuelCost() != null ? profile.getFuelCost() : 0.0,
+                        "ElectCost", profile.getElectricityCost() != null ? profile.getElectricityCost() : 0.0,
+                        "WasteCost", profile.getWasteCost() != null ? profile.getWasteCost() : 0.0,
+                        "WaterCost", profile.getWaterCost() != null ? profile.getWaterCost() : 0.0,
+                        "TransCost", profile.getPublicTransportationCost() != null ? profile.getPublicTransportationCost() : 0.0,
+                        "NatGasCost", profile.getNaturalGasCost() != null ? profile.getNaturalGasCost() : 0.0,
+                        "InternetCost", profile.getInternetCost() != null ? profile.getInternetCost() : 0.0
+                );
+
+                for (Map.Entry<String, Double> entry : costMap.entrySet()) {
+                    Double cost = entry.getValue();
+                    if (cost > 0) {
+                        pieData.put(entry.getKey() + ": $" + cost, (cost / totalCost) * 100);
+                    }
                 }
-                if (profile.getFuelCost() > 0) {
-                    pieData.put("FuelCost: " + "$" + profile.getFuelCost(), (profile.getFuelCost() / profile.getTotalCost()) * 100);
-                }
-                if (profile.getElectricityCost() > 0) {
-                    pieData.put("ElectCost: " + "$" + profile.getElectricityCost(), (profile.getElectricityCost() / profile.getTotalCost()) * 100);
-                }
-                if (profile.getWasteCost() > 0) {
-                    pieData.put("WasteCost: " + "$" + profile.getWasteCost(), (profile.getWasteCost() / profile.getTotalCost()) * 100);
-                }
-                if (profile.getWaterCost() > 0) {
-                    pieData.put("WaterCost: " + "$" + profile.getWaterCost(), (profile.getWaterCost() / profile.getTotalCost()) * 100);
-                }
-                if (profile.getPublicTransportationCost() > 0) {
-                    pieData.put("TransCost: " + "$" + profile.getPublicTransportationCost(), (profile.getPublicTransportationCost() / profile.getTotalCost()) * 100);
-                }
-                if (profile.getNaturalGasCost() > 0) {
-                    pieData.put("NatGasCost: " + "$" + profile.getNaturalGasCost(), (profile.getNaturalGasCost() / profile.getTotalCost()) * 100);
-                }
-                if (profile.getInternetCost() > 0) {
-                    pieData.put("InternetCost: " + "$" + profile.getInternetCost(), (profile.getInternetCost() / profile.getTotalCost()) * 100);
-                }
+
                 model.addAttribute("pieData", pieData);
-
-
                 return "/usersession";
             }
 
