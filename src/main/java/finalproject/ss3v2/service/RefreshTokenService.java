@@ -52,16 +52,16 @@ public class RefreshTokenService {
         //Note: Because i was having a list of tokens when requesting for the refresh token, i did have an error
         // when trying to get that token (many of them with the same user id), so i had to delete all the tokens before
         // the latest one
-//        if (tokens.size() > 1) {
-//            // Sort tokens by expiryDate
-//            tokens.sort(Comparator.comparing(RefreshToken::getExpiryDate));
-//
-//            // Remove the newest token from the list (last item after sorting)
-//            tokens.remove(tokens.size() - 1);
-//
-//            // Delete the older tokens
-//            refreshTokenRepository.deleteAll(tokens);
-//        }
+        if (tokens.size() > 1) {
+            // Sort tokens by expiryDate
+            tokens.sort(Comparator.comparing(RefreshToken::getExpiryDate));
+
+            // Remove the newest token from the list (last item after sorting)
+            tokens.remove(tokens.size() - 1);
+
+            // Delete the older tokens
+            refreshTokenRepository.deleteAll(tokens);
+        }
         return refreshToken;
     }
 
@@ -107,15 +107,8 @@ public class RefreshTokenService {
         return timeLeft.getSeconds() <= secondsBeforeExpiry && !timeLeft.isNegative();
     }
     public RefreshToken findByUserId(Integer userId) {
-        // Find the refresh token by the user id, so we can check if it's expired or not
-        List<RefreshToken> tokens = refreshTokenRepository.findAllByUserId(userId);
-        if (tokens.isEmpty()) {
-            throw new IllegalArgumentException("Refresh token not found");
-        }
-        // Sort tokens by expiryDate
-        tokens.sort(Comparator.comparing(RefreshToken::getExpiryDate));
-        // Return the last token (most recent one)
-        return tokens.get(tokens.size() - 1);
+        // Find the refresh token by the user id so we can check if it's expired or not
+        return refreshTokenRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
     }
     public String refreshTokenExpirationTimeLeft(RefreshToken refreshToken) {
         // Returns the time left until the refresh token expires
