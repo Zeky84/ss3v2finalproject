@@ -90,6 +90,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     }
                 } catch (ExpiredJwtException e) {
                     try {
+                        assert refreshTokenCookie != null;
                         token = refreshTokenService.createNewAccessToken(new RefreshTokenRequest(refreshTokenCookie.getValue()));
                         accessTokenCookie = CookieUtils.createAccessTokenCookie(token);
 
