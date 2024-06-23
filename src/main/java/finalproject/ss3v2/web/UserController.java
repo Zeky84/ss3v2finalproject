@@ -547,13 +547,13 @@ public class UserController {
                 }
 
                 model.addAttribute("pieData", pieData);
-                return "/usersession";
+                return "usersession";
             }
 
             System.out.println("No data to create the pie chart");
             model.addAttribute("error", "No data to create the pie chart");
 
-            return "/usersession";
+            return "usersession";
         }
         return "redirect:/signin";
     }
