@@ -58,9 +58,31 @@
         transition: background-color 0.5s;
         margin-left: 5px;
         margin-right: 1px;
-        margin-top: 7px;
+        margin-top: 10px;
         height: 40px;
         width: 70px;
+      }
+      .button-like {
+        position: absolute;
+        right: 200px;
+        background-color: #e99b1d;
+        box-shadow: 0 0 6px #e99b1d;
+        border: none;
+        color: #3fa4db;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 0.5s;
+        margin-left: 5px;
+        margin-right: 5px;
+        margin-top: 10px;
+        height: 40px;
+        width: 140px;
+        line-height: 40px;
       }
       .button-signlogin:hover {
         background-color: #b8b8b8ce;
@@ -128,7 +150,14 @@
         <span style="color: #ffffff">YOU ARE IN THE RIGHT PLACE. </span> Let's
         find it together.
       </p>
-      <div class="button-container">
+      <div >
+        <button
+          class="button-like"
+          style="border-radius: 10px 10px 10px 10px"
+          onclick="location.href='/app-testing'"
+        >
+
+        </button>
         <button
           class="button-signlogin"
           style="border-radius: 10px 4px 4px 10px"
