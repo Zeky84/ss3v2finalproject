@@ -19,11 +19,7 @@ public class TestingProfile {
 
     private String location;
 
-
     private String stateCode;
-
-
-    private String profileName;
 
     private Double totalCost;
 

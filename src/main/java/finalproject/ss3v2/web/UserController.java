@@ -145,18 +145,20 @@ public class UserController {
             // Metro Data does not offer a State code cause some metro areas are associated with more than one state
             // and state code is need it to call to the EIA API and get  the elect rates by state. So we need to obtain
             // the state or states codes from metro_name.(CHANGE THIS FOR THE ZIP CODE STACK API when zip code is available)
-//            model.addAttribute("stateCodes", apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode));
             return "usersession";
         }
         return "redirect:/signin";
     }
 
     @GetMapping("/{userId}/metroarea/data/{dataEntityCode}/dataid/{dataindex}")
-// ENDPOINT METroAREA SEARCH CRITERIA FINAL DATA
+    // ENDPOINT METroAREA SEARCH CRITERIA FINAL DATA
     public String getSpecificDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model,
                                                  @PathVariable Integer dataindex, Authentication authentication) {
 
-        String stateCode;
+        String stateCode; // to store the state code when using zip code stack api. when metro-are have has more than one
+        // zip code associated with it, it's hard to get the state code. but having the zip code we can get the state code
+        // using the API zip code stack.
+
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);

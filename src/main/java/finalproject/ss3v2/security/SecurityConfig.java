@@ -81,7 +81,7 @@ public class SecurityConfig {
                         .requestMatchers("/usersession/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                         .requestMatchers("/edituser").hasAnyRole(Role.ADMIN.name(), Role.USER.name(), Role.SUPERUSER.name())
                         .requestMatchers("/success").authenticated()
-                        .requestMatchers("homepage", "/registration","/api/**").permitAll()
+                        .requestMatchers("homepage", "/registration","/api/**","/app-testing/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .headers(header -> header.frameOptions(frameOption -> frameOption.disable()))

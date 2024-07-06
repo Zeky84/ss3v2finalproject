@@ -1,232 +1,175 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
-  <head>
-    <title>mycostliving-homepage</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      src="https://kit.fontawesome.com/17e9292b04.js"
-      crossorigin="anonymous"
-    ></script>
-    <style>
-      body {
-        font-family: "Roboto", sans-serif;
-        background-color: #1c3955; /* Optional: background color for the overall page */
-        color: #306da6; /* Optional: default text color */
-        margin: 0;
-      }
-      .paragraph {
-        position: absolute;
-        font-size: 20px;
-        top: 0; /* Top of the container */
-        left: 45%; /* Center horizontally */
-        transform: translateX(-40%); /* Adjust horizontal position */
-        color: #c3e9ff;
-        /* filter: blur(1px); */
-      }
-      .button-signlogin {
-        font-family: "Roboto", sans-serif;
-        /* ... other button styles ... */
-        margin-top: 0; /* Adjust if needed to align with the image */
-      }
-      .container {
-        display: flex;
-        justify-content: space-between;
-      }
-      .gif-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        aspect-ratio: 25/9;
-      }
-      .button-signlogin {
-        font-family: "Roboto", sans-serif;
-        background-color: #ffffff;
-        border: none;
-        box-shadow: 0 0 6px #ffffff;
-        color: #3f90db;
-        padding: 2px 5px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 18px;
-        border-radius: 10px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-        margin-left: 5px;
-        margin-right: 1px;
-        margin-top: 10px;
-        height: 40px;
-        width: 70px;
-      }
-      .button-like {
-        position: absolute;
-        right: 200px;
-        background-color: #e99b1d;
-        box-shadow: 0 0 6px #e99b1d;
-        border: none;
-        color: #3fa4db;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 18px;
-        border-radius: 10px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-        margin-left: 5px;
-        margin-right: 5px;
-        margin-top: 10px;
-        height: 40px;
-        width: 140px;
-        line-height: 40px;
-      }
-      .button-signlogin:hover {
-        background-color: #b8b8b8ce;
-        box-shadow: 0 0 4px #b8b8b8ce;
-        font-size: 18px;
-      }
+<head>
+  <title>mycostliving-homepage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://kit.fontawesome.com/17e9292b04.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: "Roboto", sans-serif;
+      background-color: #1c3955;
+      color: #306da6;
+      margin: 0;
+    }
+    .paragraph {
+      position: absolute;
+      font-size: 20px;
+      top: 0;
+      left: 45%;
+      transform: translateX(-40%);
+      color: #c3e9ff;
+    }
+    .button-signlogin {
+      font-family: "Roboto", sans-serif;
+      margin-top: 0;
+    }
+    .container {
+      display: flex;
+      justify-content: space-between;
+    }
+    .gif-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      aspect-ratio: 25/9;
+    }
+    .button-signlogin {
+      font-family: "Roboto", sans-serif;
+      background-color: #ffffff;
+      border: none;
+      box-shadow: 0 0 6px #ffffff;
+      color: #3f90db;
+      padding: 2px 5px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+      margin-left: 5px;
+      margin-right: 1px;
+      margin-top: 10px;
+      height: 40px;
+      width: 70px;
+    }
+    .button-like {
+      position: absolute;
+      right: 200px;
+      background-color: #e99b1d;
+      box-shadow: 0 0 6px #e99b1d;
+      border: none;
+      color: #3f90db;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 10px;
+      height: 40px;
+      width: 150px;
+      line-height: 40px;
+      animation: blink 3s infinite;
+    }
+    .button-signlogin:hover {
+      background-color: #b8b8b8ce;
+      box-shadow: 0 0 4px #b8b8b8ce;
+      font-size: 18px;
+    }
+    
+    @keyframes blink {
+      0%, 100% { background-color: #e99b1d; }
+      50% { background-color: #ffffff; box-shadow: 0 0 6px #ffffff; }
+    }
+    .button-like:hover {
+      background-color: #b8b8b8ce;
+      box-shadow: 0 0 4px #b8b8b8ce;
+      font-size: 18px;
+    }
+    .button-container {
+      position: absolute;
+      margin-top: 10px;
+      right: 13px;
+    }
+    .image-container-column {
+      display: flex;
+      flex-direction: row;
+      font-size: 16px;
+    }
+    .image-paragraph {
+      position: center;
+      font-size: 12px;
+      color: #c3e9ff;
+      margin-left: 1px;
+    }
+    .image {
+      display: flex;
+      flex-direction: row;
+      justify-content: left;
+      margin-top: 7px;
+      margin-left: 15px;
+      height: 35px;
+    }
+    .icon {
+      display: flex;
+      flex-direction: row;
+      justify-content: left;
+      margin-left: 25px;
+      margin-top: 7px;
+      color: #ffffff;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .icon:hover {
+      display: flex;
+      flex-direction: row;
+      justify-content: left;
+      margin-left: 25px;
+      margin-top: 7px;
+      color: #b8b8b8ce;
+      text-decoration: none;
+    }
+  </style>
+</head>
 
-      .button-container {
-        position: absolute;
-        margin-top: 10px;
-        right: 13px;
-      }
-      .image-container-column {
-        display: flex;
-        flex-direction: row; /* Stack icon and text horizontally */
-        font-size: 16px;
-      }
-      .image-paragraph {
-        position: center;
-        font-size: 12px;
-        color: #c3e9ff;
-        margin-left: 1px;
-      }
-
-      .image {
-        display: flex;
-        flex-direction: row;
-        justify-content: left;
-        margin-top: 7px;
-        margin-left: 15px;
-        height: 35px;
-      }
-      .icon {
-        display: flex;
-        flex-direction: row;
-        justify-content: left;
-        margin-left: 25px;
-        margin-top: 7px;
-        color: #ffffff;
-        cursor: pointer;
-        text-decoration: none;
-      }
-      .icon:hover {
-        display: flex;
-        flex-direction: row;
-        justify-content: left;
-        margin-left: 25px;
-        margin-top: 7px;
-        color: #b8b8b8ce;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="container">
-      <img
-        src="/images/imagehome.png"
-        style="margin-left: 15px; margin-top: 15px"
-        alt="this is the logo used for the app 'MyLivingCost'"
-        aspect-ratio="1/1"
-      />
-      <p class="paragraph">
-        Curious about living cost where you're moving?
-        <span style="color: #ffffff">YOU ARE IN THE RIGHT PLACE. </span> Let's
-        find it together.
-      </p>
-      <div >
-        <button
-          class="button-like"
-          style="border-radius: 10px 10px 10px 10px"
-          onclick="location.href='/app-testing'"
-        >
-
-        </button>
-        <button
-          class="button-signlogin"
-          style="border-radius: 10px 4px 4px 10px"
-          onclick="location.href='/registration'"
-        >
-          Sign Up
-        </button>
-        <button
-          class="button-signlogin"
-          style="border-radius: 4px 10px 10px 4px"
-          onclick="location.href='/signin'"
-        >
-          Sign In
-        </button>
-      </div>
+<body>
+  <div class="container">
+    <img src="/images/imagehome.png" style="margin-left: 15px; margin-top: 15px" alt="this is the logo used for the app 'MyLivingCost'" aspect-ratio="1/1"/>
+    <p class="paragraph">
+      Curious about living cost where you're moving?
+      <span style="color: #ffffff">YOU ARE IN THE RIGHT PLACE. </span> Let's find it together.
+    </p>
+    <div>
+      <button class="button-like" style="border-radius: 10px 10px 10px 10px" onclick="location.href='/app-testing'">Test Demo Here</button>
+      <button class="button-signlogin" style="border-radius: 10px 4px 4px 10px" onclick="location.href='/registration'">Sign Up</button>
+      <button class="button-signlogin" style="border-radius: 4px 10px 10px 4px" onclick="location.href='/signin'">Sign In</button>
     </div>
-    <div class="gif-container">
-      <!-- <img
-        src="/images/homepage1.gif"
-        id="hoverGif"
-        onmouseover="changeGif()"
-        onmouseout="originalGif()"
-        alt="GIF Image"
-      /> -->
-      <img src="/images/homepage1.gif" id="hoverGif" alt="GIF Image" />
+  </div>
+  <div class="gif-container">
+    <img src="/images/homepage1.gif" id="hoverGif" alt="GIF Image"/>
+  </div>
+  <div class="image-container-column">
+    <div class="image" style="padding-left: 630px">
+      <span class="image-paragraph" style="font-size: 10px; padding-right: 10px">POWERED BY:</span>
+      <span class="image-paragraph"></span><img src="/images/poweredByCC.png"/>
     </div>
-    <div class="image-container-column">
-      <div class="image" style="padding-left: 630px">
-        <span
-          class="image-paragraph"
-          style="font-size: 10px; padding-right: 10px"
-          >POWERED BY:</span
-        >
-        <span class="image-paragraph"></span
-        ><img src="/images/poweredByCC.png" />
-      </div>
-      <div class="image">
-        <img src="/images/poweredByHU.png" />
-      </div>
-      <div class="image">
-        <img src="/images/poweredByEIA.png" />
-      </div>
-      <div class="image">
-        <img src="/images/poweredByZCS.png" />
-      </div>
-      <div class="icon" style="padding-left: 500px">
-        <span >
-          <a class="icon" href="https://github.com/Zeky84/ss3v2finalproject" target="_blank"
-            ><i class="fa-brands fa-github fa-2x"></i
-          ></a>
-        </span>
-        <span >
-          <a class="icon"
-            href="https://www.linkedin.com/in/ezequiel-fernandez-76134110a/"
-            target="_blank"
-            ><i class="fa-brands fa-linkedin fa-2x"></i>
-          </a>
-        </span>
-      </div>
+    <div class="image"><img src="/images/poweredByHU.png"/></div>
+    <div class="image"><img src="/images/poweredByEIA.png"/></div>
+    <div class="image"><img src="/images/poweredByZCS.png"/></div>
+    <div class="icon" style="padding-left: 500px">
+      <span>
+        <a class="icon" href="https://github.com/Zeky84/ss3v2finalproject" target="_blank"><i class="fa-brands fa-github fa-2x"></i></a>
+      </span>
+      <span>
+        <a class="icon" href="https://www.linkedin.com/in/ezequiel-fernandez-76134110a/" target="_blank"><i class="fa-brands fa-linkedin fa-2x"></i></a>
+      </span>
     </div>
-
-    <script>
-      // function changeGif() {
-      //   document.getElementById("hoverGif").src = "/images/homepage.gif"; // path to the new gif
-      // }
-
-      // function originalGif() {
-      //   document.getElementById("hoverGif").src = "/images/homepage1.gif"; // path to the original gif
-      // }
-    </script>
-  </body>
+  </div>
+</body>
 </html>
