@@ -69,7 +69,6 @@ public class TestingController {
     public String getSpecificDataByMetroAreaCode(@PathVariable String dataEntityCode, Model model,
                                                  @PathVariable Integer dataindex) {
 
-        TestingProfile testingProfile = new TestingProfile();
         String stateCode;
 
         //to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
@@ -106,12 +105,6 @@ public class TestingController {
             model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                     .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
 
-            //Setting the profile state code from the zip code(zip code stack api)
-            testingProfile.setStateCode(stateCode);
-
-            //Setting the profile name and location when zip code is available
-            testingProfile.setLocation("Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
-                    .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
         }
         // to manage when the data has only one basic data object
         if (basicData.size() == 1) {
@@ -123,15 +116,7 @@ public class TestingController {
             model.addAttribute("stateCode", stateCode);
             model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
 
-            //Setting the profile state code from the hud user api(original to get a list of states associated with the metro area)
-            // now taken the first state code from the list. Because here only exists one set of data
-            testingProfile.setStateCode(stateCode);
-
-            testingProfile.setLocation("Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
-                    .getMetroName());
         }
-
-        model.addAttribute("profile", testingProfile);
 
         return "app-testing";
     }

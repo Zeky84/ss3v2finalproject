@@ -70,7 +70,7 @@
           .button-like {
             position: absolute;
             top: 10px;
-            right: 237px;
+            right: 200px;
             background-color: #d6effd;
             box-shadow: 0 0 6px #d6effd;
             border: none;
@@ -87,7 +87,7 @@
             margin-right: 5px;
             margin-top: 7px;
             height: 40px;
-            width: 100px;
+            width: 160px;
             line-height: 40px;
           }
           .submit-button {
@@ -298,10 +298,7 @@
           </div>
 
           <div>
-            <a
-              href="/homepage"
-              class="button-like"
-              style="top: 10px; right: 123px"
+            <a href="/homepage" class="button-like" style="top: 10px"
               >Goto Homepage</a
             >
           </div>
@@ -496,11 +493,19 @@
           <form th:action="@{/app-testing/profile/create}" method="post">
             <div class="icon-row">
               <div class="icon-text-container-row">
-                <diV>
-                    <input type="hidden" th:name="location" th:value="${location}" />
-                    <input type="hidden" th:name="stateCode" th:value="${stateCode}" />
-                </diV>
-                
+                <div>
+                  <input
+                    type="hidden"
+                    th:name="location"
+                    th:value="${location}"
+                  />
+                  <input
+                    type="hidden"
+                    th:name="stateCode"
+                    th:value="${stateCode}"
+                  />
+                </div>
+
                 <div class="icon-text-container-column">
                   <label class="label">Rent cost</label>
                   <img
@@ -921,11 +926,10 @@
         </div>
 
         <div
-          th:if="${profile} != null"
+          th:if="${profile}"
           class="form-container"
           style="flex-direction: column; padding-top: 10px; height: 260px"
         >
-          <span>profile created for location: [[${location}]]</span>
           <div class="form-container-inner">
             <form
               th:action="@{/app-testing/profile/create/generateBarChart}"
@@ -933,9 +937,8 @@
               id="profileSelectionForm"
               onsubmit="return validateForm()"
             >
-
               <div
-                th:if="${profile.totalCost} != null"
+                th:if="${profile.totalCost != null}"
                 style="padding-bottom: 10px"
               >
                 <input
@@ -945,14 +948,13 @@
                   style="margin-left: 15px"
                 />
                 <span style="display: inline-block; vertical-align: middle">
-                  Profile: Total Cost by Utilities selected:
+                  Profile for [[${profile.location}]]: Total Cost by Utilities
+                  selected:
                   <h3 style="display: inline">
                     $&nbsp;[[${profile.totalCost}]]
                   </h3>
                 </span>
-                <a
-                  th:href="@{/app-testing/profile/create/piechart}"
-                >
+                <a th:href="@{/app-testing/profile/create/piechart}">
                   <i
                     class="fa-solid fa-chart-pie"
                     style="
