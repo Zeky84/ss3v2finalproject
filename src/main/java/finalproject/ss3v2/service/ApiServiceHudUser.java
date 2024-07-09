@@ -53,7 +53,7 @@ public class ApiServiceHudUser {
         // Fetch the states and metro areas from the HUD User API when the application starts and
         // save them into the DBs
         try {
-            if (stateRepository.count() == 0 && metroAreaRepository.count() == 0) {
+            if (stateRepository.count() == 0 && metroAreaRepository.count() == 0) {// Only fetch data if the tables are empty. Good for deployment.
                 RestTemplate rt = new RestTemplate();
                 HttpHeaders headers = createHeaders();
                 HttpEntity<String> entity = new HttpEntity<>(headers);

@@ -41,17 +41,21 @@ public class AdminController {
 
 
 
-    public void createAdminUser() {
-        User adminUser = new User();
-        adminUser.setFirstName("Admin");
-        adminUser.setLastName("User");
-        adminUser.setEmail("admin");
-        adminUser.setPassword(passwordEncoder.encode("admin"));
-        Authority adminAuth = new Authority("ROLE_ADMIN", adminUser);
-        adminUser.setAuthorities(Collections.singletonList(adminAuth));
-        adminUser.setAdmin(true);// added to the original code
-        adminUser.setUser(true);// added to the original code
-        userServiceImpl.save(adminUser);
+    public void createAdminUser() {// This method is used to create an admin user during application startup, if admin already created,
+        // then it will not create again, this is to avoid creating multiple admin users when deploying the application the app and updating the database
+        if(userServiceImpl.findUserByEmail("admin").isEmpty()) {
+            User adminUser = new User();
+            adminUser.setFirstName("Admin");
+            adminUser.setLastName("User");
+            adminUser.setEmail("admin");
+            adminUser.setPassword(passwordEncoder.encode("admin"));
+            Authority adminAuth = new Authority("ROLE_ADMIN", adminUser);
+            adminUser.setAuthorities(Collections.singletonList(adminAuth));
+            adminUser.setAdmin(true);// added to the original code
+            adminUser.setUser(true);// added to the original code
+            userServiceImpl.save(adminUser);
+        }
+
     }
 
     @GetMapping("/dashboard")

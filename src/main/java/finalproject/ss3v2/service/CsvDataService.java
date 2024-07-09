@@ -25,33 +25,41 @@ public class CsvDataService {
     }
 
     public void createDbWithCsvData() {
-        // This method will create the database with the data from the csv file
-        String csvFile = "UtilitiesCostStatesManualFed.csv";
-        String line = "";
-        String cvsSplitBy = ",";
+        if(utilitiesRepository.count()==0){// I was having an error because in deployment to avoid overwriting the data in the database
+            // i was using none and it was creating a double record in the db, finding a double values of each state, with this if condition is done, the same i used for
+            //states and metro areas
+            // This method will create the database with the data from the csv file
+            String csvFile = "UtilitiesCostStatesManualFed.csv";
+            String line = "";
+            String cvsSplitBy = ",";
 
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            String headerLine = br.readLine();
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(cvsSplitBy);
-                Utilities utilities = new Utilities();
-                utilities.setStateCode(data[0]);
-                utilities.setStateName(data[1]);
-                utilities.setGasRegularCost(Double.parseDouble(data[2]));
-                utilities.setGasMidGradeCost(Double.parseDouble(data[3]));
-                utilities.setGasPremiumCost(Double.parseDouble(data[4]));
-                utilities.setGasDieselCost(Double.parseDouble(data[5]));
-                utilities.setMonthlyWaterCost(Double.parseDouble(data[6]));
-                utilities.setMonthlyInternetCost(Double.parseDouble(data[7]));
-                utilities.setMonthlyNaturalGasCost(Double.parseDouble(data[8]));
-                utilities.setMonthlyWasteCost(Double.parseDouble(data[9]));
-                utilities.setPublicTransportationCost(Double.parseDouble(data[10]));
-                utilitiesRepository.save(utilities);
+            try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+                String headerLine = br.readLine();
+                while ((line = br.readLine()) != null) {
+                    String[] data = line.split(cvsSplitBy);
+                    Utilities utilities = new Utilities();
+                    utilities.setStateCode(data[0]);
+                    utilities.setStateName(data[1]);
+                    utilities.setGasRegularCost(Double.parseDouble(data[2]));
+                    utilities.setGasMidGradeCost(Double.parseDouble(data[3]));
+                    utilities.setGasPremiumCost(Double.parseDouble(data[4]));
+                    utilities.setGasDieselCost(Double.parseDouble(data[5]));
+                    utilities.setMonthlyWaterCost(Double.parseDouble(data[6]));
+                    utilities.setMonthlyInternetCost(Double.parseDouble(data[7]));
+                    utilities.setMonthlyNaturalGasCost(Double.parseDouble(data[8]));
+                    utilities.setMonthlyWasteCost(Double.parseDouble(data[9]));
+                    utilities.setPublicTransportationCost(Double.parseDouble(data[10]));
+                    utilitiesRepository.save(utilities);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+
             }
-        } catch (IOException e) {
-            e.printStackTrace();
 
-        }
+    }else{
+        System.out.println("The database is already populated with the utilities data");
+    }
+
 
     }
 }
