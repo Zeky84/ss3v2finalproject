@@ -1,16 +1,12 @@
 package finalproject.ss3v2.web;
 
-
-import finalproject.ss3v2.domain.Profile;
-import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.dto.BasicData;
 import finalproject.ss3v2.dto.TestingProfile;
 import finalproject.ss3v2.repository.UtilitiesRepository;
 import finalproject.ss3v2.service.ApiServiceEnergyInfoAdmin;
 import finalproject.ss3v2.service.ApiServiceHudUser;
 import finalproject.ss3v2.service.ApiServiceZipCodeStack;
-import jakarta.persistence.Table;
-import org.springframework.security.core.Authentication;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -40,6 +36,7 @@ public class TestingController {
         this.utilitiesRepository = utilitiesRepository;
 
     }
+    TestingProfile myTestingProfile = new TestingProfile();//to store the profile created by the user to be used in the pie chart and bar chart endpoints.
 
     @GetMapping("")
     public String goToUserSession(Model model, ModelMap modelMap) {
@@ -273,51 +270,52 @@ public class TestingController {
         testingProfile.setInternetCost(internetType);
         testingProfile.setTotalCost((double) Math.round(rentType + (fuelType * fuelQty) + testingProfile.getElectricityCost() + wasteType + waterType + transpType + gasType + internetType));
 
+        myTestingProfile = testingProfile;
         redirectAttributes.addFlashAttribute("profile", testingProfile);
         return "redirect:/app-testing";
     }
 
-//    @GetMapping("/profile/create/piechart")
-//    public String generatePieChart( Model model,@RequestParam String profile ) {
-//
-//            // Adding the states and metro areas to the html view
-//            model.addAttribute("states", apiServiceHudUser.getStatesList());
-//            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
-//
-//
-//
-//            // Getting the profile to get the data to create the pie chart
-//        TestingProfile profile = (TestingProfile) model.getAttribute("profile");
-//            Map<String, Double> pieData = new HashMap<>();
-//
-//            if (profile.getTotalCost() != null && profile.getTotalCost() > 0) {
-//                double totalCost = profile.getTotalCost();
-//                Map<String, Double> costMap = Map.of(
-//                        "RentCost", profile.getRentCost() != null ? profile.getRentCost() : 0.0,
-//                        "FuelCost", profile.getFuelCost() != null ? profile.getFuelCost() : 0.0,
-//                        "ElectCost", profile.getElectricityCost() != null ? profile.getElectricityCost() : 0.0,
-//                        "WasteCost", profile.getWasteCost() != null ? profile.getWasteCost() : 0.0,
-//                        "WaterCost", profile.getWaterCost() != null ? profile.getWaterCost() : 0.0,
-//                        "TransCost", profile.getPublicTransportationCost() != null ? profile.getPublicTransportationCost() : 0.0,
-//                        "NatGasCost", profile.getNaturalGasCost() != null ? profile.getNaturalGasCost() : 0.0,
-//                        "InternetCost", profile.getInternetCost() != null ? profile.getInternetCost() : 0.0
-//                );
-//                for (Map.Entry<String, Double> entry : costMap.entrySet()) {
-//                    Double cost = entry.getValue();
-//                    if (cost > 0) {
-//                        pieData.put(entry.getKey() + ": $" + cost, (cost / totalCost) * 100);
-//                    }
-//                }
-//
-//                model.addAttribute("pieData", pieData);
-//                return "app-testing";
-//            }
-//
-//            System.out.println("No data to create the pie chart");
-//            model.addAttribute("error", "No data to create the pie chart");
-//
-//            return "app-testing";
-//        }
+    @GetMapping("/profile/create/piechart")
+    public String generatePieChart( Model model) {
+
+            // Adding the states and metro areas to the html view
+            model.addAttribute("states", apiServiceHudUser.getStatesList());
+            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+
+
+
+            // Getting the profile to get the data to create the pie chart
+        TestingProfile profile = myTestingProfile;
+            Map<String, Double> pieData = new HashMap<>();
+
+            if (profile.getTotalCost() != null && profile.getTotalCost() > 0) {
+                double totalCost = profile.getTotalCost();
+                Map<String, Double> costMap = Map.of(
+                        "RentCost", profile.getRentCost() != null ? profile.getRentCost() : 0.0,
+                        "FuelCost", profile.getFuelCost() != null ? profile.getFuelCost() : 0.0,
+                        "ElectCost", profile.getElectricityCost() != null ? profile.getElectricityCost() : 0.0,
+                        "WasteCost", profile.getWasteCost() != null ? profile.getWasteCost() : 0.0,
+                        "WaterCost", profile.getWaterCost() != null ? profile.getWaterCost() : 0.0,
+                        "TransCost", profile.getPublicTransportationCost() != null ? profile.getPublicTransportationCost() : 0.0,
+                        "NatGasCost", profile.getNaturalGasCost() != null ? profile.getNaturalGasCost() : 0.0,
+                        "InternetCost", profile.getInternetCost() != null ? profile.getInternetCost() : 0.0
+                );
+                for (Map.Entry<String, Double> entry : costMap.entrySet()) {
+                    Double cost = entry.getValue();
+                    if (cost > 0) {
+                        pieData.put(entry.getKey() + ": $" + cost, (cost / totalCost) * 100);
+                    }
+                }
+                model.addAttribute("profile", profile);
+                model.addAttribute("pieData", pieData);
+                return "app-testing";
+            }
+
+            System.out.println("No data to create the pie chart");
+            model.addAttribute("error", "No data to create the pie chart");
+
+            return "app-testing";
+        }
 
 
 }
