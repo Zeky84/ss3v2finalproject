@@ -1,5 +1,7 @@
 package finalproject.ss3v2.web;
 
+import finalproject.ss3v2.domain.Profile;
+import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.dto.BasicData;
 import finalproject.ss3v2.dto.TestingProfile;
 import finalproject.ss3v2.repository.UtilitiesRepository;
@@ -7,12 +9,14 @@ import finalproject.ss3v2.service.ApiServiceEnergyInfoAdmin;
 import finalproject.ss3v2.service.ApiServiceHudUser;
 import finalproject.ss3v2.service.ApiServiceZipCodeStack;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +40,8 @@ public class TestingController {
         this.utilitiesRepository = utilitiesRepository;
 
     }
-    TestingProfile myTestingProfile = new TestingProfile();//to store the profile created by the user to be used in the pie chart and bar chart endpoints.
+
+    private TestingProfile myTestingProfile = new TestingProfile();//to store the profile created by the user to be used in the pie chart and bar chart endpoints.
 
     @GetMapping("")
     public String goToUserSession(Model model, ModelMap modelMap) {
@@ -203,10 +208,8 @@ public class TestingController {
                                             @RequestParam(required = false) Double wasteType, @RequestParam(required = false) Double waterType,
                                             @RequestParam(required = false) Double transpType, @RequestParam(required = false) Double gasType,
                                             @RequestParam(required = false) Double internetType, @RequestParam(required = false) Integer fuelQty,
-                                            @RequestParam(required = false) Integer personsQty,@RequestParam String location,
-                                            @RequestParam String stateCode,  RedirectAttributes redirectAttributes) {
-
-        TestingProfile testingProfile = new TestingProfile();
+                                            @RequestParam(required = false) Integer personsQty, @RequestParam String location,
+                                            @RequestParam String stateCode, RedirectAttributes redirectAttributes) {
 
         //Checking no null values before updating the profile(null values are set to 0)
         if (rentType == null) {
@@ -235,87 +238,117 @@ public class TestingController {
         }
 
 
-        testingProfile.setLocation(location);
-        testingProfile.setStateCode(stateCode);
-        testingProfile.setRentCost(rentType);
+        myTestingProfile.setLocation(location);
+        myTestingProfile.setStateCode(stateCode);
+        myTestingProfile.setRentCost(rentType);
         // Setting the values up to two decimal places
-        testingProfile.setFuelCost(Math.round(fuelType * fuelQty * 100.0) / 100.0);
+        myTestingProfile.setFuelCost(Math.round(fuelType * fuelQty * 100.0) / 100.0);
 
         // Setting the elect cost is complicated based in all the aspects to consider and this approach is not
         // the objective of this project, however we did try our best to provide approximated values based on household
         // members
         if (personsQty == 0) {
-            testingProfile.setElectricityCost(0.0);
+            myTestingProfile.setElectricityCost(0.0);
         }
         if (personsQty == 1) {
-            testingProfile.setElectricityCost((double) Math.round(electType * 850 * 0.01));
+            myTestingProfile.setElectricityCost((double) Math.round(electType * 850 * 0.01));
         }
         if (personsQty == 2) {
-            testingProfile.setElectricityCost((double) Math.round(electType * 960 * 0.01));
+            myTestingProfile.setElectricityCost((double) Math.round(electType * 960 * 0.01));
         }
         if (personsQty == 3) {
-            testingProfile.setElectricityCost((double) Math.round(electType * 1160 * 0.01));
+            myTestingProfile.setElectricityCost((double) Math.round(electType * 1160 * 0.01));
         }
         if (personsQty == 4) {
-            testingProfile.setElectricityCost((double) Math.round(electType * 1320 * 0.01));
+            myTestingProfile.setElectricityCost((double) Math.round(electType * 1320 * 0.01));
         }
         if (personsQty >= 5) {
-            testingProfile.setElectricityCost((double) Math.round(electType * 1500 * 0.01));
+            myTestingProfile.setElectricityCost((double) Math.round(electType * 1500 * 0.01));
         }
 
-        testingProfile.setWasteCost(wasteType);
-        testingProfile.setWaterCost(waterType);
-        testingProfile.setPublicTransportationCost(transpType);
-        testingProfile.setNaturalGasCost(gasType);
-        testingProfile.setInternetCost(internetType);
-        testingProfile.setTotalCost((double) Math.round(rentType + (fuelType * fuelQty) + testingProfile.getElectricityCost() + wasteType + waterType + transpType + gasType + internetType));
+        myTestingProfile.setWasteCost(wasteType);
+        myTestingProfile.setWaterCost(waterType);
+        myTestingProfile.setPublicTransportationCost(transpType);
+        myTestingProfile.setNaturalGasCost(gasType);
+        myTestingProfile.setInternetCost(internetType);
+        myTestingProfile.setTotalCost((double) Math.round(rentType + (fuelType * fuelQty) + myTestingProfile.getElectricityCost() + wasteType + waterType + transpType + gasType + internetType));
 
-        myTestingProfile = testingProfile;
-        redirectAttributes.addFlashAttribute("profile", testingProfile);
+        redirectAttributes.addFlashAttribute("profile", myTestingProfile);
         return "redirect:/app-testing";
     }
 
     @GetMapping("/profile/create/piechart")
-    public String generatePieChart( Model model) {
+    public String generatePieChart(Model model) {
 
-            // Adding the states and metro areas to the html view
-            model.addAttribute("states", apiServiceHudUser.getStatesList());
-            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+        // Adding the states and metro areas to the html view
+        model.addAttribute("states", apiServiceHudUser.getStatesList());
+        model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
 
 
+        // Getting the myTestingProfile from local variable to get the data to create the pie chart
+        Map<String, Double> pieData = new HashMap<>();
 
-            // Getting the profile to get the data to create the pie chart
-        TestingProfile profile = myTestingProfile;
-            Map<String, Double> pieData = new HashMap<>();
-
-            if (profile.getTotalCost() != null && profile.getTotalCost() > 0) {
-                double totalCost = profile.getTotalCost();
-                Map<String, Double> costMap = Map.of(
-                        "RentCost", profile.getRentCost() != null ? profile.getRentCost() : 0.0,
-                        "FuelCost", profile.getFuelCost() != null ? profile.getFuelCost() : 0.0,
-                        "ElectCost", profile.getElectricityCost() != null ? profile.getElectricityCost() : 0.0,
-                        "WasteCost", profile.getWasteCost() != null ? profile.getWasteCost() : 0.0,
-                        "WaterCost", profile.getWaterCost() != null ? profile.getWaterCost() : 0.0,
-                        "TransCost", profile.getPublicTransportationCost() != null ? profile.getPublicTransportationCost() : 0.0,
-                        "NatGasCost", profile.getNaturalGasCost() != null ? profile.getNaturalGasCost() : 0.0,
-                        "InternetCost", profile.getInternetCost() != null ? profile.getInternetCost() : 0.0
-                );
-                for (Map.Entry<String, Double> entry : costMap.entrySet()) {
-                    Double cost = entry.getValue();
-                    if (cost > 0) {
-                        pieData.put(entry.getKey() + ": $" + cost, (cost / totalCost) * 100);
-                    }
+        if (myTestingProfile.getTotalCost() != null && myTestingProfile.getTotalCost() > 0) {
+            double totalCost = myTestingProfile.getTotalCost();
+            Map<String, Double> costMap = Map.of(
+                    "RentCost", myTestingProfile.getRentCost() != null ? myTestingProfile.getRentCost() : 0.0,
+                    "FuelCost", myTestingProfile.getFuelCost() != null ? myTestingProfile.getFuelCost() : 0.0,
+                    "ElectCost", myTestingProfile.getElectricityCost() != null ? myTestingProfile.getElectricityCost() : 0.0,
+                    "WasteCost", myTestingProfile.getWasteCost() != null ? myTestingProfile.getWasteCost() : 0.0,
+                    "WaterCost", myTestingProfile.getWaterCost() != null ? myTestingProfile.getWaterCost() : 0.0,
+                    "TransCost", myTestingProfile.getPublicTransportationCost() != null ? myTestingProfile.getPublicTransportationCost() : 0.0,
+                    "NatGasCost", myTestingProfile.getNaturalGasCost() != null ? myTestingProfile.getNaturalGasCost() : 0.0,
+                    "InternetCost", myTestingProfile.getInternetCost() != null ? myTestingProfile.getInternetCost() : 0.0
+            );
+            for (Map.Entry<String, Double> entry : costMap.entrySet()) {
+                Double cost = entry.getValue();
+                if (cost > 0) {
+                    pieData.put(entry.getKey() + ": $" + cost, (cost / totalCost) * 100);
                 }
-                model.addAttribute("profile", profile);
-                model.addAttribute("pieData", pieData);
-                return "app-testing";
             }
-
-            System.out.println("No data to create the pie chart");
-            model.addAttribute("error", "No data to create the pie chart");
-
+            model.addAttribute("profile", myTestingProfile);
+            model.addAttribute("pieData", pieData);
             return "app-testing";
         }
+
+        System.out.println("No data to create the pie chart");
+        model.addAttribute("error", "No data to create the pie chart");
+
+        return "app-testing";
+    }
+
+    @PostMapping("/profile/create/generateBarChart")
+    public String processSelectedProfiles(Model model, RedirectAttributes redirectAttributes) {
+        // Adding the states and metro areas to the html view
+        model.addAttribute("states", apiServiceHudUser.getStatesList());
+        model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+
+        List<TestingProfile> profiles =  new ArrayList<>(); // It doesn't have sense to create a list here to add only one profile,
+        // but it is done like that because I'm lazy and don't want to change the code in the html view to accept a single object
+        profiles.add(myTestingProfile);
+
+        Map<String, Map<String, Double>> barChartData = new HashMap<>();
+        for (TestingProfile profile : profiles) {
+            Map<String, Double> profileData = new HashMap<>();
+            profileData.put("rentCost", profile.getRentCost() != null ? profile.getRentCost() : 0.0);
+            profileData.put("fuelCost", profile.getFuelCost() != null ? profile.getFuelCost() : 0.0);
+            profileData.put("electricityCost", profile.getElectricityCost() != null ? profile.getElectricityCost() : 0.0);
+            profileData.put("wasteCost", profile.getWasteCost() != null ? profile.getWasteCost() : 0.0);
+            profileData.put("waterCost", profile.getWaterCost() != null ? profile.getWaterCost() : 0.0);
+            profileData.put("publicTransportationCost", profile.getPublicTransportationCost() != null ? profile.getPublicTransportationCost() : 0.0);
+            profileData.put("naturalGasCost", profile.getNaturalGasCost() != null ? profile.getNaturalGasCost() : 0.0);
+            profileData.put("internetCost", profile.getInternetCost() != null ? profile.getInternetCost() : 0.0);
+            profileData.put("totalCost", profile.getTotalCost() != null ? profile.getTotalCost() : 0.0);
+
+            barChartData.put("testing session/Profile" + myTestingProfile.getLocation(), profileData);
+        }
+
+        redirectAttributes.addFlashAttribute("profile", myTestingProfile);
+        redirectAttributes.addFlashAttribute("barChartData", barChartData);
+
+        return "redirect:/app-testing";
+
+    }
 
 
 }

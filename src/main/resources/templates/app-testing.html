@@ -283,6 +283,44 @@
             width: 500px;
             height: 260px;
           }
+          .tooltip {
+            position: relative;
+            display: inline-block;
+          }
+
+          .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: rgba(179, 190, 211, 0.8); /* Add transparency here */
+            font-size: 13px;
+            color: #306da6;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Position the tooltip above the icon */
+            left: 50%;
+            margin-left: -110px; /* Use half of the width to center the tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+          }
+
+          .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%; /* At the bottom of the tooltip */
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+          }
+
+          .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+          }
         </style>
       </head>
       <body>
@@ -295,6 +333,10 @@
           />
           <div class="paragraph">
             <p>Testing Session</p>
+            <p>
+              All functionalities can be tested but you're not allow to saves
+              profiles and compare them
+            </p>
           </div>
 
           <div>
@@ -928,7 +970,7 @@
         <div
           th:if="${profile}"
           class="form-container"
-          style="flex-direction: column; padding-top: 10px; height: 260px"
+          style="flex-direction: column; padding-top: 10px; height: 200px"
         >
           <div class="form-container-inner">
             <form
@@ -954,7 +996,7 @@
                     $&nbsp;[[${profile.totalCost}]]
                   </h3>
                 </span>
-                <a th:href="@{/app-testing/profile/create/piechart}">
+                <a th:href="@{/app-testing/profile/create/piechart}" class="tooltip">
                   <i
                     class="fa-solid fa-chart-pie"
                     style="
@@ -965,10 +1007,11 @@
                       color: #306da6;
                     "
                   ></i>
+                  <span class="tooltiptext">Generate pie chart for the searching profile.Total cost splitted</span>
                 </a>
               </div>
 
-              <button
+              <button class="tooltip"
                 th:if="${profile.totalCost != null}"
                 type="submit"
                 style="
@@ -983,6 +1026,7 @@
                   class="fa-solid fa-chart-column fa-2x"
                   style="color: #306da6"
                 ></i>
+                <span class="tooltiptext">Generate bar multilple charts visualization for comparison</span>
               </button>
               <p id="error-message" style="color: red; display: none">
                 Please select at least one profile.
