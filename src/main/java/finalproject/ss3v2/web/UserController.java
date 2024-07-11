@@ -5,6 +5,7 @@ import finalproject.ss3v2.domain.Authority;
 import finalproject.ss3v2.domain.Profile;
 import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.dto.BasicData;
+import finalproject.ss3v2.dto.DataRent;
 import finalproject.ss3v2.repository.UtilitiesRepository;
 import finalproject.ss3v2.service.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,9 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
@@ -79,7 +78,6 @@ public class UserController {
             if (!profiles.isEmpty()) {
                 model.addAttribute("profiles", profiles);
             }
-
             return "usersession";
         }
         return "redirect:/signin";
@@ -137,7 +135,26 @@ public class UserController {
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("entityCode", dataEntityCode);
             if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
-                model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
+                // The previous code was changed. When trying to input search in the list of zip codes to localize it easier
+                // the input search was not working. Because instead of sending a list of zip codes to the front end, i was
+                // getting and object (Data) with a nested List<BasicData> object. So I changed the code to send a list of zip codes
+                // now works.
+                DataRent data = apiServiceHudUser.getTheDataCostByCode(dataEntityCode);
+                if (Objects.equals(data.getSmallAreaStatus(), "1")) {
+                    model.addAttribute("smallAreaStatus", "1"); // small area status of 1 means that the metro area has many zip codes associated with it
+                    List<String> AllZipCodes = new ArrayList<>();
+                    List<BasicData> basicdata = data.getBasicdata();
+                    for (BasicData groupset : basicdata) {
+                        if (!Objects.equals(groupset.getZipCode(), "88888")) {
+                            AllZipCodes.add(groupset.getZipCode());
+                        }
+                    }
+                    model.addAttribute("zipCodes", AllZipCodes);
+                } else {
+                    model.addAttribute("smallAreaStatus", "0");
+                    model.addAttribute("metroName", data.getMetroName());
+                }
+                model.addAttribute("data", data);
             } else {
                 //found a case where no data was found... for example Arecibo, PR
                 model.addAttribute("nodata", "no data found for this search");
@@ -155,8 +172,8 @@ public class UserController {
     public String getSpecificDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model,
                                                  @PathVariable Integer dataindex, Authentication authentication) {
 
-        String stateCode; // to store the state code when using zip code stack api. when metro-are have has more than one
-        // zip code associated with it, it's hard to get the state code. but having the zip code we can get the state code
+        String stateCode; // to store the state code when using zip code stack api. When metro-area have has more than one
+        // zip code associated with it, it's hard to get the state code. but having the zip code allows to get the state code
         // using the API zip code stack.
 
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
@@ -219,7 +236,7 @@ public class UserController {
                 //Setting the profile name and location when zip code is available
                 profile.setLocation("Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
-                profile.setProfileName(userAuth.getFirstName() + "'s /Search Profile:" + " Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
+                profile.setProfileName(" Metro Area: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                         .getMetroName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
             }
             // to manage when the data has only one basic data object
@@ -293,10 +310,35 @@ public class UserController {
                 model.addAttribute("profiles", profiles);
             }
 
+            if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
+                // The previous code was changed. When trying to input search in the list of zip codes to localize it easier
+                // the input search was not working. Because instead of sending a list of zip codes to the front end, i was
+                // getting and object (Data) with a nested List<BasicData> object. So I changed the code to send a list of zip codes
+                // now works.
+
+                DataRent data = apiServiceHudUser.getTheDataCostByCode(dataEntityCode);
+                if (Objects.equals(data.getSmallAreaStatus(), "1") && !Objects.equals(data.getCountyName(), "")) {
+                    model.addAttribute("smallAreaStatus", "1"); // small area status of 1 means that the county area has many zip codes associated with it
+                    List<String> AllZipCodes = new ArrayList<>();
+                    List<BasicData> basicdata = data.getBasicdata();
+                    for (BasicData groupset : basicdata) {
+                        AllZipCodes.add(groupset.getZipCode());
+
+                    }
+                    model.addAttribute("zipCodes", AllZipCodes);
+                } else {
+                    model.addAttribute("smallAreaStatus", "0");
+                    model.addAttribute("countyName", data.getCountyName());
+                }
+                model.addAttribute("data", data);
+            } else {
+                //found a case where no data was found... for example Arecibo, PR
+                model.addAttribute("nodata", "no data found for this search");
+            }
+
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
-            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
             model.addAttribute("stateCode", stateCode);
             model.addAttribute("entityCode", dataEntityCode);
 

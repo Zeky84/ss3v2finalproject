@@ -1,1190 +1,1113 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
-  <head>
-    <title>mycostliving-usersession</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      src="https://kit.fontawesome.com/17e9292b04.js"
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
-    <style>
-      body {
-        font-family: "Roboto", sans-serif;
-        background-color: #1c3955;
-        color: #306da6;
-      }
 
-      .form-container {
-        /* GPT help */
-        display: flex;
-        flex-direction: row;
-        align-items: top;
-        width: 1500px;
-        height: 240px;
-        margin: auto;
-        padding: 20px;
-        box-shadow: 0 0 6px #e7f6ff;
-        border-radius: 13px;
-        background-color: #e7f6ff;
-      }
-      .form-container-inner {
-        /* For PieChart */
-        display: flex;
-        flex-direction: row;
-        width: 1500px;
-        height: 220px;
-        justify-content: space-between;
-      }
+<head>
+  <title>mycostliving-usersession</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/17e9292b04.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <style>
+    body {
+      font-family: "Roboto", sans-serif;
+      background-color: #1c3955;
+      color: #306da6;
+    }
 
-      .form-container-addvalues {
-        /* Adding values widget */
-        display: flex;
-        flex-direction: column;
-        width: 1500px;
-        margin: auto;
-        padding: 20px;
-        box-shadow: 0 0 6px #e7f6ff;
-        border-radius: 13px;
-        background-color: #e7f6ff;
-      }
-      .paragraph {
-        position: absolute;
-        text-align: center;
-        font-size: 20px;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        color: #c3e9ff;
-      }
-      .button-logout {
-        position: absolute; /* Take the div out of the normal document flow */
-        top: 10px; /* 10px from the top of the page */
-        right: 10px;
-        font-family: "Roboto", sans-serif;
-        background-color: #ffffff;
-        border: none;
-        box-shadow: 0 0 6px #ffffff;
-        color: #3f90db;
-        padding: 2px 5px;
-        text-align: center;
-        display: inline-block;
-        font-size: 18px;
-        border-radius: 10px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-        margin-left: 5px;
-        margin-right: 5px;
-        margin-top: 7px;
-        height: 40px;
-        width: 100px;
-      }
-      .button-like {
-        position: absolute;
-        top: 10px;
-        right: 237px;
-        background-color: #d6effd;
-        box-shadow: 0 0 6px #d6effd;
-        border: none;
-        color: #3f90db;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 18px;
-        border-radius: 10px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-        margin-left: 5px;
-        margin-right: 5px;
-        margin-top: 7px;
-        height: 40px;
-        width: 100px;
-        line-height: 40px;
-      }
-      .button-like1 {
-        position: absolute;
-        top: 10px;
-        right: 237px;
-        background-color: #b2e3ff;
-        box-shadow: 0 0 6px #b2e3ff;
-        border: none;
-        color: #306da6;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 18px;
-        border-radius: 10px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-        margin-left: 5px;
-        margin-right: 5px;
-        margin-top: 7px;
-        height: 40px;
-        width: 100px;
-        line-height: 40px;
-      }
-      .submit-button {
-        position: absolute;
-        background-color: #7dcfff;
-        box-shadow: 0 0 6px #7dcfff;
-        border: none;
-        color: #306da6;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        border-radius: 10px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-        margin-left: 5px;
-        height: 30px;
-        width: 120px;
-      }
-      .button-logout:hover {
-        background-color: #b8b8b8ce;
-        box-shadow: 0 0 4px #b8b8b8ce;
-        font-size: 18px;
-      }
-      .button-like:hover {
-        background-color: #b8b8b8ce;
-        box-shadow: 0 0 4px #b8b8b8ce;
-        font-size: 18px;
-      }
-      .submit-button:hover {
-        background-color: #b8b8b8ce;
-        box-shadow: 0 0 4px #b8b8b8ce;
-        font-size: 16px;
-      }
-      .button-like1:hover {
-        background-color: #b8b8b8ce;
-        box-shadow: 0 0 4px #b8b8b8ce;
-        font-size: 18px;
-      }
+    .form-container {
+      /* GPT help */
+      display: flex;
+      flex-direction: row;
+      align-items: top;
+      width: 1500px;
+      height: 240px;
+      margin: auto;
+      padding: 20px;
+      box-shadow: 0 0 6px #e7f6ff;
+      border-radius: 13px;
+      background-color: #e7f6ff;
+    }
 
-      .expiration-clock {
-        position: fixed; /* Fixed position, keep the timing always in the same screen position even if the user scroll down or up */
-        top: 65px;
-        right: 20px;
-        font-family: "Roboto", sans-serif;
-        color: rgb(255, 136, 0);
-        color-scheme: dark;
-        font-size: 33px;
-        font-weight: 500;
-        text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
-      }
-      .expiration-p {
-        position: fixed;
-        top: 62px;
-        right: 20px;
-        font-family: "Roboto", sans-serif;
-        color: rgb(255, 153, 0);
-        color-scheme: dark;
-        font-size: 18px;
-        text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
-      }
-      .expiration-refresh {
-        position: fixed;
-        top: 120px;
-        right: 20px;
-        font-family: "Roboto", sans-serif;
-        color: #dbe3e9;
-        color-scheme: dark;
-        font-size: 16px;
-        text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
-      }
-      .inputs-row {
-        display: flex;
-        width: 100%;
-      }
-      .scrollable-list-metroarea {
-        max-height: 200px;
-        overflow-y: auto;
-        overflow-x: auto;
-        width: 300px;
-        background-color: #d6effd;
-        border-radius: 10px;
-        padding: 10px;
-        margin-left: 5px;
-        margin-right: 5px;
-      }
+    .form-container-inner {
+      /* For PieChart */
+      display: flex;
+      flex-direction: row;
+      width: 1500px;
+      height: 220px;
+      justify-content: space-between;
+    }
 
-      /* Styling the scrollbar track (part the thumb slides within) */
-      .scrollable-list-metroarea::-webkit-scrollbar-track {
-        background-color: #d6effd;
-        border-radius: 10px;
-      }
+    .form-container-addvalues {
+      /* Adding values widget */
+      display: flex;
+      flex-direction: column;
+      width: 1500px;
+      margin: auto;
+      padding: 20px;
+      box-shadow: 0 0 6px #e7f6ff;
+      border-radius: 13px;
+      background-color: #e7f6ff;
+    }
 
-      /* Styling the scrollbar thumb (draggable part) */
-      .scrollable-list-metroarea::-webkit-scrollbar-thumb {
-        background-color: #306da6;
-        border-radius: 10px;
-        border: 3px solid #306da6;
-      }
+    .paragraph {
+      position: absolute;
+      text-align: center;
+      font-size: 20px;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #c3e9ff;
+    }
 
-      .scrollable-list-metroarea::-webkit-scrollbar {
-        width: 8px; /* Width of the vertical scrollbar */
-        height: 8px; /* Height of the horizontal scrollbar */
-      }
-      .scrollable-list {
-        max-height: 200px;
-        overflow-y: auto;
-        overflow-x: auto;
-        width: 300px;
-        background-color: #bee7ff;
-        border-radius: 10px;
-        border-color: #306da6;
-        padding: 10px;
-      }
+    .button-logout {
+      position: absolute;
+      /* Take the div out of the normal document flow */
+      top: 10px;
+      /* 10px from the top of the page */
+      right: 10px;
+      font-family: "Roboto", sans-serif;
+      background-color: #ffffff;
+      border: none;
+      box-shadow: 0 0 6px #ffffff;
+      color: #3f90db;
+      padding: 2px 5px;
+      text-align: center;
+      display: inline-block;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 7px;
+      height: 40px;
+      width: 100px;
+    }
 
-      .scrollable-list::-webkit-scrollbar-track {
-        background-color: #bee7ff;
-        border-radius: 10px;
-      }
+    .button-like {
+      position: absolute;
+      top: 10px;
+      right: 237px;
+      background-color: #d6effd;
+      box-shadow: 0 0 6px #d6effd;
+      border: none;
+      color: #3f90db;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 7px;
+      height: 40px;
+      width: 100px;
+      line-height: 40px;
+    }
 
-      .scrollable-list::-webkit-scrollbar-thumb {
-        background-color: #306da6;
-        border-radius: 10px;
-        border: 3px solid #306da6;
-      }
+    .button-like1 {
+      position: absolute;
+      top: 10px;
+      right: 237px;
+      background-color: #b2e3ff;
+      box-shadow: 0 0 6px #b2e3ff;
+      border: none;
+      color: #306da6;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 7px;
+      height: 40px;
+      width: 100px;
+      line-height: 40px;
+    }
 
-      .scrollable-list::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-      .scrollable-list-profile {
-        height: 220px;
-        overflow-y: auto;
-        overflow-x: auto;
-        width: 970px;
-        background-color: #bee7ff;
-        border-radius: 10px;
-        border-color: #306da6;
-        padding: 10px;
-      }
+    .submit-button {
+      position: absolute;
+      background-color: #7dcfff;
+      box-shadow: 0 0 6px #7dcfff;
+      border: none;
+      color: #306da6;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+      margin-left: 5px;
+      height: 30px;
+      width: 120px;
+    }
 
-      .scrollable-list-profile::-webkit-scrollbar-track {
-        background-color: #bee7ff;
-        border-radius: 10px;
-      }
+    .button-logout:hover {
+      background-color: #b8b8b8ce;
+      box-shadow: 0 0 4px #b8b8b8ce;
+      font-size: 18px;
+    }
 
-      .scrollable-list-profile::-webkit-scrollbar-thumb {
-        background-color: #306da6;
-        border-radius: 10px;
-        border: 3px solid #306da6;
-      }
+    .button-like:hover {
+      background-color: #b8b8b8ce;
+      box-shadow: 0 0 4px #b8b8b8ce;
+      font-size: 18px;
+    }
 
-      .scrollable-list-profile::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
+    .submit-button:hover {
+      background-color: #b8b8b8ce;
+      box-shadow: 0 0 4px #b8b8b8ce;
+      font-size: 16px;
+    }
 
-      .icon-row {
-        display: flex;
-        flex-direction: column;
-        align-items: left;
-        width: 100%;
-      }
-      .icon-row img {
-        width: 40px;
-        height: 40px;
-        margin-bottom: 15px;
-        cursor: pointer;
-      }
-      .icon-text-container-row {
-        display: flex;
-        flex-direction: row; /* Stack icon and text vertically */
-        order: -1;
-        font-size: 16px;
-      }
-      .icon-text-container-column {
-        display: flex;
-        flex-direction: column; /* Stack icon and text vertically */
-        font-size: 10px;
-      }
-      #fuelCostInfo label {
-        display: inline-block;
-        margin-right: 10px;
-        white-space: nowrap;
-        width: 100px;
-        height: 20px;
-        border-radius: 6px;
-      }
-      #rentCostInfo label {
-        display: inline-block;
-        margin-right: 10px;
-        white-space: nowrap;
-        height: 20px;
-        border-radius: 6px;
-        width: 120px;
-        height: 20px;
-      }
-      .plot-container {
+    .button-like1:hover {
+      background-color: #b8b8b8ce;
+      box-shadow: 0 0 4px #b8b8b8ce;
+      font-size: 18px;
+    }
+
+    .expiration-clock {
+      position: fixed;
+      /* Fixed position, keep the timing always in the same screen position even if the user scroll down or up */
+      top: 65px;
+      right: 20px;
+      font-family: "Roboto", sans-serif;
+      color: rgb(255, 136, 0);
+      color-scheme: dark;
+      font-size: 33px;
+      font-weight: 500;
+      text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
+    }
+
+    .expiration-p {
+      position: fixed;
+      top: 62px;
+      right: 20px;
+      font-family: "Roboto", sans-serif;
+      color: rgb(255, 153, 0);
+      color-scheme: dark;
+      font-size: 18px;
+      text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
+    }
+
+    .expiration-refresh {
+      position: fixed;
+      top: 120px;
+      right: 20px;
+      font-family: "Roboto", sans-serif;
+      color: #dbe3e9;
+      color-scheme: dark;
+      font-size: 16px;
+      text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.5);
+    }
+
+    .inputs-row {
+      display: flex;
+      width: 100%;
+    }
+
+    /* Styling the scrollbar for the metro areas and all it's related data --------------------------------------- */
+    .scrollable-list-metroarea {
+      max-height: 180px;
+      overflow-y: auto;
+      overflow-x: auto;
+      width: 300px;
+      background-color: #d6effd;
+      border-radius: 10px;
+      padding: 10px;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+
+    /* Styling the scrollbar track (part the thumb slides within) */
+    .scrollable-list-metroarea::-webkit-scrollbar-track {
+      background-color: #d6effd;
+      border-radius: 10px;
+    }
+
+    /* Styling the scrollbar thumb (draggable part) */
+    .scrollable-list-metroarea::-webkit-scrollbar-thumb {
+      background-color: #306da6;
+      border-radius: 10px;
+      border: 3px solid #306da6;
+    }
+
+    .scrollable-list-metroarea::-webkit-scrollbar {
+      width: 8px;
+      /* Width of the vertical scrollbar */
+      height: 8px;
+      /* Height of the horizontal scrollbar */
+    }
+
+    /* Styling the scrollbar for the states and all it's related data --------------------------------------- */
+    .scrollable-list {
+      max-height: 180px;
+      overflow-y: auto;
+      overflow-x: auto;
+      width: 300px;
+      background-color: #bee7ff;
+      border-radius: 10px;
+      border-color: #306da6;
+      padding: 10px;
+    }
+
+    .scrollable-list::-webkit-scrollbar-track {
+      background-color: #bee7ff;
+      border-radius: 10px;
+    }
+
+    .scrollable-list::-webkit-scrollbar-thumb {
+      background-color: #306da6;
+      border-radius: 10px;
+      border: 3px solid #306da6;
+    }
+
+    .scrollable-list::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    /* Styling the scrollbar for the created profile list --------------------------------------- */
+    .scrollable-list-profile {
+      height: 220px;
+      overflow-y: auto;
+      overflow-x: auto;
+      width: 970px;
+      background-color: #bee7ff;
+      border-radius: 10px;
+      border-color: #306da6;
+      padding: 10px;
+    }
+
+    .scrollable-list-profile::-webkit-scrollbar-track {
+      background-color: #bee7ff;
+      border-radius: 10px;
+    }
+
+    .scrollable-list-profile::-webkit-scrollbar-thumb {
+      background-color: #306da6;
+      border-radius: 10px;
+      border: 3px solid #306da6;
+    }
+
+    .scrollable-list-profile::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .filterListMetroArea {
+      margin-top: 10px;
+      max-height: 20px;
+      width: 320px;
+      background-color: #d6effd;
+      border-radius: 10px;
+      border: none;
+      padding-top: 5px;
+    }
+
+    .filterList {
+      margin-top: 10px;
+      max-height: 20px;
+      width: 320px;
+      background-color: #bee7ff;
+      border-radius: 10px;
+      border: none;
+      padding-top: 5px;
+    }
+
+    /* Styling all the right side icos representing each utility----------------------------------- */
+    .icon-row {
+      display: flex;
+      flex-direction: column;
+      align-items: left;
+      width: 100%;
+    }
+
+    .icon-row img {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+
+    .icon-text-container-row {
+      display: flex;
+      flex-direction: row;
+      /* Stack icon and text vertically */
+      order: -1;
+      font-size: 16px;
+    }
+
+    .icon-text-container-column {
+      display: flex;
+      flex-direction: column;
+      /* Stack icon and text vertically */
+      font-size: 10px;
+    }
+
+    /* Styling the selection fields for rent cost and fuel cost -----------------------------------*/
+    #fuelCostInfo label {
+      display: inline-block;
+      margin-right: 10px;
+      white-space: nowrap;
+      width: 100px;
+      height: 20px;
+      border-radius: 6px;
+    }
+
+    #rentCostInfo label {
+      display: inline-block;
+      margin-right: 10px;
+      white-space: nowrap;
+      height: 20px;
+      border-radius: 6px;
+      width: 120px;
+      height: 20px;
+    }
+
+    /* .plot-container {
         display: flex;
         justify-content: right;
         align-items: top;
         width: 500px;
         height: 260px;
+      } */
+    /* Blinking attention icon when user needs ask for super user priviledges--------------------------------- */
+    @keyframes colorChange {
+      0% {
+        color: #bee7ff;
       }
-      @keyframes colorChange {
-            0% {
-                color: #bee7ff;
-            }
-            50% {
-                color: rgb(255, 153, 0);
-            }
-            100% {
-                color: #bee7ff;
-            }
-        }
-        .attention-icon {
-            animation: colorChange 3s infinite;
-        }
-    </style>
-  </head>
-  <body>
+
+      50% {
+        color: rgb(255, 153, 0);
+      }
+
+      100% {
+        color: #bee7ff;
+      }
+    }
+
+    .attention-icon {
+      animation: colorChange 3s infinite;
+    }
+
+    /* Tooltip text to comment when hover over the action icons--------------------------------- */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 150px;
+      background-color: rgba(179, 190, 211, 0.8);
+      /* Add transparency here */
+      font-size: 13px;
+      color: #306da6;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 0;
+      position: absolute;
+      top: -5px;
+      left: 105%;
+      /* Position the tooltip to the right of the icon */
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 100%;
+      margin-top: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <img src="/images/imagehome.png" style="margin-left: 7px; margin-top: 7px" alt="this is the app logo"
+      aspect-ratio="1/1" />
+    <div class="paragraph">
+      <p>[[${user.firstName}]]'s Session</p>
+      <!--The rest of this div is for the user to interact with the admin when asking for SuperUser priviledges -->
+      <p th:if="${user.isAdmin.equals(true)}" style="font-size: 15px;">You are an admin user, no need for upgrading
+        privileges</p>
+      <p th:if="${user.isUser.equals(true) && user.isAdmin.equals(false) && user.userAskedForSuperUser.equals(false)}"
+        style="display:inline;">
+        <span style="font-size: 15px;">Regular user don't have visualization privileges. Request SuperUser upgrade to
+          access all app functionalities</span>
+      <form th:action="@{/usersession/{userId}/asKForSuperUser(userId=${user.id})}" method="post"
+        style="display:inline;">
+        <button
+          th:if="${user.isUser.equals(true) && user.isAdmin.equals(false) && user.userAskedForSuperUser.equals(false)}"
+          style="background: none; border: none; padding: 0; cursor: pointer; display: inline; margin-left: 5px;"
+          type="submit">
+          <i class="fa-solid fa-user-plus fa-2x attention-icon"></i>
+        </button>
+      </form>
+      </p>
+      <p th:if="${user.isUser.equals(true) && user.userAskedForSuperUser.equals(true) && user.isAdmin.equals(false)}"
+        style="font-size:  15px;">
+        You requested SuperUser privileges. Wait for admin to authorize
+      </p>
+      <p th:if="${user.isSuperUser.equals(true)}" style="font-size: 15px;">You are a SuperUser. You can visualize all
+        searching profiles</p>
+    </div>
+
     <div>
-      <img
-        src="/images/imagehome.png"
-        style="margin-left: 7px; margin-top: 7px"
-        alt="this is the app logo"
-        aspect-ratio="1/1"
-      />
-      <div class="paragraph">
-        <p>[[${user.firstName}]]'s Session</p>
-        <!--The rest of this div is for the user to interact with the admin when asking for SuperUser priviledges -->
-        <p th:if="${user.isAdmin.equals(true)}" style="font-size: 15px;">You are an admin user, no need for upgrading privileges</p>
-        <p th:if="${user.isUser.equals(true) && user.isAdmin.equals(false) && user.userAskedForSuperUser.equals(false)}" style="display:inline;">
-            <span style="font-size: 15px;">Regular user don't have visualization privileges. Request SuperUser upgrade to access all app functionalities</span>
-            <form th:action="@{/usersession/{userId}/asKForSuperUser(userId=${user.id})}" method="post" style="display:inline;">
-              <button th:if="${user.isUser.equals(true) && user.isAdmin.equals(false) && user.userAskedForSuperUser.equals(false)}" style="background: none; border: none; padding: 0; cursor: pointer; display: inline; margin-left: 5px;" type="submit">
-                <i class="fa-solid fa-user-plus fa-2x attention-icon"></i>
-            </button>
-            </form>
-        </p>
-        <p th:if="${user.isUser.equals(true) && user.userAskedForSuperUser.equals(true) && user.isAdmin.equals(false)}" style="font-size:  15px;">
-            You requested SuperUser privileges. Wait for admin to authorize
-        </p>
-        <p th:if="${user.isSuperUser.equals(true)}" style="font-size: 15px;">You are a SuperUser. You can visualize all searching profiles</p>
+      <form action="/logout" method="post">
+        <button class="button-logout" type="submit">Logout</button>
+      </form>
+
+      <a th:href="@{/usersession/{userId}/edituser(userId=${user.id})}" class="button-like"
+        style="top: 10px; right: 123px">Edit User</a>
+
+      <a href="/admin/dashboard" class="button-like1" th:if="${user.isAdmin.equals(true)}">Dashboard</a>
     </div>
+  </div>
 
-      <div>
-        <form action="/logout" method="post">
-          <button class="button-logout" type="submit">Logout</button>
-        </form>
-
-        <a
-          th:href="@{/usersession/{userId}/edituser(userId=${user.id})}"
-          class="button-like"
-          style="top: 10px; right: 123px"
-          >Edit User</a
-        >
-
-        <a
-          href="/admin/dashboard"
-          class="button-like1"
-          th:if="${user.isAdmin.equals(true)}"
-          >Dashboard</a
-        >
-      </div>
+  <div>
+    <div class="expiration-p">
+      <p id="expiresInP"></p>
     </div>
+    <div class="expiration-clock">
+      <div id="countDownRefreshToken" style="display: inline"></div>
+    </div>
+    <div class="expiration-refresh">
+      <p id="activateMessage"></p>
+    </div>
+  </div>
 
+  <div class="form-container" style="flex-direction: column; align-items: center; height: auto">
+
+    <h2 style="flex-direction: column; align-items: center; height: auto">
+      Cost Living Profile Search Monthly
+    </h2>
     <div>
-      <div class="expiration-p">
-        <p id="expiresInP"></p>
-      </div>
-      <div class="expiration-clock">
-        <div id="countDownRefreshToken" style="display: inline"></div>
-      </div>
-      <div class="expiration-refresh">
-        <p id="activateMessage"></p>
-      </div>
+      Please select
+      <h3 style="display: inline; color: #806326">Metropolitan Area</h3>
+      or
+      <h3 style="display: inline">State</h3>
+      to start the search
     </div>
+  </div>
 
-    <div
-      class="form-container"
-      style="flex-direction: column; align-items: center; height: auto">
-    
-      <h2 style="flex-direction: column; align-items: center; height: auto">
-        Cost Living Profile Search Monthly
-      </h2>
+  <br />
+
+  <div class="form-container">
+    <div th:if="${metroAreas}" class="inputs-row">
       <div>
-        Please select
-        <h3 style="display: inline; color: #806326">Metropolitan Area</h3>
-        or
-        <h3 style="display: inline">State</h3>
-        to start the search
+        <label class="toggle-label" style="color: #806326">Metropolitan Area</label>
+        <div class="scrollable-list-metroarea" id="metroareaList">
+          <ul id="metroareaListItems">
+            <li th:each="metroArea : ${metroAreas}">
+              <a th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}(userId=${user.id}, dataEntityCode=${metroArea.cbsaCode})}"
+                th:text="${metroArea.areaName}">
+              </a>
+            </li>
+          </ul>
+        </div>
+        <!--Search bar for metro area name-->
+        <input class="filterListMetroArea" type="text" id="searchInputMetroArea"
+          placeholder="Search for Metropolitan Area name..."
+          onkeyup="filterList('metroareaListItems', 'searchInputMetroArea')">
       </div>
     </div>
 
-    <br />
-
-    <div class="form-container">
-      <div th:if="${metroAreas}" class="inputs-row">
-        <div>
-          <label class="toggle-label" style="color: #806326"
-            >Metropolitan Area</label
-          >
-          <div class="scrollable-list-metroarea" id="metroareaList">
-            <ul>
-              <li th:each="metroArea : ${metroAreas}">
-                <a
-                  th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}(userId=${user.id}, dataEntityCode=${metroArea.cbsaCode})}"
-                  th:text="${metroArea.areaName}"
-                >
+    <div th:if="${data != null and data.countyName == ''}" class="inputs-row">
+      <!-- when countyName empty refers to MetroArea-->
+      <div>
+        <label class="toggle-label" style="color: #806326">Metropolitan Area / Zip Codes</label>
+        <div class="scrollable-list-metroarea" id="datametro">
+          <ul id="metroareaListItemsData">
+            <div th:if="${smallAreaStatus}==1">
+              <!--SmallAreaStatus==1 means more than one zip code asocitated to the selected MetroArea-->
+              <li th:each="zipCode, iterStat : ${zipCodes}">
+                <a th:if="${zipCode} != '88888'"
+                  th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
+                  th:text="${zipCode}">
                 </a>
               </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div th:if="${data != null and data.countyName == ''}" class="inputs-row">
-        <!-- when countyName empty refers to MetroArea-->
-        <div>
-          <label class="toggle-label" style="color: #806326"
-            >Metropolitan Area / Zip Codes</label
-          >
-          <div class="scrollable-list-metroarea" id="datametro">
-            <ul>
-              <li th:each="field : ${data}">
-                <div th:if="${field.smallAreaStatus}==1">
-                  <div th:each="rentObject, iterStat : ${field.basicdata}">
-                    <!-- 88888 is a placeholder for no data. zip code 88888 does not have any data asociated with, this code was writen to avoid getting this zipcode into the zipcodes list -->
-                    <a
-                      th:if="${rentObject.zipCode} != '88888'"
-                      th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
-                      th:text="${rentObject.zipCode}"
-                    >
-                    </a>
-                  </div>
-                </div>
-                <div th:if="${field.smallAreaStatus}==0">
-                  <a
-                    th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=0)}"
-                    th:text="${field.metroName}"
-                  ></a>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div th:if="${states}" class="inputs-row">
-        <div>
-          <label class="toggle-label">State</label>
-          <div class="scrollable-list" id="stateList">
-            <ul>
-              <li th:each="state : ${states}">
-                <a
-                  th:href="@{/usersession/{userId}/counties/{stateCode}(userId=${user.id}, stateCode=${state.stateCode})}"
-                  th:text="${state.stateName} + ' - ' + ${state.stateCode}"
-                >
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div th:if="${counties}" class="inputs-row">
-        <div>
-          <label class="toggle-label">State / Counties</label>
-          <div class="scrollable-list" id="countyList">
-            <ul>
-              <li th:each="county : ${counties}">
-                <a
-                  th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${county.fipsCode})}"
-                  th:text="${county.stateCode}  + ' - ' +${county.countyName} "
-                >
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div th:if="${data != null and data.countyName != ''}" class="inputs-row">
-        <!-- when countyName not empty refers to County-->
-        <div>
-          <label class="toggle-label">State/County/Zip Codes</label>
-          <div class="scrollable-list" id="datastate">
-            <ul>
-              <li th:each="field : ${data}">
-                <div th:if="${field.smallAreaStatus}==1">
-                  <div th:each="rentObject, iterStat : ${field.basicdata}">
-                    <a
-                      th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
-                      th:text="${rentObject.zipCode}"
-                    >
-                    </a>
-                  </div>
-                </div>
-                <div th:if="${field.smallAreaStatus}==0">
-                  <a
-                    th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, id=0)}"
-                    th:text="${field.countyName}"
-                  ></a>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div th:if="${location}">
-      <br />
-    </div>
-
-    <div th:if="${nodata}">
-      <br />
-    </div>
-
-    <div
-      th:if="${nodata}"
-      class="form-container"
-      style="flex-direction: column; align-items: center; height: auto"
-    >
-      <!-- If no data available, show this message -->
-      [[${nodata}]]
-    </div>
-    <div th:if="${nodata}">
-      <br />
-    </div>
-    <div
-      th:if="${location}"
-      class="form-container"
-      style="flex-direction: column; align-items: center; height: auto"
-    >
-      <div th:if="${location}">
-        You have chossen the following location:
-        <h3 style="display: inline">[[${location}]].</h3>
-        Profile is already created. Add desire utilities cost to searching
-        profile.
-      </div>
-    </div>
-
-    <div th:if="${location}">
-      <br />
-    </div>
-
-    <div th:if="${location}" class="form-container-addvalues">
-      <form
-        th:action="@{/usersession/{userId}/profile/{profileId}/update(userId=${user.id}, profileId=${profileId})}"
-        method="post"
-      >
-        <div class="icon-row">
-          <div class="icon-text-container-row">
-            <div class="icon-text-container-column">
-              <label class="label">Rent cost</label>
-              <img
-                src="/images/1rentOFF.png"
-                alt="Utility image representation"
-                onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png', 'rentCostInfo')"
-              />
             </div>
-            <div
-              id="rentCostInfo"
-              th:if="${rentValues}"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              Select the type of rent to pay for(house or apartment):
-              <label
-                style="
+            <div th:if="${smallAreaStatus}==0">
+              <!-- SmallAreaStatus==0 means no zip code and only area value associated with-->
+              <li>
+                <a th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, dataEntityCode=${entityCode}, id=0)}"
+                  th:text="${metroName}">
+                </a>
+              </li>
+            </div>
+          </ul>
+        </div>
+        <!--Displays this only if more than one data set exists. I can consider include to display this input if more than 10 data sets exists, less than ten are easier to read-->
+        <input th:if="${smallAreaStatus}==1" class="filterListMetroArea" type="text" id="searchInputMetroAreaZipCode"
+          placeholder="Search for MetroArea ZipCode"
+          onkeyup="filterList('metroareaListItemsData', 'searchInputMetroAreaZipCode')">
+      </div>
+    </div>
+
+    <div th:if="${states}" class="inputs-row">
+      <div>
+        <label class="toggle-label">State</label>
+        <div class="scrollable-list" id="stateList">
+          <ul id="stateListItems">
+            <li th:each="state : ${states}">
+              <a th:href="@{/usersession/{userId}/counties/{stateCode}(userId=${user.id}, stateCode=${state.stateCode})}"
+                th:text="${state.stateName} + ' - ' + ${state.stateCode}">
+              </a>
+            </li>
+          </ul>
+        </div>
+        <input class="filterList" type="text" id="searchInputState" placeholder="Search State..."
+          onkeyup="filterList('stateListItems', 'searchInputState')">
+      </div>
+    </div>
+
+    <div th:if="${counties}" class="inputs-row">
+      <div>
+        <label class="toggle-label">State / Counties</label>
+        <div class="scrollable-list" id="countyList">
+          <ul id="countyListItems">
+            <li th:each="county : ${counties}">
+              <a th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${county.fipsCode})}"
+                th:text="${county.stateCode}  + ' - ' +${county.countyName}">
+              </a>
+            </li>
+          </ul>
+        </div>
+        <input class="filterList" type="text" id="searchInputStateCounties" placeholder="Search County..."
+          onkeyup="filterList('countyListItems', 'searchInputStateCounties')">
+      </div>
+    </div>
+
+    <div th:if="${data != null and data.countyName != ''}" class="inputs-row">
+      <!-- when countyName not empty refers to County-->
+      <div>
+        <label class="toggle-label">State/County/Zip Codes</label>
+        <div class="scrollable-list" id="datastate">
+          <ul id="datastateListItems">
+            <div th:if="${smallAreaStatus}==1">
+              <!--SmallAreaStatus==1 means more than one zip code asocitated to the selected County-->
+              <li th:each="zipCode, iterStat : ${zipCodes}">
+                <a th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
+                  th:text="${zipCode}">
+                </a>
+              </li>
+            </div>
+            <div th:if="${smallAreaStatus}==0">
+              <!-- SmallAreaStatus==0 means no zip code and only area value associated with-->
+              <li>
+                <a th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{id}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, id=0)}"
+                  th:text="${countyName}">
+                </a>
+              </li>
+            </div>
+          </ul>
+        </div>
+        <!--Displays this only if more than one data set exists. I can consider include to display this input if more than 10 data sets exists, less than ten are easier to read-->
+        <input th:if="${smallAreaStatus}==1" class="filterList" type="text" id="searchInputStateCountiesZipCodes"
+          placeholder="Search Zip Code..."
+          onkeyup="filterList('datastateListItems', 'searchInputStateCountiesZipCodes')">
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${location}">
+    <br />
+  </div>
+
+  <div th:if="${nodata}">
+    <br />
+  </div>
+
+  <div th:if="${nodata}" class="form-container" style="flex-direction: column; align-items: center; height: auto">
+    <!-- If no data available, show this message -->
+    [[${nodata}]]
+  </div>
+  <div th:if="${nodata}">
+    <br />
+  </div>
+  <div th:if="${location}" class="form-container" style="flex-direction: column; align-items: center; height: auto">
+    <div th:if="${location}">
+      You have chossen the following location:
+      <h3 style="display: inline">[[${location}]].</h3>
+      Profile is already created. Add desire utilities cost to searching
+      profile.
+    </div>
+  </div>
+
+  <div th:if="${location}">
+    <br />
+  </div>
+
+  <div th:if="${location}" class="form-container-addvalues">
+    <form th:action="@{/usersession/{userId}/profile/{profileId}/update(userId=${user.id}, profileId=${profileId})}"
+      method="post">
+      <div class="icon-row">
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Rent cost</label>
+            <img src="/images/1rentOFF.png" alt="Utility image representation"
+              onclick="toggleImage(this, '/images/1rentON.png', '/images/1rentOFF.png', 'rentCostInfo')" />
+          </div>
+          <div id="rentCostInfo" th:if="${rentValues}" style="padding-left: 10px; padding-top: 20px; display: none">
+            Select the type of rent to pay for(house or apartment):
+            <label style="
                   background-color: #bfdbff;
                   box-shadow: 0 0 6px #d3dff8;
                   width: 150px;
-                "
-                ><input
-                  type="radio"
-                  name="rentType"
-                  th:value="${rentValues.efficiency}"
-                />
-                Efficiency/Studio</label
-              >
-              <label
-                style="background-color: #b4d4fd; box-shadow: 0 0 6px #c4d9ff"
-                ><input
-                  type="radio"
-                  name="rentType"
-                  th:value="${rentValues.oneBedroom}"
-                />
-                1-Bedroom</label
-              >
-              <label
-                style="background-color: #a3cbff; box-shadow: 0 0 6px #abcfff"
-                ><input
-                  type="radio"
-                  name="rentType"
-                  th:value="${rentValues.twoBedroom}"
-                />
-                2-Bedrooms</label
-              >
-              <label
-                style="background-color: #8fbfff; box-shadow: 0 0 6px #96b2ff"
-                ><input
-                  type="radio"
-                  name="rentType"
-                  th:value="${rentValues.threeBedroom}"
-                />3-Bedrooms</label
-              >
-              <label
-                style="background-color: #71afff; box-shadow: 0 0 6px #86a4f8"
-                ><input
-                  type="radio"
-                  name="rentType"
-                  th:value="${rentValues.fourBedroom}"
-                />4-Bedrooms</label
-              >
-            </div>
-            <div
-              id="rentCostInfo"
-              th:if="${rentValues} == null"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              No data available yet. Please define the searching profile first.
-            </div>
+                "><input type="radio" name="rentType" th:value="${rentValues.efficiency}" />
+              Efficiency/Studio</label>
+            <label style="background-color: #b4d4fd; box-shadow: 0 0 6px #c4d9ff"><input type="radio" name="rentType"
+                th:value="${rentValues.oneBedroom}" />
+              1-Bedroom</label>
+            <label style="background-color: #a3cbff; box-shadow: 0 0 6px #abcfff"><input type="radio" name="rentType"
+                th:value="${rentValues.twoBedroom}" />
+              2-Bedrooms</label>
+            <label style="background-color: #8fbfff; box-shadow: 0 0 6px #96b2ff"><input type="radio" name="rentType"
+                th:value="${rentValues.threeBedroom}" />3-Bedrooms</label>
+            <label style="background-color: #71afff; box-shadow: 0 0 6px #86a4f8"><input type="radio" name="rentType"
+                th:value="${rentValues.fourBedroom}" />4-Bedrooms</label>
           </div>
+          <div id="rentCostInfo" th:if="${rentValues} == null"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            No data available yet. Please define the searching profile first.
+          </div>
+        </div>
 
-          <div class="icon-text-container-row">
-            <div class="icon-text-container-column">
-              <label class="label">Fuel cost</label>
-              <img
-                src="/images/1fuelOFF.png"
-                alt="Utility image representation"
-                onclick="toggleImage(this, '/images/1fuelON.png', '/images/1fuelOFF.png', 'fuelCostInfo')"
-              />
-            </div>
-            <div
-              id="fuelCostInfo"
-              th:if="${othersUtilities}"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              Select Fuel Grade and Monthly Quantity in Gallons(
-              <h3 style="display: inline">[[${stateCode}]]</h3>
-              ):
-              <label
-                style="
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Fuel cost</label>
+            <img src="/images/1fuelOFF.png" alt="Utility image representation"
+              onclick="toggleImage(this, '/images/1fuelON.png', '/images/1fuelOFF.png', 'fuelCostInfo')" />
+          </div>
+          <div id="fuelCostInfo" th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            Select Fuel Grade and Monthly Quantity in Gallons(
+            <h3 style="display: inline">[[${stateCode}]]</h3>
+            ):
+            <label style="
                   background-color: #ecbe3e;
                   box-shadow: 0 0 6px f1df8e#ecbe3e;
-                "
-                ><input
-                  type="radio"
-                  name="fuelType"
-                  th:value="${othersUtilities.gasRegularCost}"
-                />
-                Regular</label
-              >
-              <label
-                style="background-color: #ca9d22; box-shadow: 0 0 6px #ca9d22"
-                ><input
-                  type="radio"
-                  name="fuelType"
-                  th:value="${othersUtilities.gasMidGradeCost}"
-                />
-                Midgrade</label
-              >
-              <label
-                style="background-color: #b1860f; box-shadow: 0 0 6px #b1860f"
-                ><input
-                  type="radio"
-                  name="fuelType"
-                  th:value="${othersUtilities.gasPremiumCost}"
-                />
-                Premium</label
-              >
-              <label
-                style="background-color: #51c035; box-shadow: 0 0 6px #50c035"
-                ><input
-                  type="radio"
-                  name="fuelType"
-                  th:value="${othersUtilities.gasDieselCost}"
-                />
-                Diesel</label
-              >
+                "><input type="radio" name="fuelType" th:value="${othersUtilities.gasRegularCost}" />
+              Regular</label>
+            <label style="background-color: #ca9d22; box-shadow: 0 0 6px #ca9d22"><input type="radio" name="fuelType"
+                th:value="${othersUtilities.gasMidGradeCost}" />
+              Midgrade</label>
+            <label style="background-color: #b1860f; box-shadow: 0 0 6px #b1860f"><input type="radio" name="fuelType"
+                th:value="${othersUtilities.gasPremiumCost}" />
+              Premium</label>
+            <label style="background-color: #51c035; box-shadow: 0 0 6px #50c035"><input type="radio" name="fuelType"
+                th:value="${othersUtilities.gasDieselCost}" />
+              Diesel</label>
 
-              <p style="padding-left: 40px; display: inline">
-                Aproximate Monthly Quantity in Gallons:
-              </p>
-              <input
-                type="number"
-                name="fuelQty"
-                style="
+            <p style="padding-left: 40px; display: inline">
+              Aproximate Monthly Quantity in Gallons:
+            </p>
+            <input type="number" name="fuelQty" style="
                   background-color: #e7f6ff;
                   border: 1px solid #306da6;
                   border-radius: 6px;
                   box-shadow: 0 0 6px #306da6;
                   width: 50px;
-                "
-                th:value="${gallonsOfFuel}"
-              />
-            </div>
-            <div
-              id="fuelCostInfo"
-              th:if="${othersUtilities} == null"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              No data available yet. Please define the searching profile first.
-            </div>
+                " th:value="${gallonsOfFuel}" />
           </div>
+          <div id="fuelCostInfo" th:if="${othersUtilities} == null"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            No data available yet. Please define the searching profile first.
+          </div>
+        </div>
 
-          <div class="icon-text-container-row">
-            <div class="icon-text-container-column">
-              <label class="label">Elect cost</label>
-              <img
-                src="/images/1electOFF.png"
-                alt="Utility image representation"
-                onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png', 'electCostInfo')"
-              />
-            </div>
-            <div
-              id="electCostInfo"
-              th:if="${electRate}"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              Select electric rate and number of persons in the home:
-              <label
-                ><input
-                  type="radio"
-                  name="electType"
-                  th:value="${electRate}"
-                />Elect Rate for (
-                <h3 style="display: inline">[[${stateCode}]]</h3>
-                ) State</label
-              >
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Elect cost</label>
+            <img src="/images/1electOFF.png" alt="Utility image representation"
+              onclick="toggleImage(this, '/images/1electON.png', '/images/1electOFF.png', 'electCostInfo')" />
+          </div>
+          <div id="electCostInfo" th:if="${electRate}" style="padding-left: 10px; padding-top: 20px; display: none">
+            Select electric rate and number of persons in the home:
+            <label><input type="radio" name="electType" th:value="${electRate}" />Elect Rate for (
+              <h3 style="display: inline">[[${stateCode}]]</h3>
+              ) State
+            </label>
 
-              <p style="padding-left: 40px; display: inline">
-                Home Living Persons:
-              </p>
-              <input
-                type="number"
-                name="personsQty"
-                style="
+            <p style="padding-left: 40px; display: inline">
+              Home Living Persons:
+            </p>
+            <input type="number" name="personsQty" style="
                   background-color: #e7f6ff;
                   border: 1px solid #306da6;
                   border-radius: 6px;
                   box-shadow: 0 0 6px #306da6;
                   width: 40px;
-                "
-                th:value="${personsLivingIn}"
-              />
+                " th:value="${personsLivingIn}" />
 
-              <!-- State: [[${stateCode}]] Rate: [[${electRate}]] -->
-            </div>
-            <div
-              id="electCostInfo"
-              th:if="${othersUtilities} == null"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              No data available yet. Please define the searching profile first.
-            </div>
+            <!-- State: [[${stateCode}]] Rate: [[${electRate}]] -->
           </div>
-
-          <div class="icon-text-container-row">
-            <div class="icon-text-container-column">
-              <label class="label">Waste cost</label>
-              <img
-                src="/images/1wasteOFF.png"
-                alt="Utility image representation "
-                onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png', 'wasteCostInfo')"
-              />
-            </div>
-            <div
-              id="wasteCostInfo"
-              th:if="${othersUtilities}"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              Select Waste Cost:
-              <label
-                ><input
-                  type="radio"
-                  name="wasteType"
-                  th:value="${othersUtilities.monthlyWasteCost}"
-                />Waste cost for (
-                <h3 style="display: inline">[[${stateCode}]]</h3>
-                ) State</label
-              >
-              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWasteCost}]] -->
-            </div>
-            <div
-              id="wasteCostInfo"
-              th:if="${othersUtilities} == null"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              No data available yet. Please define the searching profile first.
-            </div>
-          </div>
-
-          <div class="icon-text-container-row">
-            <div class="icon-text-container-column">
-              <label class="label">Water cost</label>
-              <img
-                src="/images/1waterOFF.png"
-                alt="Utility image representation"
-                onclick="toggleImage(this, '/images/1waterON.png', '/images/1waterOFF.png', 'waterCostInfo')"
-              />
-            </div>
-            <div
-              id="waterCostInfo"
-              th:if="${othersUtilities}"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              Select Water Cost:
-              <label
-                ><input
-                  type="radio"
-                  name="waterType"
-                  th:value="${othersUtilities.monthlyWaterCost}"
-                />Water cost for (
-                <h3 style="display: inline">[[${stateCode}]]</h3>
-                ) State</label
-              >
-              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWaterCost}]] -->
-            </div>
-            <div
-              id="waterCostInfo"
-              th:if="${othersUtilities} == null"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              No data available yet. Please define the searching profile first.
-            </div>
-          </div>
-
-          <div class="icon-text-container-row">
-            <div class="icon-text-container-column">
-              <label class="label">Transportation</label>
-              <img
-                src="/images/1transpOFF.png"
-                alt="Utility image representation"
-                onclick="toggleImage(this, '/images/1transpON.png', '/images/1transpOFF.png', 'transportationCostInfo')"
-              />
-            </div>
-            <div
-              id="transportationCostInfo"
-              th:if="${othersUtilities}"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              Select Transportation Cost:
-              <label
-                ><input
-                  type="radio"
-                  name="transpType"
-                  th:value="${othersUtilities.publicTransportationCost}"
-                />Premium public transportation cost(
-                <h3 style="display: inline">[[${stateCode}]]</h3>
-                ) State</label
-              >
-              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.publicTransportationCost}]] -->
-            </div>
-            <div
-              id="transportationCostInfo"
-              th:if="${othersUtilities} == null"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              No data available yet. Please define the searching profile first.
-            </div>
-          </div>
-
-          <div class="icon-text-container-row">
-            <div class="icon-text-container-column">
-              <label class="label">Natural Gas</label>
-              <img
-                src="/images/1greenOFF.png"
-                alt="Utility image representation "
-                onclick="toggleImage(this, '/images/1greenON.png', '/images/1greenOFF.png', 'naturalGasCostInfo')"
-              />
-            </div>
-            <div
-              id="naturalGasCostInfo"
-              th:if="${othersUtilities}"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              Select Natural Gas Cost:
-              <label
-                ><input
-                  type="radio"
-                  name="gasType"
-                  th:value="${othersUtilities.monthlyNaturalGasCost}"
-                />Natural Gas cost(
-                <h3 style="display: inline">[[${stateCode}]]</h3>
-                ) State</label
-              >
-              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]] -->
-            </div>
-            <div
-              id="naturalGasCostInfo"
-              th:if="${othersUtilities} == null"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              No data available yet. Please define the searching profile first.
-            </div>
-          </div>
-
-          <div class="icon-text-container-row">
-            <div class="icon-text-container-column">
-              <label class="label">Internet cost</label>
-              <img
-                src="/images/1commOFF.png"
-                alt="Utility image representation"
-                onclick="toggleImage(this, '/images/1commON.png', '/images/1commOFF.png', 'internetCostInfo')"
-              />
-            </div>
-            <div
-              id="internetCostInfo"
-              th:if="${othersUtilities}"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              Internet Cost:
-              <label
-                ><input
-                  type="radio"
-                  name="internetType"
-                  th:value="${othersUtilities.monthlyInternetCost}"
-                />Internet cost(
-                <h3 style="display: inline">[[${stateCode}]]</h3>
-                ) State</label
-              >
-              <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]] -->
-            </div>
-            <div
-              id="internetCostInfo"
-              th:if="${othersUtilities} == null"
-              style="padding-left: 10px; padding-top: 20px; display: none"
-            >
-              No data available yet. Please define the searching profile first.
-            </div>
+          <div id="electCostInfo" th:if="${othersUtilities} == null"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            No data available yet. Please define the searching profile first.
           </div>
         </div>
-        <div style="padding: 20px">
-          <!-- If profile is created, show the submit button -->
-          <button
-            type="submit"
-            class="submit-button"
-            id="submitBtn"
-            style="display: none"
-          >
-            Submit Costs
-          </button>
-        </div>
-      </form>
-    </div>
-    <div th:if="${profiles} !=null">
-      <br />
-    </div>
 
-    <div
-    th:if="${profiles} != null"
-    class="form-container"
-    style="flex-direction: column; padding-top: 10px; height: 260px"
-    >
-      <span>[[${user.firstName}]]'s profile's list:</span>
-      <div class="form-container-inner">
-          <div class="scrollable-list-profile" id="profileList">
-              <form th:action="@{/usersession/{userId}/generateBarChart(userId=${user.id})}" method="post" id="profileSelectionForm" onsubmit="return validateForm()">
-                  <ul>
-                      <li th:each="profile : ${profiles}">
-                          <div th:if="${profile.totalCost} == null" style="padding-bottom: 10px">
-                              <span style="display: inline-block; vertical-align: middle">
-                                  Profile:
-                                  <h3 style="display: inline">[[${profile.profileName}]]</h3>
-                                  Profile incomplete. Complete it or remove it.
-                              </span>
-                              <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
-                                  <i class="fa-solid fa-trash-can" style="display: inline-block; vertical-align: middle; margin-left: 35px; cursor: pointer; color: #306da6;"></i>
-                              </a>
-                          </div>
-
-                          <div th:if="${profile.totalCost} != null" style="padding-bottom: 10px">
-                              <input th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="checkbox" name="selectedProfiles" th:value="${profile.profileId}" style="margin-left: 15px;" />
-                              <span style="display: inline-block; vertical-align: middle">
-                                  Profile:
-                                  <h3 style="display: inline">[[${profile.profileName}]]</h3>
-                                  Total Cost by Utilities selected:
-                                  <h3 style="display: inline">$&nbsp;[[${profile.totalCost}]]</h3>
-                              </span>
-                              <a th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
-                                  <i class="fa-solid fa-trash-can" style="display: inline-block; vertical-align: middle; margin-left: 35px; cursor: pointer; color: #306da6;"></i>
-                              </a>
-                              <a th:if="${user.isSuperUser || user.isAdmin}" th:href="@{/usersession/{userId}/profile/{profileId}/piechart(userId=${user.id}, profileId=${profile.profileId})}">
-                                  <i class="fa-solid fa-chart-pie" style="display: inline-block; vertical-align: middle; margin-left: 10px; cursor: pointer; color: #306da6;"></i>
-                              </a>
-                              
-                          </div>
-                      </li>
-                  </ul>
-                  <button th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
-                      <h3 style="display: inline; color: #306da6">Generate</h3> <i class="fa-solid fa-chart-column fa-2x" style="color: #306da6;"></i>
-                  </button>
-                  <p id="error-message" style="color: red; display: none;">Please select at least one profile.</p>
-              </form>
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Waste cost</label>
+            <img src="/images/1wasteOFF.png" alt="Utility image representation "
+              onclick="toggleImage(this, '/images/1wasteON.png', '/images/1wasteOFF.png', 'wasteCostInfo')" />
           </div>
-          <div th:if="${pieData}" id="myDiv" class="plot-container"></div><!-- Pie chart will be rendered here -->
+          <div id="wasteCostInfo" th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            Select Waste Cost:
+            <label><input type="radio" name="wasteType" th:value="${othersUtilities.monthlyWasteCost}" />Waste cost for
+              (
+              <h3 style="display: inline">[[${stateCode}]]</h3>
+              ) State
+            </label>
+            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWasteCost}]] -->
+          </div>
+          <div id="wasteCostInfo" th:if="${othersUtilities} == null"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            No data available yet. Please define the searching profile first.
+          </div>
+        </div>
+
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Water cost</label>
+            <img src="/images/1waterOFF.png" alt="Utility image representation"
+              onclick="toggleImage(this, '/images/1waterON.png', '/images/1waterOFF.png', 'waterCostInfo')" />
+          </div>
+          <div id="waterCostInfo" th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            Select Water Cost:
+            <label><input type="radio" name="waterType" th:value="${othersUtilities.monthlyWaterCost}" />Water cost for
+              (
+              <h3 style="display: inline">[[${stateCode}]]</h3>
+              ) State
+            </label>
+            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyWaterCost}]] -->
+          </div>
+          <div id="waterCostInfo" th:if="${othersUtilities} == null"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            No data available yet. Please define the searching profile first.
+          </div>
+        </div>
+
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Transportation</label>
+            <img src="/images/1transpOFF.png" alt="Utility image representation"
+              onclick="toggleImage(this, '/images/1transpON.png', '/images/1transpOFF.png', 'transportationCostInfo')" />
+          </div>
+          <div id="transportationCostInfo" th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            Select Transportation Cost:
+            <label><input type="radio" name="transpType"
+                th:value="${othersUtilities.publicTransportationCost}" />Premium public transportation cost(
+              <h3 style="display: inline">[[${stateCode}]]</h3>
+              ) State
+            </label>
+            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.publicTransportationCost}]] -->
+          </div>
+          <div id="transportationCostInfo" th:if="${othersUtilities} == null"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            No data available yet. Please define the searching profile first.
+          </div>
+        </div>
+
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Natural Gas</label>
+            <img src="/images/1greenOFF.png" alt="Utility image representation "
+              onclick="toggleImage(this, '/images/1greenON.png', '/images/1greenOFF.png', 'naturalGasCostInfo')" />
+          </div>
+          <div id="naturalGasCostInfo" th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            Select Natural Gas Cost:
+            <label><input type="radio" name="gasType" th:value="${othersUtilities.monthlyNaturalGasCost}" />Natural Gas
+              cost(
+              <h3 style="display: inline">[[${stateCode}]]</h3>
+              ) State
+            </label>
+            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyNaturalGasCost}]] -->
+          </div>
+          <div id="naturalGasCostInfo" th:if="${othersUtilities} == null"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            No data available yet. Please define the searching profile first.
+          </div>
+        </div>
+
+        <div class="icon-text-container-row">
+          <div class="icon-text-container-column">
+            <label class="label">Internet cost</label>
+            <img src="/images/1commOFF.png" alt="Utility image representation"
+              onclick="toggleImage(this, '/images/1commON.png', '/images/1commOFF.png', 'internetCostInfo')" />
+          </div>
+          <div id="internetCostInfo" th:if="${othersUtilities}"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            Internet Cost:
+            <label><input type="radio" name="internetType" th:value="${othersUtilities.monthlyInternetCost}" />Internet
+              cost(
+              <h3 style="display: inline">[[${stateCode}]]</h3>
+              ) State
+            </label>
+            <!-- State: [[${stateCode}]] cost: [[${othersUtilities.monthlyInternetCost}]] -->
+          </div>
+          <div id="internetCostInfo" th:if="${othersUtilities} == null"
+            style="padding-left: 10px; padding-top: 20px; display: none">
+            No data available yet. Please define the searching profile first.
+          </div>
+        </div>
       </div>
+      <div style="padding: 20px">
+        <!-- If profile is created, show the submit button -->
+        <button type="submit" class="submit-button" id="submitBtn" style="display: none">
+          Submit Costs
+        </button>
+      </div>
+    </form>
+  </div>
+  <div th:if="${profiles} !=null">
+    <br />
+  </div>
+
+  <div th:if="${profiles} != null" class="form-container"
+    style="flex-direction: column; padding-top: 10px; height: 260px">
+    <span>[[${user.firstName}]]'s profile's list:</span>
+    <div class="form-container-inner">
+      <div class="scrollable-list-profile" id="profileList">
+        <form th:action="@{/usersession/{userId}/generateBarChart(userId=${user.id})}" method="post"
+          id="profileSelectionForm" onsubmit="return validateForm()">
+          <ul>
+            <li th:each="profile : ${profiles}">
+              <div th:if="${profile.totalCost} == null" style="padding-bottom: 10px">
+                <span style="display: inline-block; vertical-align: middle">
+                  Profile:
+                  <h3 style="display: inline">[[${profile.profileName}]]</h3>
+                  Profile incomplete. Complete it or remove it.
+                </span>
+                <a
+                  th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
+                  <i class="fa-solid fa-trash-can"
+                    style="display: inline-block; vertical-align: middle; margin-left: 35px; cursor: pointer; color: #306da6;"></i>
+                </a>
+              </div>
+
+              <div th:if="${profile.totalCost} != null" style="padding-bottom: 10px">
+                <input th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}" type="checkbox"
+                  name="selectedProfiles" th:value="${profile.profileId}" style="margin-left: 15px;" />
+                <span style="display: inline-block; vertical-align: middle">
+                  Profile:
+                  <h3 style="display: inline">[[${profile.profileName}]]</h3>
+                  Total Cost by Utilities selected:
+                  <h3 style="display: inline">$&nbsp;[[${profile.totalCost}]]</h3>
+                </span>
+                <a
+                  th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
+                  <i class="fa-solid fa-trash-can"
+                    style="display: inline-block; vertical-align: middle; margin-left: 35px; cursor: pointer; color: #306da6;"></i>
+                </a>
+                <a class="tooltip" th:if="${user.isSuperUser || user.isAdmin}"
+                  th:href="@{/usersession/{userId}/profile/{profileId}/piechart(userId=${user.id}, profileId=${profile.profileId})}">
+                  <i class="fa-solid fa-chart-pie"
+                    style="display: inline-block; vertical-align: middle; margin-left: 10px; cursor: pointer; color: #306da6;"></i>
+                  <span class="tooltiptext">Generate pie chart for the searching profile.Total cost splitted</span>
+                </a>
+
+              </div>
+            </li>
+          </ul>
+          <button class="tooltip" th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}"
+            type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+            <h3 style="display: inline; color: #306da6">Generate</h3> <i class="fa-solid fa-chart-column fa-2x"
+              style="color: #306da6;"></i>
+            <span class="tooltiptext">Generate multilple bar chart visualizations for comparison</span>
+
+          </button>
+          <p id="error-message" style="color: red; display: none;">Please select at least one profile.</p>
+        </form>
+      </div>
+      <div th:if="${pieData}" id="myDiv" class="plot-container"></div><!-- Pie chart will be rendered here -->
     </div>
-    <div th:if="${barChartData} != null">
-      <br />
-    </div>
-    <div th:if="${barChartData!= null} " id="barChartDiv" class="form-container"
+  </div>
+  <div th:if="${barChartData} != null">
+    <br />
+  </div>
+  <div th:if="${barChartData!= null} " id="barChartDiv" class="form-container"
     style="flex-direction: column; padding-top: 10px; height: 260px"></div><!-- Pie chart will be rendered here -->
 
-    <script th:inline="javascript">
+  <script th:inline="javascript">
 
-      function refreshTokenExpCount() {
-        fetch(`/tokens/refreshtokenexptime`)
-          .then((response) => response.text())
-          .then((countdowntime) => {
-            console.log(countdowntime); // For debugging purposes
-            const countdownContainer = document.getElementById(
-              "countDownRefreshToken"
-            );
-            const expirationP = document.getElementById("expiresInP");
-            const activateMessage = document.getElementById("activateMessage");
-
-            //countdowntime in minutes and seconds
-            const [minutes, seconds] = countdowntime.split(":").map(Number);
-
-            if (countdowntime.trim() === "0:00") {
-              countdownContainer.style.color = "red";
-              countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
-              expirationP.innerHTML = ``;
-              activateMessage.innerHTML = "";
-              clearInterval(refreshTokenInterval);
-            } else {
-              if (minutes === 0 && seconds <= 15) {
-                // If less than 15 seconds, will allow to detect activity for refreshing the token(was before at the end of the code)
-                document.addEventListener("click", activityDetected);
-                document.addEventListener("keypress", activityDetected);
-                // If less than 15 seconds, make the text red
-                countdownContainer.style.color = "red";
-                activateMessage.style.color = "red";
-                activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
-              } else {
-                // Reset to default color if more than 15 seconds remain and hide the activate message(for the account refresh)
-                countdownContainer.style.color = "";
-                activateMessage.innerHTML = ""; // Clear "key press refresh" message
-              }
-              expirationP.innerHTML = `expires in:`;
-              countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
-            }
-          })
-          .catch((error) => console.error("Error fetching countdown:", error));
-      }
-      let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
-      refreshTokenExpCount();
-
-
-      function checkRefreshToken() {
-        fetch("/tokens/newrefreshtoken")
-          .then((response) => {
-            if (response.ok) {
-              return response.text();
-            } else if (response.status === 401) {
-              // Token expired or unauthorized
-              clearInterval(refreshTokenInterval);
-              clearLocalStorage();
-              window.location.href = "/signin?sessionexpired=true";
-              console.log("Token expired or unauthorized");
-            } else if (response.status === 500) {
-              // Internal Server Error
-              clearInterval(refreshTokenInterval);
-              clearLocalStorage();
-              window.location.href = "/signin?sessionexpired=true";
-              console.log("Internal Server Error");
-            } else {
-              console.error("Error fetching new refresh token");
-            }
-          })
-          .then((data) => console.log(data))
-          .catch((error) => console.error("Error:", error));
-      }
-
-
-      function clearLocalStorage() {
-        localStorage.clear();
-        sessionStorage.clear();
-      }
-      function activityDetected() {
-        checkRefreshToken();
-      }
-
-
-      // Function to toggle the image and show/hide the info block  // Chat GPT 3.5 code
-      function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
-        console.log("toggleImage called"); // Check if function is called
-        var infoBlock = document.getElementById(infoBlockId);
-        if (imgElement.src.includes(offSrc)) {
-          imgElement.src = onSrc;
-          if (infoBlock) infoBlock.style.display = "block"; // Show the info block
-        } else {
-          imgElement.src = offSrc;
-          if (infoBlock) infoBlock.style.display = "none"; // Hide the info block
-        }
-      }
-
-
-      document.addEventListener("DOMContentLoaded", function () {
-        // to display the submit button only when a radio button is selected
-        // Chat GPT 3.5 code
-        // Get all radio inputs
-        const radios = document.querySelectorAll('input[type="radio"]');
-        const submitBtn = document.getElementById("submitBtn");
-
-        // Function to update the visibility of the submit button
-        function updateSubmitButtonVisibility() {
-          // Check if any radio button is selected
-          const isAnySelected = Array.from(radios).some(
-            (radio) => radio.checked
+    function refreshTokenExpCount() {
+      fetch(`/tokens/refreshtokenexptime`)
+        .then((response) => response.text())
+        .then((countdowntime) => {
+          console.log(countdowntime); // For debugging purposes
+          const countdownContainer = document.getElementById(
+            "countDownRefreshToken"
           );
-          // Show or hide the submit button based on whether any radio is selected
-          submitBtn.style.display = isAnySelected ? "block" : "none"; // Use 'inline', 'inline-block', or 'block' as needed
-        }
+          const expirationP = document.getElementById("expiresInP");
+          const activateMessage = document.getElementById("activateMessage");
 
-        // Initialize button visibility on load
-        updateSubmitButtonVisibility();
+          //countdowntime in minutes and seconds
+          const [minutes, seconds] = countdowntime.split(":").map(Number);
 
-        // Add change event listener to all radio buttons
-        radios.forEach((radio) => {
-          radio.addEventListener("change", updateSubmitButtonVisibility);
-        });
-      });
+          if (countdowntime.trim() === "0:00") {
+            countdownContainer.style.color = "red";
+            countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
+            expirationP.innerHTML = ``;
+            activateMessage.innerHTML = "";
+            clearInterval(refreshTokenInterval);
+          } else {
+            if (minutes === 0 && seconds <= 15) {
+              // If less than 15 seconds, will allow to detect activity for refreshing the token(was before at the end of the code)
+              document.addEventListener("click", activityDetected);
+              document.addEventListener("keypress", activityDetected);
+              // If less than 15 seconds, make the text red
+              countdownContainer.style.color = "red";
+              activateMessage.style.color = "red";
+              activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
+            } else {
+              // Reset to default color if more than 15 seconds remain and hide the activate message(for the account refresh)
+              countdownContainer.style.color = "";
+              activateMessage.innerHTML = ""; // Clear "key press refresh" message
+            }
+            expirationP.innerHTML = `expires in:`;
+            countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
+          }
+        })
+        .catch((error) => console.error("Error fetching countdown:", error));
+    }
+    let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
+    refreshTokenExpCount();
 
-      // Plotly pie chart
-      document.addEventListener("DOMContentLoaded", function () {
-        const pieData = /*[[${pieData}]]*/ {};
-        const labels = Object.keys(pieData);
-        const values = Object.values(pieData).map((value) =>
-          parseFloat(value.toFixed(2))
+
+    function checkRefreshToken() {
+      fetch("/tokens/newrefreshtoken")
+        .then((response) => {
+          if (response.ok) {
+            return response.text();
+          } else if (response.status === 401) {
+            // Token expired or unauthorized
+            clearInterval(refreshTokenInterval);
+            clearLocalStorage();
+            window.location.href = "/signin?sessionexpired=true";
+            console.log("Token expired or unauthorized");
+          } else if (response.status === 500) {
+            // Internal Server Error
+            clearInterval(refreshTokenInterval);
+            clearLocalStorage();
+            window.location.href = "/signin?sessionexpired=true";
+            console.log("Internal Server Error");
+          } else {
+            console.error("Error fetching new refresh token");
+          }
+        })
+        .then((data) => console.log(data))
+        .catch((error) => console.error("Error:", error));
+    }
+
+
+    function clearLocalStorage() {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
+    function activityDetected() {
+      checkRefreshToken();
+    }
+
+
+    // Function to toggle the image and show/hide the info block  // Chat GPT 3.5 code
+    function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
+      console.log("toggleImage called"); // Check if function is called
+      var infoBlock = document.getElementById(infoBlockId);
+      if (imgElement.src.includes(offSrc)) {
+        imgElement.src = onSrc;
+        if (infoBlock) infoBlock.style.display = "block"; // Show the info block
+      } else {
+        imgElement.src = offSrc;
+        if (infoBlock) infoBlock.style.display = "none"; // Hide the info block
+      }
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // to display the submit button only when a radio button is selected
+      // Chat GPT 3.5 code
+      // Get all radio inputs
+      const radios = document.querySelectorAll('input[type="radio"]');
+      const submitBtn = document.getElementById("submitBtn");
+
+      // Function to update the visibility of the submit button
+      function updateSubmitButtonVisibility() {
+        // Check if any radio button is selected
+        const isAnySelected = Array.from(radios).some(
+          (radio) => radio.checked
         );
-        // Apply border-radius to the plot container
-        const plotContainer = document.getElementById("myDiv");
-        plotContainer.style.borderRadius = "6px"; // Rounded borders
+        // Show or hide the submit button based on whether any radio is selected
+        submitBtn.style.display = isAnySelected ? "block" : "none"; // Use 'inline', 'inline-block', or 'block' as needed
+      }
 
-        const data = [
-          {
-            values: values,
-            labels: labels,
-            type: "pie",
-          },
-        ];
-        const layout = {
-          height: 200,
-          width: 470,
-          margin: { t: 10, b: 10, l: 10, r: 10 },
-          paper_bgcolor: "transparent",
-          plot_bgcolor: "transparent",
-        };
-        Plotly.newPlot("myDiv", data, layout);
+      // Initialize button visibility on load
+      updateSubmitButtonVisibility();
+
+      // Add change event listener to all radio buttons
+      radios.forEach((radio) => {
+        radio.addEventListener("change", updateSubmitButtonVisibility);
       });
+    });
+
+    // Plotly pie chart
+    document.addEventListener("DOMContentLoaded", function () {
+      const pieData = /*[[${pieData}]]*/ {};
+      const labels = Object.keys(pieData);
+      const values = Object.values(pieData).map((value) =>
+        parseFloat(value.toFixed(2))
+      );
+      // Apply border-radius to the plot container
+      const plotContainer = document.getElementById("myDiv");
+      plotContainer.style.borderRadius = "6px"; // Rounded borders
+
+      const data = [
+        {
+          values: values,
+          labels: labels,
+          type: "pie",
+        },
+      ];
+      const layout = {
+        height: 200,
+        width: 470,
+        margin: { t: 10, b: 10, l: 10, r: 10 },
+        paper_bgcolor: "transparent",
+        plot_bgcolor: "transparent",
+      };
+      Plotly.newPlot("myDiv", data, layout);
+    });
 
 
-      // Plotly bar chart
-      document.addEventListener("DOMContentLoaded", function () {
+    // Plotly bar chart
+    document.addEventListener("DOMContentLoaded", function () {
       const barChartData = /*[[${barChartData}]]*/ {};
       if (Object.keys(barChartData).length > 0) {
         const profileNames = Object.keys(barChartData);
@@ -1217,17 +1140,36 @@
       }
     });
 
-    function validateForm() {
-        const checkboxes = document.querySelectorAll('input[name="selectedProfiles"]:checked');
-        const errorMessage = document.getElementById('error-message');
-        if (checkboxes.length === 0) {
-            errorMessage.style.display = 'block';
-            return false; // Prevent form submission
-        }
-        errorMessage.style.display = 'none';
-        return true; // Allow form submission
+    function validateForm() { // Chat GPT 4 code for validating the form
+      const checkboxes = document.querySelectorAll('input[name="selectedProfiles"]:checked');
+      const errorMessage = document.getElementById('error-message');
+      if (checkboxes.length === 0) {
+        errorMessage.style.display = 'block';
+        return false; // Prevent form submission
+      }
+      errorMessage.style.display = 'none';
+      return true; // Allow form submission
     }
 
-    </script>
-  </body>
+    // Filter list input function
+    function filterList(listId, searchInputId) {
+      const searchInput = document.getElementById(searchInputId);
+      const filter = searchInput.value.toLowerCase();
+
+      console.log(`Filtering list ${listId} with value ${filter}`); // Debug log
+      const list = document.getElementById(listId);
+
+      if (list) {
+        const items = list.getElementsByTagName('li');
+        Array.from(items).forEach(item => {
+          const textValue = item.textContent || item.innerText;
+          console.log(`Text: ${textValue}, Filter: ${filter}`); // Log values
+          item.style.display = textValue.toLowerCase().includes(filter) ? '' : 'none';
+        });
+      }
+    }
+
+  </script>
+</body>
+
 </html>

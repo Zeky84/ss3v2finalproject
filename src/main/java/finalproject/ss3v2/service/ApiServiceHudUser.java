@@ -109,7 +109,7 @@ public class ApiServiceHudUser {
     }
 
     public DataRent getTheDataCostByCode(String code) {
-        // The data response has a field basicdata that can be either an object or an array of objectslo, that's why we need to
+        // The data response has a field basicdata that can be either an object or an array of objects, that's why we need to
         // handle it differently creating a CUSTOM DESERIALIZER, instead of using the mapper.readValue method
         // directly. CHAT GPT_4 HELP!!!
             RestTemplate restTemplate = new RestTemplate();

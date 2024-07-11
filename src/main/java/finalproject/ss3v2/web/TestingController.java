@@ -3,6 +3,7 @@ package finalproject.ss3v2.web;
 import finalproject.ss3v2.domain.Profile;
 import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.dto.BasicData;
+import finalproject.ss3v2.dto.DataRent;
 import finalproject.ss3v2.dto.TestingProfile;
 import finalproject.ss3v2.repository.UtilitiesRepository;
 import finalproject.ss3v2.service.ApiServiceEnergyInfoAdmin;
@@ -16,10 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/app-testing")
@@ -61,7 +59,26 @@ public class TestingController {
         model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
         model.addAttribute("entityCode", dataEntityCode);
         if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
-            model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
+            // The previous code was changed. When trying to input search in the list of zip codes to localize it easier
+            // the input search was not working. Because instead of sending a list of zip codes to the front end, i was
+            // getting and object (Data) with a nested List<BasicData> object. So I changed the code to send a list of zip codes
+            // now works.
+            DataRent data = apiServiceHudUser.getTheDataCostByCode(dataEntityCode);
+            if (Objects.equals(data.getSmallAreaStatus(), "1")) {
+                model.addAttribute("smallAreaStatus", "1"); // small area status of 1 means that the metro area has many zip codes associated with it
+                List<String> AllZipCodes = new ArrayList<>();
+                List<BasicData> basicdata = data.getBasicdata();
+                for (BasicData groupset : basicdata) {
+                    if (!Objects.equals(groupset.getZipCode(), "88888")) {
+                        AllZipCodes.add(groupset.getZipCode());
+                    }
+                }
+                model.addAttribute("zipCodes", AllZipCodes);
+            } else {
+                model.addAttribute("smallAreaStatus", "0");
+                model.addAttribute("metroName", data.getMetroName());
+            }
+            model.addAttribute("data", data);
         } else {
             //found a case where no data was found... for example Arecibo, PR
             model.addAttribute("nodata", "no data found for this search");
@@ -143,11 +160,35 @@ public class TestingController {
     @GetMapping("/counties/{stateCode}/data/{dataEntityCode}") // EN-POINT FOR STATE-COUNTY SEARCHING CRITERIA
     public String getDataByZipCode(@PathVariable String stateCode,
                                    @PathVariable String dataEntityCode, Model model) {
+        if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
+            // The previous code was changed. When trying to input search in the list of zip codes to localize it easier
+            // the input search was not working. Because instead of sending a list of zip codes to the front end, i was
+            // getting and object (Data) with a nested List<BasicData> object. So I changed the code to send a list of zip codes
+            // now works.
+
+            DataRent data = apiServiceHudUser.getTheDataCostByCode(dataEntityCode);
+            if (Objects.equals(data.getSmallAreaStatus(), "1") && !Objects.equals(data.getCountyName(), "")) {
+                model.addAttribute("smallAreaStatus", "1"); // small area status of 1 means that the county area has many zip codes associated with it
+                List<String> AllZipCodes = new ArrayList<>();
+                List<BasicData> basicdata = data.getBasicdata();
+                for (BasicData groupset : basicdata) {
+                    AllZipCodes.add(groupset.getZipCode());
+
+                }
+                model.addAttribute("zipCodes", AllZipCodes);
+            } else {
+                model.addAttribute("smallAreaStatus", "0");
+                model.addAttribute("countyName", data.getCountyName());
+            }
+            model.addAttribute("data", data);
+        } else {
+            //found a case where no data was found... for example Arecibo, PR
+            model.addAttribute("nodata", "no data found for this search");
+        }
 
         model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
         model.addAttribute("states", apiServiceHudUser.getStatesList());
         model.addAttribute("counties", apiServiceHudUser.getCountiesListByStateCode(stateCode));
-        model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
         model.addAttribute("stateCode", stateCode);
         model.addAttribute("entityCode", dataEntityCode);
 
