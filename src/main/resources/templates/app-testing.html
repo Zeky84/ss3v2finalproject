@@ -366,6 +366,21 @@
                 visibility: visible;
                 opacity: 1;
             }
+
+            @keyframes blink {
+
+                0%,
+                100% {
+                    color: #e99b1d;
+                }
+
+                50% {
+                    color: #ffffff;
+                }
+            }
+            .blink {
+                animation: blink 3s infinite;
+            }
         </style>
     </head>
 
@@ -375,9 +390,9 @@
                 aspect-ratio="1/1" />
             <div class="paragraph">
                 <p>Testing Session</p>
-                <p>
+                <p style="font-size: 16px;">
                     All functionalities can be tested but you're not allow to saves
-                    profiles and compare them
+                    profiles and compare them. <a style="color:#ffffff; background: none;"  class="blink" href="/registration">Full app use when sign Up!</a>
                 </p>
             </div>
 
