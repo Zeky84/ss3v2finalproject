@@ -12,7 +12,7 @@
 	<artifactId>ss3v2</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ss3v2</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Final Project for Coders Campus BootCamp</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

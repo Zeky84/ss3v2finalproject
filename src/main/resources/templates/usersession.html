@@ -650,8 +650,7 @@
     <div th:if="${location}">
       You have chossen the following location:
       <h3 style="display: inline">[[${location}]].</h3>
-      Profile is already created. Add desire utilities cost to searching
-      profile.
+      Select the desired utilities costs to be displayed:
     </div>
   </div>
 
@@ -882,7 +881,7 @@
       <div style="padding: 20px">
         <!-- If profile is created, show the submit button -->
         <button type="submit" class="submit-button" id="submitBtn" style="display: none">
-          Submit Costs
+          Get Costs
         </button>
       </div>
     </form>
@@ -904,7 +903,7 @@
                 <span style="display: inline-block; vertical-align: middle">
                   Profile:
                   <h3 style="display: inline">[[${profile.profileName}]]</h3>
-                  Profile incomplete. Complete it or remove it.
+                  Profile Cretated is Empty.
                 </span>
                 <a
                   th:href="@{/usersession/{userId}/profile/{profileId}/delete(userId=${user.id}, profileId=${profile.profileId})}">
@@ -939,7 +938,7 @@
           </ul>
           <button class="tooltip" th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}"
             type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
-            <h3 style="display: inline; color: #306da6">Generate</h3> <i class="fa-solid fa-chart-column fa-2x"
+             <i class="fa-solid fa-chart-column fa-2x"
               style="color: #306da6;"></i>
             <span class="tooltiptext">Generate multilple bar chart visualizations for comparison</span>
 

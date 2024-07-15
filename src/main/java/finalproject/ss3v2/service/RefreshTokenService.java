@@ -91,7 +91,7 @@ public class RefreshTokenService {
     }
 
     //--------------------------------------------------------------------------------addition to the original code
-    public Boolean verifyRefreshTokenExpirationByUserId(Integer userId) {// verify if the refresh token is not expired
+    public boolean verifyRefreshTokenExpirationByUserId(Integer userId) {// verify if the refresh token is not expired
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
         if (refreshToken.getExpiryDate().compareTo(Instant.now()) < 0) {
             return false;
