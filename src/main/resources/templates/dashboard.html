@@ -1,226 +1,262 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
-  <head>
-    <title>mycostliving-dashboard</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      src="https://kit.fontawesome.com/17e9292b04.js"
-      crossorigin="anonymous"
-    ></script>
-    <style>
-      body {
-        font-family: "Roboto", sans-serif;
-        background-color: #1c3955;
-        color: #306da6;
-      }
-      .form-container {
-        /* GPT help */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 1300px;
-        margin: auto;
-        padding: 20px;
-        box-shadow: 0 0 6px #e7f6ff;
-        border-radius: 13px;
-        background-color: #e7f6ff;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-      }
-      th,
-      td {
-        border: 2px solid #1c3955;
-        padding: 8px;
-        text-align: left;
-      }
-      th {
-        background-color: #c3e9ff;
-        color: #306da6;
-      }
-      .button-logout {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-family: "Roboto", sans-serif;
-        background-color: #ffffff;
-        border: none;
-        box-shadow: 0 0 6px #ffffff;
-        color: #3f90db;
-        padding: 2px 5px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 18px;
-        border-radius: 10px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-        margin-left: 5px;
-        margin-right: 5px;
-        margin-top: 7px;
-        height: 40px;
-        width: 100px;
-      }
-      .button-logout:hover {
-        background-color: #b8b8b8ce;
-        box-shadow: 0 0 4px #b8b8b8ce;
-        font-size: 18px;
-      }
-      .elevate-button {
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        cursor: pointer;
-        font-family: "Roboto", sans-serif;
-        background-color: #2eac49;
-        border: none;
-        box-shadow: 0 0 4px #2eac49;
-        /* color: #306DA6; */
-        padding: 4px 5px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        border-radius: 8px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-      }
-      .elevate-button:hover {
-        color: rgb(204, 255, 189);
-        background-color: #19792e;
-        box-shadow: 0 0 4px #19792e;
-        font-size: 16px;
-      }
-      .remove-button {
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        cursor: pointer;
-        font-family: "Roboto", sans-serif;
-        background-color: #ac2e2e;
-        border: none;
-        box-shadow: 0 0 4px #ac2e2e;
-        /* color: #306DA6; */
-        padding: 4px 5px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        border-radius: 8px;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.5s;
-      }
-      .remove-button:hover {
-        color: rgb(255, 192, 192);
-        background-color: #831d1d;
-        box-shadow: 0 0 4px #831d1d;
-        font-size: 16px;
-      }
-      span {
-        display: inline-block;
-        margin-right: 10px;
-      }
-    </style>
-  </head>
 
-  <body>
-    <div class="form-container">
-      <h2>Admin Dashboard. /Admin user: [[${adminname}]]</h2>
-      <h2></h2>
+<head>
+  <title>mycostliving-dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/17e9292b04.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: "Roboto", sans-serif;
+      background-color: #1c3955;
+      color: #306da6;
+    }
 
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Roles</th>
-            <th>Action</th>
-            <th>Asked Priviledge</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Iterate over the list of users -->
-          <tr th:each="user : ${userList}">
-            <td th:text="${user.id}"></td>
-            <td th:text="${user.firstName}"></td>
-            <td th:text="${user.lastName}"></td>
-            <td th:text="${user.email}"></td>
-            <td>
-              <span
-                th:each="authority : ${user.authorities}"
-                th:text="${authority.getAuthority()} + '  '"
-              ></span>
-            </td>
-            <td>
-              <span th:if="${user.isAdmin.equals(false)}">
-                <form th:action="@{/admin/makeAdmin}" th:method="post">
-                  <input type="hidden" th:name="userId" th:value="${user.id}" />
-                  <button type="submit" class="elevate-button">
-                    <i class="fa-solid fa-user-plus"></i>Admin
-                  </button>
-                </form>
-              </span>
-              <span th:if="${user.isAdmin.equals(true)}">
-                <form th:action="@{/admin/removeAdmin}" th:method="post">
-                  <input type="hidden" th:name="userId" th:value="${user.id}" />
-                  <button type="submit" class="remove-button">
-                    <i class="fa-solid fa-user-slash"></i>Admin
-                  </button>
-                </form>
-              </span>
-              <span th:if="${user.isSuperUser.equals(false)}">
-                <form th:action="@{/admin/makeSuperUser}" th:method="post">
-                  <input type="hidden" th:name="userId" th:value="${user.id}" />
-                  <button type="submit" class="elevate-button">
-                    <i class="fa-solid fa-user-plus"></i>SuperUser
-                  </button>
-                </form>
-              </span>
-              <span th:if="${user.isSuperUser.equals(true)}">
-                <form th:action="@{/admin/removeSuperUser}" th:method="post">
-                  <input type="hidden" th:name="userId" th:value="${user.id}" />
-                  <button type="submit" class="remove-button">
-                    <i class="fa-solid fa-user-slash"></i>SuperUser
-                  </button>
-                </form>
-              </span>
-              <span>
-                <form th:action="@{/admin/deleteUser}" th:method="post">
-                  <input type="hidden" th:name="userId" th:value="${user.id}" />
-                  <button type="submit" class="remove-button">
-                    <i class="fa-solid fa-trash-can"></i>
-                  </button>
-                </form>
-              </span>
-            </td>
-            <td>
-              <span th:if="${user.userAskedForSuperUser.equals(true)}"
-                ><!--To notifie the admin when a user request superuser priviledges-->
-                User request for SuperUser priviledge
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <form action="/logout" method="post">
-      <button class="button-logout" type="submit">Logout</button>
-    </form>
-  </body>
+    .form-container {
+      /* GPT help */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 1300px;
+      margin: auto;
+      padding: 20px;
+      box-shadow: 0 0 6px #e7f6ff;
+      border-radius: 13px;
+      background-color: #e7f6ff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      border: 2px solid #1c3955;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #c3e9ff;
+      color: #306da6;
+    }
+
+    .button-logout {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-family: "Roboto", sans-serif;
+      background-color: #ffffff;
+      border: none;
+      box-shadow: 0 0 6px #ffffff;
+      color: #3f90db;
+      padding: 2px 5px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 7px;
+      height: 40px;
+      width: 100px;
+    }
+
+    .button-like {
+      position: absolute;
+      top: 10px;
+      right: 237px;
+      background-color: #d6effd;
+      box-shadow: 0 0 6px #d6effd;
+      border: none;
+      color: #3f90db;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 7px;
+      height: 40px;
+      width: 100px;
+      line-height: 40px;
+    }
+
+    .button-logout:hover {
+      background-color: #b8b8b8ce;
+      box-shadow: 0 0 4px #b8b8b8ce;
+      font-size: 18px;
+    }
+
+    .button-like:hover {
+      background-color: #b8b8b8ce;
+      box-shadow: 0 0 4px #b8b8b8ce;
+      font-size: 18px;
+    }
+
+    .elevate-button {
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      font-family: "Roboto", sans-serif;
+      background-color: #2eac49;
+      border: none;
+      box-shadow: 0 0 4px #2eac49;
+      /* color: #306DA6; */
+      padding: 4px 5px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+    }
+
+    .elevate-button:hover {
+      color: rgb(204, 255, 189);
+      background-color: #19792e;
+      box-shadow: 0 0 4px #19792e;
+      font-size: 16px;
+    }
+
+    .remove-button {
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      font-family: "Roboto", sans-serif;
+      background-color: #ac2e2e;
+      border: none;
+      box-shadow: 0 0 4px #ac2e2e;
+      /* color: #306DA6; */
+      padding: 4px 5px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.5s;
+    }
+
+    .remove-button:hover {
+      color: rgb(255, 192, 192);
+      background-color: #831d1d;
+      box-shadow: 0 0 4px #831d1d;
+      font-size: 16px;
+    }
+
+    span {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form-container">
+    <h2>Admin Dashboard. /Admin user: [[${adminname}]]</h2>
+    <h2></h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Roles</th>
+          <th>Action</th>
+          <th>Asked Priviledge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Iterate over the list of users -->
+        <tr th:each="user : ${userList}">
+          <td th:text="${user.id}"></td>
+          <td th:text="${user.firstName}"></td>
+          <td th:text="${user.lastName}"></td>
+          <td th:text="${user.email}"></td>
+          <td>
+            <span th:each="authority : ${user.authorities}" th:text="${authority.getAuthority()} + '  '"></span>
+          </td>
+          <td>
+            <span th:if="${user.isAdmin.equals(false)}">
+              <form th:action="@{/admin/makeAdmin}" th:method="post">
+                <input type="hidden" th:name="userId" th:value="${user.id}" />
+                <button type="submit" class="elevate-button">
+                  <i class="fa-solid fa-user-plus"></i>Admin
+                </button>
+              </form>
+            </span>
+            <span th:if="${user.isAdmin.equals(true)}">
+              <form th:action="@{/admin/removeAdmin}" th:method="post">
+                <input type="hidden" th:name="userId" th:value="${user.id}" />
+                <button type="submit" class="remove-button">
+                  <i class="fa-solid fa-user-slash"></i>Admin
+                </button>
+              </form>
+            </span>
+            <span th:if="${user.isSuperUser.equals(false)}">
+              <form th:action="@{/admin/makeSuperUser}" th:method="post">
+                <input type="hidden" th:name="userId" th:value="${user.id}" />
+                <button type="submit" class="elevate-button">
+                  <i class="fa-solid fa-user-plus"></i>SuperUser
+                </button>
+              </form>
+            </span>
+            <span th:if="${user.isSuperUser.equals(true)}">
+              <form th:action="@{/admin/removeSuperUser}" th:method="post">
+                <input type="hidden" th:name="userId" th:value="${user.id}" />
+                <button type="submit" class="remove-button">
+                  <i class="fa-solid fa-user-slash"></i>SuperUser
+                </button>
+              </form>
+            </span>
+            <span>
+              <form th:action="@{/admin/deleteUser}" th:method="post">
+                <input type="hidden" th:name="userId" th:value="${user.id}" />
+                <button type="submit" class="remove-button">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </form>
+            </span>
+          </td>
+          <td>
+            <span
+              th:if="${user.userAskedForSuperUser.equals(true)}"><!--To notifie the admin when a user request superuser priviledges-->
+              User request for SuperUser priviledge
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <form action="/logout" method="post">
+    <button class="button-logout" type="submit">Logout</button>
+  </form>
+  <a th:href="@{/usersession/{userId}(userId=${admin.id})}" class="button-like" style="top: 10px; right: 123px">Go
+    back</a>
+</body>
+
 </html>

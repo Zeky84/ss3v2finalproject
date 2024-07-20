@@ -64,6 +64,7 @@ public class AdminController {
         List<User> users = userServiceImpl.findAll();
         model.addAttribute("userList", users);
         model.addAttribute("adminname", adminname);
+        model.addAttribute("admin", userServiceImpl.findUserByEmail(adminname).get());// added later 7/26/2024
         return "dashboard";
     }
 
