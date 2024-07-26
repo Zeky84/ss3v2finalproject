@@ -94,13 +94,21 @@ public class UserController {
             // Clean up the user object before saving
             cleanUpUserBeforeSave(userAuth);
 
-            userServiceImpl.save(userAuth);
+            //--------------------------------------------IMPORTANT TO REMEMBER----------------------------------------
+            userServiceImpl.save(userAuth); // updating the user with the new values
+
+            //This object takes the updated user, their credentials (usually the password), and their authorities (roles/privileges).This step is crucial
+            // as it reflects the changes in the user’s authentication token, ensuring that any subsequent security checks use the latest user details.
             Authentication updatedAuth = new UsernamePasswordAuthenticationToken(userAuth, authentication.getCredentials(), userAuth.getAuthorities());
+
+            //This final step is setting the new authentication in the SecurityContext. This is important because it
+            // ensures that within the current session or security context, the user's authentication details are up-to-date.
+            // This affects everything from security checks to decisions made based on the user's roles or identity.
             SecurityContextHolder.getContext().setAuthentication(updatedAuth);
+            //---------------------------------------------------------------------------------------------------------
+
             model.addAttribute("user", userAuth);
 
-            // Log for debugging
-            System.out.println("Redirecting to /usersession/" + userId);
 
             return "redirect:/usersession/" + userId; // Ensure this is a redirect
         }
@@ -159,9 +167,7 @@ public class UserController {
                 //found a case where no data was found... for example Arecibo, PR
                 model.addAttribute("nodata", "no data found for this search");
             }
-            // Metro Data does not offer a State code cause some metro areas are associated with more than one state
-            // and state code is need it to call to the EIA API and get  the elect rates by state. So we need to obtain
-            // the state or states codes from metro_name.(CHANGE THIS FOR THE ZIP CODE STACK API when zip code is available)
+
             return "usersession";
         }
         return "redirect:/signin";
@@ -180,7 +186,7 @@ public class UserController {
             User userAuth = (User) authentication.getPrincipal();
             model.addAttribute("user", userAuth);
 
-            User user = userServiceImpl.findUserById(userId).get();// we don't want to use the user from the security context
+            User user = userServiceImpl.findUserById(userId).get();// we don't use the user from the security context here
             // we used the user from the security context to make sure when accessing the view and editing the fields to
             // avoid any possible manipulation of the URL. But when creating the profile we need to use the user from the db
 
@@ -490,7 +496,7 @@ public class UserController {
             profile.setFuelCost(Math.round(fuelType * fuelQty * 100.0) / 100.0);
 
             // Setting the elect cost is complicated based in all the aspects to consider and this approach is not
-            // the objective of this project, however we did try our best to provide approximated values based on household
+            // the objective of this project, however did try our best to provide approximated values based on household
             // members
             if (personsQty == 0) {
                 profile.setElectricityCost(0.0);
@@ -539,8 +545,8 @@ public class UserController {
             }
 
             //Removing the profile from the user's profile list and deleting the profile(6/15/2024)
-            //Need to understand better this part. Ins't supposed to has the need to remove from the user's profile list
-            // too. Shouldn't be enough to delete the profile from the profile table?
+            //Because the way JPA works,we need to remove the profile from both sides of the relationship to avoid
+            // data integrity issues,such as having a Profile in the collection that no longer exists in the database.
             user.getProfiles().remove(profileService.getProfileById(profileId));
             profileService.deleteProfileById(profileId);
 
@@ -695,7 +701,8 @@ public class UserController {
 
             // Update the security context. This is necessary because the user's email and password have changed and the
             // user we're working with is the one from the authentication object not the one from the database. If we the
-            // one from the database, we will have security issues.
+            // one from the database, we will have security issues. And if we don't update the security context, we have
+            // unexpected token in the authority table.
             Authentication newAuth = new UsernamePasswordAuthenticationToken(existingUser, existingUser.getPassword(), existingUser.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(newAuth);
 
