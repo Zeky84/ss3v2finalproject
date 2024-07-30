@@ -1,6 +1,4 @@
 package finalproject.ss3v2.web;
-
-
 import finalproject.ss3v2.domain.Authority;
 import finalproject.ss3v2.domain.Profile;
 import finalproject.ss3v2.domain.User;
@@ -146,14 +144,14 @@ public class UserController {
                 // The previous code was changed. When trying to input search in the list of zip codes to localize it easier
                 // the input search was not working. Because instead of sending a list of zip codes to the front end, i was
                 // getting and object (Data) with a nested List<BasicData> object. So I changed the code to send a list of zip codes
-                // now works.
+                // now works.07/15/2024
                 DataRent data = apiServiceHudUser.getTheDataCostByCode(dataEntityCode);
                 if (Objects.equals(data.getSmallAreaStatus(), "1")) {
                     model.addAttribute("smallAreaStatus", "1"); // small area status of 1 means that the metro area has many zip codes associated with it
                     List<String> AllZipCodes = new ArrayList<>();
                     List<BasicData> basicdata = data.getBasicdata();
                     for (BasicData groupset : basicdata) {
-                        if (!Objects.equals(groupset.getZipCode(), "88888")) {
+                        if (!Objects.equals(groupset.getZipCode(), "88888")) {// filtering the zip code 88888 which is a placeholder and no state associated with it
                             AllZipCodes.add(groupset.getZipCode());
                         }
                     }
@@ -698,11 +696,6 @@ public class UserController {
             }
 
             userServiceImpl.save(existingUser);
-
-            // Update the security context. This is necessary because the user's email and password have changed and the
-            // user we're working with is the one from the authentication object not the one from the database. If we the
-            // one from the database, we will have security issues. And if we don't update the security context, we have
-            // unexpected token in the authority table.
             Authentication newAuth = new UsernamePasswordAuthenticationToken(existingUser, existingUser.getPassword(), existingUser.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(newAuth);
 

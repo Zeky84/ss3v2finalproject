@@ -542,7 +542,8 @@
             <div th:if="${smallAreaStatus}==1">
               <!--SmallAreaStatus==1 means more than one zip code asocitated to the selected MetroArea-->
               <li th:each="zipCode, iterStat : ${zipCodes}">
-                <a th:if="${zipCode} != '88888'"
+                <span th:if="${zipCode} == 'MSA level'">MSA general data.</span><!--MSA level is new,  values are aggregated and provided for the entire MSA 08/03/2024 NOT USEFUL NOW-->
+                <a th:if="${zipCode} != 'MSA level'"
                   th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
                   th:text="${zipCode}">
                 </a>
@@ -608,7 +609,9 @@
             <div th:if="${smallAreaStatus}==1">
               <!--SmallAreaStatus==1 means more than one zip code asocitated to the selected County-->
               <li th:each="zipCode, iterStat : ${zipCodes}">
-                <a th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
+                <span th:if="${zipCode} == 'MSA level'">MSA general data</span><!--MSA level is new,  values are aggregated and provided for the entire MSA 08/03/2024-->
+                <a th:if="${zipCode} != 'MSA level'"
+                th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
                   th:text="${zipCode}">
                 </a>
               </li>
