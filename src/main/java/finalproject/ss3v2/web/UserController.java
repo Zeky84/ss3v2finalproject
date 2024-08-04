@@ -65,6 +65,10 @@ public class UserController {
             // the user from the auth object instead from the to avoid any possible manipulation of the URL
             User userAuth = (User) authentication.getPrincipal();
             User user = userServiceImpl.findUserById(userId).get();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
             model.addAttribute("user", userAuth);
 
             // Adding the states and metro areas to the html view
@@ -88,6 +92,10 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             userAuth.setUserAskedForSuperUser(true);
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
 
             // Clean up the user object before saving
             cleanUpUserBeforeSave(userAuth);
@@ -129,6 +137,10 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             User user = userServiceImpl.findUserById(userId).get();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error";
+            }
             model.addAttribute("user", userAuth);
 
             // Adding list of profiles created by the user if they exist(this was added later)
@@ -140,6 +152,7 @@ public class UserController {
             model.addAttribute("states", apiServiceHudUser.getStatesList());
             model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
             model.addAttribute("entityCode", dataEntityCode);
+
             if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
                 // The previous code was changed. When trying to input search in the list of zip codes to localize it easier
                 // the input search was not working. Because instead of sending a list of zip codes to the front end, i was
@@ -150,9 +163,9 @@ public class UserController {
                     model.addAttribute("smallAreaStatus", "1"); // small area status of 1 means that the metro area has many zip codes associated with it
                     List<String> AllZipCodes = new ArrayList<>();
                     List<BasicData> basicdata = data.getBasicdata();
-                    for (BasicData groupset : basicdata) {
-                        if (!Objects.equals(groupset.getZipCode(), "88888")) {// filtering the zip code 88888 which is a placeholder and no state associated with it
-                            AllZipCodes.add(groupset.getZipCode());
+                    for (BasicData dataset : basicdata) {
+                        if (!Objects.equals(dataset.getZipCode(), "88888")) {// filtering the zip code 88888 which is a placeholder and no state associated with it
+                            AllZipCodes.add(dataset.getZipCode());
                         }
                     }
                     model.addAttribute("zipCodes", AllZipCodes);
@@ -182,6 +195,10 @@ public class UserController {
 
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error";
+            }
             model.addAttribute("user", userAuth);
 
             User user = userServiceImpl.findUserById(userId).get();// we don't use the user from the security context here
@@ -283,6 +300,10 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             User user = userServiceImpl.findUserById(userId).get();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
             model.addAttribute("user", userAuth);
 
             // Adding list of profiles created by the user if they exists
@@ -306,6 +327,10 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             User user = userServiceImpl.findUserById(userId).get();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
             model.addAttribute("user", userAuth);
 
             // Adding list of profiles created by the user if they exists
@@ -357,11 +382,11 @@ public class UserController {
                                                               @PathVariable Integer dataindex, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
+            User user = userServiceImpl.findUserById(userId).get();
 
-            User user = userServiceImpl.findUserById(userId).get();// we don't want to use the user from the security context
-            // we used the user from the security context to make sure when accessing the view and editing the fields to
-            // avoid any possible security risk. But when creating the profile we need to use the user from the db
-
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
             model.addAttribute("user", userAuth);
 
             // Adding list of profiles created by the user if they exists
@@ -453,6 +478,10 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             User user = userServiceImpl.findUserById(userId).get();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
             model.addAttribute("user", userAuth);
 
             // Adding list of profiles created by the user if they exists
@@ -535,6 +564,10 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             User user = userServiceImpl.findUserById(userId).get();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
             model.addAttribute("user", userAuth);
             // Adding list of profiles created by the user if they exists
             List<Profile> profiles = user.getProfiles();
@@ -559,6 +592,10 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             User user = userServiceImpl.findUserById(userId).get();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
             model.addAttribute("user", userAuth);
 
             // Adding the states and metro areas to the html view
@@ -613,6 +650,10 @@ public class UserController {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
             User user = userServiceImpl.findUserById(userId).get();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
             model.addAttribute("user", userAuth);
 
             // Fetch profiles based on selectedProfileIds
@@ -657,6 +698,10 @@ public class UserController {
     public String goToEditUser(@PathVariable Integer userId, Model model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
+
+            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+                return "redirect:/error?unAuthorized";
+            }
             model.addAttribute("user", userAuth);
             return "edituser";
         }
@@ -668,19 +713,20 @@ public class UserController {
                              @RequestParam(required = false) String newPassword,
                              Authentication authentication, Model model) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-            User authenticatedUser = (User) authentication.getPrincipal();
+            User userAuth = (User) authentication.getPrincipal();
+
+            if (!userAuth.getId().equals(userId)) {
+                // Redirect to an error page or a 'forbidden' page
+                return "redirect:/error?unAuthorized"; // Redirect to an error page
+            }
 
             // Adding list of profiles created by the user if they exists
-            List<Profile> profiles = authenticatedUser.getProfiles();
+            List<Profile> profiles = userAuth.getProfiles();
             if (!profiles.isEmpty()) {
                 model.addAttribute("profiles", profiles);
             }
 
             // Check if the authenticated user's ID matches the user ID from the URL to avoid unauthorized updates. just in case
-            if (!authenticatedUser.getId().equals(userId)) {
-                // Redirect to an error page or a 'forbidden' page
-                return "redirect:/error?unAuthenticated"; // Redirect to an error page
-            }
 
             User existingUser = userServiceImpl.findUserById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
