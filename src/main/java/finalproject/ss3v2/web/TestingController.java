@@ -1,5 +1,7 @@
 package finalproject.ss3v2.web;
 
+import finalproject.ss3v2.domain.Profile;
+import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.dto.BasicData;
 import finalproject.ss3v2.dto.DataRent;
 import finalproject.ss3v2.dto.TestingProfile;
@@ -8,6 +10,7 @@ import finalproject.ss3v2.service.ApiServiceEnergyInfoAdmin;
 import finalproject.ss3v2.service.ApiServiceHudUser;
 import finalproject.ss3v2.service.ApiServiceZipCodeStack;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -18,7 +21,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/app-testing")
-public class AppTestingController {
+public class TestingController {
 
     private ApiServiceHudUser apiServiceHudUser;
     private ApiServiceEnergyInfoAdmin apiServiceEnergyInfoAdmin;
@@ -27,8 +30,8 @@ public class AppTestingController {
 
     private UtilitiesRepository utilitiesRepository;
 
-    public AppTestingController(ApiServiceHudUser apiServiceHudUser, ApiServiceEnergyInfoAdmin apiServiceEnergyInfoAdmin,
-                                ApiServiceZipCodeStack apiServiceZipCodeStack, UtilitiesRepository utilitiesRepository) {
+    public TestingController(ApiServiceHudUser apiServiceHudUser, ApiServiceEnergyInfoAdmin apiServiceEnergyInfoAdmin,
+                             ApiServiceZipCodeStack apiServiceZipCodeStack, UtilitiesRepository utilitiesRepository) {
         this.apiServiceHudUser = apiServiceHudUser;
         this.apiServiceEnergyInfoAdmin = apiServiceEnergyInfoAdmin;
         this.apiServiceZipCodeStack = apiServiceZipCodeStack;

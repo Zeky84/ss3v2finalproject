@@ -447,7 +447,14 @@
     <img src="/images/imagehome.png" style="margin-left: 7px; margin-top: 7px" alt="this is the app logo"
       aspect-ratio="1/1" />
     <div class="paragraph">
-      <p>[[${user.firstName}]]'s Session</p>
+      <p>
+        [[${user.firstName}]]'s Session
+        <span th:if="${param.unAuthorized}" style="color: red">
+          You are not authorized to access other users data!!!
+        </span>
+      </p>
+
+
       <!--The rest of this div is for the user to interact with the admin when asking for SuperUser priviledges -->
       <p th:if="${user.isAdmin.equals(true)}" style="font-size: 15px;">You are an admin user, no need for upgrading
         privileges</p>
@@ -542,7 +549,8 @@
             <div th:if="${smallAreaStatus}==1">
               <!--SmallAreaStatus==1 means more than one zip code asocitated to the selected MetroArea-->
               <li th:each="zipCode, iterStat : ${zipCodes}">
-                <span th:if="${zipCode} == 'MSA level'">MSA general data.</span><!--MSA level is new,  values are aggregated and provided for the entire MSA 08/03/2024 NOT USEFUL NOW-->
+                <span th:if="${zipCode} == 'MSA level'">MSA general
+                  data.</span><!--MSA level is new,  values are aggregated and provided for the entire MSA 08/03/2024 NOT USEFUL NOW-->
                 <a th:if="${zipCode} != 'MSA level'"
                   th:href="@{/usersession/{userId}/metroarea/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
                   th:text="${zipCode}">
@@ -609,9 +617,10 @@
             <div th:if="${smallAreaStatus}==1">
               <!--SmallAreaStatus==1 means more than one zip code asocitated to the selected County-->
               <li th:each="zipCode, iterStat : ${zipCodes}">
-                <span th:if="${zipCode} == 'MSA level'">MSA general data</span><!--MSA level is new,  values are aggregated and provided for the entire MSA 08/03/2024-->
+                <span th:if="${zipCode} == 'MSA level'">MSA general
+                  data</span><!--MSA level is new,  values are aggregated and provided for the entire MSA 08/03/2024-->
                 <a th:if="${zipCode} != 'MSA level'"
-                th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
+                  th:href="@{/usersession/{userId}/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(userId=${user.id}, stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
                   th:text="${zipCode}">
                 </a>
               </li>
@@ -941,8 +950,7 @@
           </ul>
           <button class="tooltip" th:if="${#lists.size(profiles) > 1 && (user.isSuperUser || user.isAdmin)}"
             type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
-             <i class="fa-solid fa-chart-column fa-2x"
-              style="color: #306da6;"></i>
+            <i class="fa-solid fa-chart-column fa-2x" style="color: #306da6;"></i>
             <span class="tooltiptext">Generate multilple bar chart visualizations for comparison</span>
 
           </button>
