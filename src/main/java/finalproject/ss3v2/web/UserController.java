@@ -556,11 +556,14 @@ public class UserController {
             model, Authentication authentication) {
         if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
             User userAuth = (User) authentication.getPrincipal();
-            User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
-
             if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
                 return "redirect:/usersession/" + userAuth.getId()+"?unAuthorized";
+
             }
+
+            User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
+
             model.addAttribute("user", userAuth);
             // Adding list of profiles created by the user if they exists
             List<Profile> profiles = user.getProfiles();
@@ -602,8 +605,9 @@ public class UserController {
             }
 
             // Getting the profile to get the data to create the pie chart. Because is used the profileId to get the profile
-            //  is needed to check if the profile belongs to the current user and not to another user. Current can access
+            //  is needed to check if the profile belongs to the current user and not to another user. Current user can access
             // other user's data if the profileId is manipulated in the URL. Checking if profile id is in the user's profile list
+            // No url manipulation animore 08/04/2024
             for(Profile profile: profiles){
                 if(profile.getProfileId().equals(profileId)){
                     profile = profileService.getProfileById(profileId);

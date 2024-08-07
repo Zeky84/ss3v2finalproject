@@ -27,7 +27,7 @@ public class ApiServiceEnergyInfoAdmin {
 
     public Double getEnergyRateByStateDebug(String stateCode) {
         // elect rates for PR(Puerto Rico), AS(American Samoa), GU(Guam), VI(Virgin Islands) are hardcoded because
-        // the EIA API does not have data for them
+        // the EIA API does not provide data for them
         if (stateCode.equalsIgnoreCase("PR")) {
             return 22.57;
         } else if (stateCode.equalsIgnoreCase("AS")) {

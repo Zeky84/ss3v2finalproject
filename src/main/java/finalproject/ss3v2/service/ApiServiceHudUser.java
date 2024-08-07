@@ -29,7 +29,7 @@ import java.util.List;
 @Service
 public class ApiServiceHudUser {
     // THIS IS THE SERVICE CLASS THAT WILL INTERACT WITH THE HUD USER API( TO GET THE RENT DATA)
-    // This class is the one that not only is uses to get the data rent from the HUD User API but also to get the
+    // This class is the one that not only is uses to get the data rent from the HUD User API but also to get
     // the States and Metro Areas to look the info based on them.
     private ApiStateRepository stateRepository;
     private ApiMetroAreaRepository metroAreaRepository;
@@ -61,14 +61,14 @@ public class ApiServiceHudUser {
                 URI uriMetroArea = buildUri("/listMetroAreas");
 
                 // Getting the response as a String
-                ResponseEntity<String> responseS = rt.exchange(uriState, HttpMethod.GET, entity, String.class);
-                ResponseEntity<String> responseM = rt.exchange(uriMetroArea, HttpMethod.GET, entity, String.class);
+                ResponseEntity<String> responseState = rt.exchange(uriState, HttpMethod.GET, entity, String.class);
+                ResponseEntity<String> responsesMetroArea = rt.exchange(uriMetroArea, HttpMethod.GET, entity, String.class);
 
                 // Deserialize the JSON response into List<State>
                 ObjectMapper mapper = new ObjectMapper();
-                List<ApiState> states = mapper.readValue(responseS.getBody(), new TypeReference<List<ApiState>>() {
+                List<ApiState> states = mapper.readValue(responseState.getBody(), new TypeReference<List<ApiState>>() {
                 });
-                List<ApiMetroAreas> metroAreas = mapper.readValue(responseM.getBody(), new TypeReference<List<ApiMetroAreas>>() {
+                List<ApiMetroAreas> metroAreas = mapper.readValue(responsesMetroArea.getBody(), new TypeReference<List<ApiMetroAreas>>() {
                 });
 
                 // Save the states and metro areas to the database(could create a service to do this, but for better,
@@ -96,12 +96,12 @@ public class ApiServiceHudUser {
         URI uri = buildUri("/listCounties/" + stateCode);
 
         // Getting the response as a String
-        ResponseEntity<String> responseC = rt.exchange(uri, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> responseCounties = rt.exchange(uri, HttpMethod.GET, entity, String.class);
 
         // Deserialize the JSON response into List<County>
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readValue(responseC.getBody(), new TypeReference<List<County>>() {
+            return mapper.readValue(responseCounties.getBody(), new TypeReference<List<County>>() {
             });
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
