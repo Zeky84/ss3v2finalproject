@@ -585,70 +585,69 @@ public class UserController {
 
     @GetMapping("/{userId}/profile/{profileId}/piechart")
     public String generatePieChart(@PathVariable Integer userId, @PathVariable Long profileId, Model model, Authentication authentication) {
-        if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-            User userAuth = (User) authentication.getPrincipal();
-            User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
+		User userAuth = null; //Bringing the user to the scope in the last line of the method
+		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
+			userAuth = (User) authentication.getPrincipal();
+			User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
-            if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
-                return "redirect:/usersession/" + userAuth.getId()+"?unAuthorized";
-            }
-            model.addAttribute("user", userAuth);
+			if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data
+				return "redirect:/usersession/" + userAuth.getId() + "?unAuthorized";
+			}
+			model.addAttribute("user", userAuth);
 
-            // Adding the states and metro areas to the html view
-            model.addAttribute("states", apiServiceHudUser.getStatesList());
-            model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+			// Adding the states and metro areas to the html view
+			model.addAttribute("states", apiServiceHudUser.getStatesList());
+			model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
 
-            // Adding list of profiles created by the user if they exists
-            List<Profile> profiles = user.getProfiles();
-            if (!profiles.isEmpty()) {
-                model.addAttribute("profiles", profiles);
-            }
+			// Adding list of profiles created by the user if they exists
+			List<Profile> profiles = user.getProfiles();
+			if (!profiles.isEmpty()) {
+				model.addAttribute("profiles", profiles);
+			}
 
-            // Getting the profile to get the data to create the pie chart. Because is used the profileId to get the profile
-            //  is needed to check if the profile belongs to the current user and not to another user. Current user can access
-            // other user's data if the profileId is manipulated in the URL. Checking if profile id is in the user's profile list
-            // No url manipulation animore 08/04/2024
-            for(Profile profile: profiles){
-                if(profile.getProfileId().equals(profileId)){
-                    profile = profileService.getProfileById(profileId);
-                    Map<String, Double> pieData = new HashMap<>();
+			// Getting the profile to get the data to create the pie chart. Because is used the profileId to get the profile
+			//  is needed to check if the profile belongs to the current user and not to another user. Current user can access
+			// other user's data if the profileId is manipulated in the URL. Checking if profile id is in the user's profile list
+			// No url manipulation anymore 08/04/2024
+			for (Profile profile : profiles) {
+				if (profile.getProfileId().equals(profileId)) {
+					profile = profileService.getProfileById(profileId);
+					Map<String, Double> pieData = new HashMap<>();
 
-                    if (profile.getTotalCost() != null && profile.getTotalCost() > 0) {
-                        double totalCost = profile.getTotalCost();
-                        Map<String, Double> costMap = Map.of(
-                                "RentCost", profile.getRentCost() != null ? profile.getRentCost() : 0.0,
-                                "FuelCost", profile.getFuelCost() != null ? profile.getFuelCost() : 0.0,
-                                "ElectCost", profile.getElectricityCost() != null ? profile.getElectricityCost() : 0.0,
-                                "WasteCost", profile.getWasteCost() != null ? profile.getWasteCost() : 0.0,
-                                "WaterCost", profile.getWaterCost() != null ? profile.getWaterCost() : 0.0,
-                                "TransCost", profile.getPublicTransportationCost() != null ? profile.getPublicTransportationCost() : 0.0,
-                                "NatGasCost", profile.getNaturalGasCost() != null ? profile.getNaturalGasCost() : 0.0,
-                                "InternetCost", profile.getInternetCost() != null ? profile.getInternetCost() : 0.0
-                        );
-                        for (Map.Entry<String, Double> entry : costMap.entrySet()) {
-                            Double cost = entry.getValue();
-                            if (cost > 0) {
-                                pieData.put(entry.getKey() + ": $" + cost, (cost / totalCost) * 100);
-                            }
-                        }
+					if (profile.getTotalCost() != null && profile.getTotalCost() > 0) {
+						double totalCost = profile.getTotalCost();
+						Map<String, Double> costMap = Map.of(
+								"RentCost", profile.getRentCost() != null ? profile.getRentCost() : 0.0,
+								"FuelCost", profile.getFuelCost() != null ? profile.getFuelCost() : 0.0,
+								"ElectCost", profile.getElectricityCost() != null ? profile.getElectricityCost() : 0.0,
+								"WasteCost", profile.getWasteCost() != null ? profile.getWasteCost() : 0.0,
+								"WaterCost", profile.getWaterCost() != null ? profile.getWaterCost() : 0.0,
+								"TransCost", profile.getPublicTransportationCost() != null ? profile.getPublicTransportationCost() : 0.0,
+								"NatGasCost", profile.getNaturalGasCost() != null ? profile.getNaturalGasCost() : 0.0,
+								"InternetCost", profile.getInternetCost() != null ? profile.getInternetCost() : 0.0
+						);
+						for (Map.Entry<String, Double> entry : costMap.entrySet()) {
+							Double cost = entry.getValue();
+							if (cost > 0) {
+								pieData.put(entry.getKey() + ": $" + cost, (cost / totalCost) * 100);
+							}
+						}
 
-                        model.addAttribute("pieData", pieData);
-                        return "usersession";
-                    }
+						model.addAttribute("pieData", pieData);
+						return "usersession";
+					}
 
-                    System.out.println("No data to create the pie chart");
-                    model.addAttribute("error", "No data to create the pie chart");
+					System.out.println("No data to create the pie chart");
+					model.addAttribute("error", "No data to create the pie chart");
 
-                    return "usersession";
-                }
-                else{
-                    return "redirect:/usersession/" + userAuth.getId()+"?unAuthorized";
-                }
-            }
-
-        }
-        return "redirect:/signin";
-    }
+					return "usersession";
+				}
+				System.out.println("No data to create the pie chart");
+				model.addAttribute("error", "No data to create the pie chart");
+			}
+		}
+		return "redirect:/usersession/" + userAuth.getId() + "?unAuthorized";
+	}
 
 
     @PostMapping("/{userId}/generateBarChart")
