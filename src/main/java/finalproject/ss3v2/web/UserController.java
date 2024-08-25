@@ -723,7 +723,7 @@ public class UserController {
 
             if (!userAuth.getId().equals(userId)) {
                 // Redirect to an error page or a 'forbidden' page
-                return "redirect:/usersession/" + userAuth.getId()+"?unAuthorized"; // Redirect to an error page
+                return "redirect:/usersession/" + userAuth.getId()+"?unAuthorized";
             }
 
             // Adding list of profiles created by the user if they exists
@@ -733,7 +733,6 @@ public class UserController {
             }
 
             // Check if the authenticated user's ID matches the user ID from the URL to avoid unauthorized updates. just in case
-
             User existingUser = userServiceImpl.findUserById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 

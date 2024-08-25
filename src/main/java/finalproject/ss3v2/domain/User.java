@@ -26,8 +26,8 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Profile> profiles = new ArrayList<>();
-    @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
-    private List<Post> posts = new ArrayList<>();
+//    @OneToMany(mappedBy = "user")//FetchType.LAZY is the default
+//    private List<Post> posts = new ArrayList<>();
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("user")
     private List<Authority> authorities = new ArrayList<>();

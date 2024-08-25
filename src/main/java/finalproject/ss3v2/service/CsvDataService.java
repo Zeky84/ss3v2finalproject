@@ -25,9 +25,9 @@ public class CsvDataService {
     }
 
     public void createDbWithCsvData() {
-        if(utilitiesRepository.count()==0){// I was having an error because in deployment to avoid overwriting the data in the database
-            // i was using none and it was creating a double record in the db, finding a double values of each state, with this if condition is done, the same i used for
-            //states and metro areas
+        if(utilitiesRepository.count()==0){// I was having an error because in deployment, to avoid overwriting the data in the database
+            // I was using none, and it was creating a double record in the db, finding a double values of each state, with this "if condition", is working well, the same i used for
+            //states and metro areas in the ApiServiceHudUser class
             // This method will create the database with the data from the csv file
             String csvFile = "UtilitiesCostStatesManualFed.csv";
             String line = "";
