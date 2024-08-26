@@ -884,216 +884,139 @@
         <!-- Pie chart will be rendered here -->
 
         <script th:inline="javascript">
-            //   function refreshTokenExpCount() {
-            //     fetch(`/tokens/refreshtokenexptime`)
-            //       .then((response) => response.text())
-            //       .then((countdowntime) => {
-            //         console.log(countdowntime); // For debugging purposes
-            //         const countdownContainer = document.getElementById(
-            //           "countDownRefreshToken"
-            //         );
-            //         const expirationP = document.getElementById("expiresInP");
-            //         const activateMessage = document.getElementById("activateMessage");
-
-            //         //countdowntime in minutes and seconds
-            //         const [minutes, seconds] = countdowntime.split(":").map(Number);
-
-            //         if (countdowntime.trim() === "0:00") {
-            //           countdownContainer.style.color = "red";
-            //           countdownContainer.innerHTML = `<h4>Session Expired</h4>`;
-            //           expirationP.innerHTML = ``;
-            //           activateMessage.innerHTML = "";
-            //           clearInterval(refreshTokenInterval);
-            //         } else {
-            //           if (minutes === 0 && seconds <= 15) {
-            //             // If less than 15 seconds, will allow to detect activity for refreshing the token(was before at the end of the code)
-            //             document.addEventListener("click", activityDetected);
-            //             document.addEventListener("keypress", activityDetected);
-            //             // If less than 15 seconds, make the text red
-            //             countdownContainer.style.color = "red";
-            //             activateMessage.style.color = "red";
-            //             activateMessage.innerHTML = `<h4>key press refresh!</h4>`;
-            //           } else {
-            //             // Reset to default color if more than 15 seconds remain and hide the activate message(for the account refresh)
-            //             countdownContainer.style.color = "";
-            //             activateMessage.innerHTML = ""; // Clear "key press refresh" message
-            //           }
-            //           expirationP.innerHTML = `expires in:`;
-            //           countdownContainer.innerHTML = `<h4>${countdowntime}</h4>`;
-            //         }
-            //       })
-            //       .catch((error) => console.error("Error fetching countdown:", error));
-            //   }
-            //   let refreshTokenInterval = setInterval(refreshTokenExpCount, 1000);
-            //   refreshTokenExpCount();
-
-            //   function checkRefreshToken() {
-            //     fetch("/tokens/newrefreshtoken")
-            //       .then((response) => {
-            //         if (response.ok) {
-            //           return response.text();
-            //         } else if (response.status === 401) {
-            //           // Token expired or unauthorized
-            //           clearInterval(refreshTokenInterval);
-            //           clearLocalStorage();
-            //           window.location.href = "/signin?sessionexpired=true";
-            //           console.log("Token expired or unauthorized");
-            //         } else if (response.status === 500) {
-            //           // Internal Server Error
-            //           clearInterval(refreshTokenInterval);
-            //           clearLocalStorage();
-            //           window.location.href = "/signin?sessionexpired=true";
-            //           console.log("Internal Server Error");
-            //         } else {
-            //           console.error("Error fetching new refresh token");
-            //         }
-            //       })
-            //       .then((data) => console.log(data))
-            //       .catch((error) => console.error("Error:", error));
-            //   }
-
-            //   function clearLocalStorage() {
-            //     localStorage.clear();
-            //     sessionStorage.clear();
-            //   }
-            //   function activityDetected() {
-            //     checkRefreshToken();
-            //   }
-
             // Function to toggle the image and show/hide the info block  // Chat GPT 3.5 code
-            function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
-                console.log("toggleImage called"); // Check if function is called
-                var infoBlock = document.getElementById(infoBlockId);
-                if (imgElement.src.includes(offSrc)) {
-                    imgElement.src = onSrc;
-                    if (infoBlock) infoBlock.style.display = "block"; // Show the info block
-                } else {
-                    imgElement.src = offSrc;
-                    if (infoBlock) infoBlock.style.display = "none"; // Hide the info block
-                }
-            }
+     function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
+         console.log("toggleImage called"); // Check if function is called
+         var infoBlock = document.getElementById(infoBlockId);
+         if (imgElement.src.includes(offSrc)) {
+             imgElement.src = onSrc;
+             if (infoBlock) infoBlock.style.display = "block"; // Show the info block
+         } else {
+             imgElement.src = offSrc;
+             if (infoBlock) infoBlock.style.display = "none"; // Hide the info block
+         }
+     }
 
-            document.addEventListener("DOMContentLoaded", function () {
-                // to display the submit button only when a radio button is selected
-                // Chat GPT 3.5 code
-                // Get all radio inputs
-                const radios = document.querySelectorAll('input[type="radio"]');
-                const submitBtn = document.getElementById("submitBtn");
+     document.addEventListener("DOMContentLoaded", function () {
+         // to display the submit button only when a radio button is selected
+         // Chat GPT 3.5 code
+         // Get all radio inputs
+         const radios = document.querySelectorAll('input[type="radio"]');
+         const submitBtn = document.getElementById("submitBtn");
 
-                // Function to update the visibility of the submit button
-                function updateSubmitButtonVisibility() {
-                    // Check if any radio button is selected
-                    const isAnySelected = Array.from(radios).some(
-                        (radio) => radio.checked
-                    );
-                    // Show or hide the submit button based on whether any radio is selected
-                    submitBtn.style.display = isAnySelected ? "block" : "none"; // Use 'inline', 'inline-block', or 'block' as needed
-                }
+         // Function to update the visibility of the submit button
+         function updateSubmitButtonVisibility() {
+             // Check if any radio button is selected
+             const isAnySelected = Array.from(radios).some(
+                 (radio) => radio.checked
+             );
+             // Show or hide the submit button based on whether any radio is selected
+             submitBtn.style.display = isAnySelected ? "block" : "none"; // Use 'inline', 'inline-block', or 'block' as needed
+         }
 
-                // Initialize button visibility on load
-                updateSubmitButtonVisibility();
+         // Initialize button visibility on load
+         updateSubmitButtonVisibility();
 
-                // Add change event listener to all radio buttons
-                radios.forEach((radio) => {
-                    radio.addEventListener("change", updateSubmitButtonVisibility);
-                });
-            });
+         // Add change event listener to all radio buttons
+         radios.forEach((radio) => {
+             radio.addEventListener("change", updateSubmitButtonVisibility);
+         });
+     });
 
-            // Plotly pie chart
-            document.addEventListener("DOMContentLoaded", function () {
-                const pieData = /*[[${pieData}]]*/ {};
-                const labels = Object.keys(pieData);
-                const values = Object.values(pieData).map((value) =>
-                    parseFloat(value.toFixed(2))
-                );
-                // Apply border-radius to the plot container
-                const plotContainer = document.getElementById("myDiv");
-                plotContainer.style.borderRadius = "6px"; // Rounded borders
+     // Plotly pie chart
+     document.addEventListener("DOMContentLoaded", function () {
+         const pieData = /*[[${pieData}]]*/ {};
+         const labels = Object.keys(pieData);
+         const values = Object.values(pieData).map((value) =>
+             parseFloat(value.toFixed(2))
+         );
+         // Apply border-radius to the plot container
+         const plotContainer = document.getElementById("myDiv");
+         plotContainer.style.borderRadius = "6px"; // Rounded borders
 
-                const data = [
-                    {
-                        values: values,
-                        labels: labels,
-                        type: "pie",
-                    },
-                ];
-                const layout = {
-                    height: 200,
-                    width: 470,
-                    margin: { t: 10, b: 10, l: 10, r: 10 },
-                    paper_bgcolor: "transparent",
-                    plot_bgcolor: "transparent",
-                };
-                Plotly.newPlot("myDiv", data, layout);
-            });
+         const data = [
+             {
+                 values: values,
+                 labels: labels,
+                 type: "pie",
+             },
+         ];
+         const layout = {
+             height: 200,
+             width: 470,
+             margin: { t: 10, b: 10, l: 10, r: 10 },
+             paper_bgcolor: "transparent",
+             plot_bgcolor: "transparent",
+         };
+         Plotly.newPlot("myDiv", data, layout);
+     });
 
-            // Plotly bar chart
-            document.addEventListener("DOMContentLoaded", function () {
-                const barChartData = /*[[${barChartData}]]*/ {};
-                if (Object.keys(barChartData).length > 0) {
-                    const profileNames = Object.keys(barChartData);
-                    const costTypes = Object.keys(barChartData[profileNames[0]]);
-                    const data = [];
+     // Plotly bar chart
+     document.addEventListener("DOMContentLoaded", function () {
+         const barChartData = /*[[${barChartData}]]*/ {};
+         if (Object.keys(barChartData).length > 0) {
+             const profileNames = Object.keys(barChartData);
+             const costTypes = Object.keys(barChartData[profileNames[0]]);
+             const data = [];
 
-                    //Bar chart data
-                    costTypes.forEach((costType) => {
-                        const trace = {
-                            x: profileNames,
-                            y: profileNames.map(
-                                (profileName) => barChartData[profileName][costType]
-                            ),
-                            name: costType,
-                            type: "bar",
-                        };
-                        data.push(trace);
-                    });
-                    const layout = {
-                        barmode: "group",
-                        xaxis: { title: "Profiles" },
-                        yaxis: { title: "Cost $" },
-                        bargap: 0.12,
-                        height: 240,
-                        width: 1500,
-                        margin: { t: 10, b: 40, l: 70, r: 20 },
-                        paper_bgcolor: "transparent",
-                        plot_bgcolor: "transparent",
-                    };
+             //Bar chart data
+             costTypes.forEach((costType) => {
+                 const trace = {
+                     x: profileNames,
+                     y: profileNames.map(
+                         (profileName) => barChartData[profileName][costType]
+                     ),
+                     name: costType,
+                     type: "bar",
+                 };
+                 data.push(trace);
+             });
+             const layout = {
+                 barmode: "group",
+                 xaxis: { title: "Profiles" },
+                 yaxis: { title: "Cost $" },
+                 bargap: 0.12,
+                 height: 240,
+                 width: 1500,
+                 margin: { t: 10, b: 40, l: 70, r: 20 },
+                 paper_bgcolor: "transparent",
+                 plot_bgcolor: "transparent",
+             };
 
-                    Plotly.newPlot("barChartDiv", data, layout);
-                }
-            });
+             Plotly.newPlot("barChartDiv", data, layout);
+         }
+     });
 
-            function validateForm() {
-                const checkboxes = document.querySelectorAll(
-                    'input[name="createdProfile"]:checked'
-                );
-                const errorMessage = document.getElementById("error-message");
-                if (checkboxes.length === 0) {
-                    errorMessage.style.display = "block";
-                    return false; // Prevent form submission
-                }
-                errorMessage.style.display = "none";
-                return true; // Allow form submission
-            }
+     function validateForm() {
+         const checkboxes = document.querySelectorAll(
+             'input[name="createdProfile"]:checked'
+         );
+         const errorMessage = document.getElementById("error-message");
+         if (checkboxes.length === 0) {
+             errorMessage.style.display = "block";
+             return false; // Prevent form submission
+         }
+         errorMessage.style.display = "none";
+         return true; // Allow form submission
+     }
 
-            // Filter list input function
-            function filterList(listId, searchInputId) {
-                const searchInput = document.getElementById(searchInputId);
-                const filter = searchInput.value.toLowerCase();
+     // Filter list input function
+     function filterList(listId, searchInputId) {
+         const searchInput = document.getElementById(searchInputId);
+         const filter = searchInput.value.toLowerCase();
 
-                console.log(`Filtering list ${listId} with value ${filter}`); // Debug log
-                const list = document.getElementById(listId);
+         console.log(`Filtering list ${listId} with value ${filter}`); // Debug log
+         const list = document.getElementById(listId);
 
-                if (list) {
-                    const items = list.getElementsByTagName('li');
-                    Array.from(items).forEach(item => {
-                        const textValue = item.textContent || item.innerText;
-                        console.log(`Text: ${textValue}, Filter: ${filter}`); // Log values
-                        item.style.display = textValue.toLowerCase().includes(filter) ? '' : 'none';
-                    });
-                }
-            }
-
+         if (list) {
+             const items = list.getElementsByTagName('li');
+             Array.from(items).forEach(item => {
+                 const textValue = item.textContent || item.innerText;
+                 console.log(`Text: ${textValue}, Filter: ${filter}`); // Log values
+                 item.style.display = textValue.toLowerCase().includes(filter) ? '' : 'none';
+             });
+         }
+     }
         </script>
 
     </body>
