@@ -29,6 +29,12 @@ public class CsvDataService {
             // I was using none, and it was creating a double record in the db, finding a double values of each state, with this "if condition", is working well, the same i used for
             //states and metro areas in the ApiServiceHudUser class
             // This method will create the database with the data from the csv file
+
+            //In Java 7, the try-with-resources statement was introduced to simplify old buffered reader pattern.
+            // The try-with-resources statement automatically handles resource management for any object that implements
+            // the AutoCloseable interface (which includes Closeable like BufferedReader, FileReader, etc.), so no need to
+            // explicitly close the resources.
+
             String csvFile = "UtilitiesCostStatesManualFed.csv";
             String line = "";
             String cvsSplitBy = ",";

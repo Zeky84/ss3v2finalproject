@@ -722,7 +722,7 @@ public class UserController {
             User userAuth = (User) authentication.getPrincipal();
 
             if (!userAuth.getId().equals(userId)) {
-                // Redirect to an error page or a 'forbidden' page
+                // Redirect to the same page but with a message to show that the user is not authorized
                 return "redirect:/usersession/" + userAuth.getId()+"?unAuthorized";
             }
 

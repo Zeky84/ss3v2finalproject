@@ -449,7 +449,7 @@
     <div class="paragraph">
       <p>
         [[${user.firstName}]]'s Session
-        <span th:if="${error}" style="color: red">
+        <span th:if="${param.unAuthorized}" style="color: red">
           You are not authorized to access other users data!!!
         </span>
       </p>
