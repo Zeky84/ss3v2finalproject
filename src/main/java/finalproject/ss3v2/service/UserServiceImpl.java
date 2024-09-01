@@ -224,4 +224,11 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    public String isUserFromAuthMatchingCurrentUser(Integer userId, User userAuth) {
+        if (!userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data) return to its own session
+            return "redirect:/usersession/" + userAuth.getId() + "?unAuthorized";
+        }
+        return null;
+    }
+
 }
