@@ -1,4 +1,5 @@
 package finalproject.ss3v2.web;
+
 import finalproject.ss3v2.domain.Authority;
 import finalproject.ss3v2.domain.Profile;
 import finalproject.ss3v2.domain.User;
@@ -61,60 +62,57 @@ public class UserController {
 
 	@GetMapping("/{userId}") // END-POINT FOR START SEARCHING CRITERIA, SEARCH BY STATE OR METRO AREA
 	public String goToUserSession(@PathVariable Integer userId, Model model, ModelMap modelMap, Authentication authentication) {
+		User userAuth = null; //Bringing the user to the scope in the last line of the method
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-			// the user from the auth object instead from the to avoid any possible manipulation of the URL
-			User userAuth = (User) authentication.getPrincipal();
-			User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();
+			userAuth = (User) authentication.getPrincipal();
+			if (userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data) return to its own session
+				User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
-			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
-
-			// Adding the userAuth,states,metro areas and profiles to the html view
-			model.addAttribute("user", userAuth);
-			model.addAttribute("states", apiServiceHudUser.getStatesList());
-			model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
-			List<Profile> profiles = user.getProfiles();
-			if (!profiles.isEmpty()) {
-				model.addAttribute("profiles", profiles);
+				model.addAttribute("user", userAuth);
+				model.addAttribute("states", apiServiceHudUser.getStatesList());
+				model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
+				List<Profile> profiles = user.getProfiles();
+				if (!profiles.isEmpty()) {
+					model.addAttribute("profiles", profiles);
+				}
+				return "usersession";
+			} else {
+				return "redirect:/usersession/" + userAuth.getId() + "?unAuthorized";
 			}
-			return "usersession";
 		}
-		return "redirect:/signin";
+		return "redirect:/usersession/" + userAuth.getId() + "?unAuthenticated";
 	}
 
 
 	@PostMapping("/{userId}/asKForSuperUser")
 	public String askForSuperUser(@PathVariable Integer userId, Model model, Authentication authentication) {
-		// This code was helped by Chat GPT4... I was stuck in this part for a while
+		User userAuth = null;
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
-			User userAuth = (User) authentication.getPrincipal();
+			userAuth = (User) authentication.getPrincipal();
 			userAuth.setUserAskedForSuperUser(true);
 
-			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
-			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+			if (userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data) return to its own session
 
-			// Clean up the user object before saving(To avoid getting undesired tokens in the dashboard table)
-			cleanUpUserBeforeSave(userAuth);
+				// Clean up the user object before saving(To avoid getting undesired tokens in the dashboard table)
+				cleanUpUserBeforeSave(userAuth);
 
-			//--------------------------------------------IMPORTANT TO REMEMBER----------------------------------------
-			userServiceImpl.save(userAuth); // updating the user with the new values
+				//--------------------------------------------IMPORTANT TO REMEMBER----------------------------------------
+				userServiceImpl.save(userAuth); // updating the user with the new values
 
-			//This object takes the updated user, their credentials (usually the password), and their authorities (roles/privileges).This step is crucial
-			// as it reflects the changes in the user’s authentication token, ensuring that any subsequent security checks use the latest user details.
-			Authentication updatedAuth = new UsernamePasswordAuthenticationToken(userAuth, authentication.getCredentials(), userAuth.getAuthorities());
+				//This object takes the updated user, their credentials (usually the password), and their authorities (roles/privileges).This step is crucial
+				// as it reflects the changes in the user’s authentication token, ensuring that any subsequent security checks use the latest user details.
+				Authentication updatedAuth = new UsernamePasswordAuthenticationToken(userAuth, authentication.getCredentials(), userAuth.getAuthorities());
 
-			//This final step is setting the new authentication in the SecurityContext. This is important because it
-			// ensures that within the current session or security context, the user's authentication details are up-to-date.
-			// This affects everything from security checks to decisions made based on the user's roles or identity.
-			SecurityContextHolder.getContext().setAuthentication(updatedAuth);
-			//---------------------------------------------------------------------------------------------------------
-
-			model.addAttribute("user", userAuth);
-
-
-			return "redirect:/usersession/" + userId; // Ensure this is a redirect
+				//This final step is setting the new authentication in the SecurityContext. This is important because it
+				// ensures that within the current session or security context, the user's authentication details are up-to-date.
+				// This affects everything from security checks to decisions made based on the user's roles or identity.
+				SecurityContextHolder.getContext().setAuthentication(updatedAuth);
+				//---------------------------------------------------------------------------------------------------------
+				model.addAttribute("user", userAuth);
+				return "redirect:/usersession/" + userId; // Ensure this is a redirect
+			}
 		}
-		return "redirect:/signin";
+		return "redirect:/usersession/" + userAuth.getId() + "?unAuthenticated";
 	}
 
 	private void cleanUpUserBeforeSave(User user) {
@@ -173,9 +171,9 @@ public class UserController {
 			}
 
 			return "usersession";
+			}
+			return "redirect:/signin";
 		}
-		return "redirect:/signin";
-	}
 
 	@GetMapping("/{userId}/metroarea/data/{dataEntityCode}/dataid/{dataindex}")
 	// ENDPOINT METroAREA SEARCH CRITERIA FINAL DATA
@@ -192,36 +190,29 @@ public class UserController {
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
+
+
 			model.addAttribute("user", userAuth);
-
-
-			// Adding list of profiles created by the user if they exists
-			List<Profile> profiles = user.getProfiles();
-			if (!profiles.isEmpty()) {
-				model.addAttribute("profiles", profiles);
-			}
-
-
-			//to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
-			Integer gallonsOfFuel = 0;
-			Integer persons = 0;
-
 			model.addAttribute("states", apiServiceHudUser.getStatesList());
 			model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
 			model.addAttribute("entityCode", dataEntityCode);
 			model.addAttribute("stateCodes", apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode));
 			model.addAttribute("dataindex", dataindex);
-
+			List<Profile> profiles = user.getProfiles();
+			if (!profiles.isEmpty()) {
+				model.addAttribute("profiles", profiles);
+			}
+			model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
+			//to manage quantities(gallons of fuel and persons) values need it to calculate fuel and elect costs
+			Integer gallonsOfFuel = 0;
+			Integer persons = 0;
 			model.addAttribute("gallonsOfFuel", gallonsOfFuel);
 			model.addAttribute("personsLivingIn", persons);
-
-
-			model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
 
 			//Creating utilities profile, so the user will add values later to analyze and get total cost.
 			Profile profile = new Profile();
 			profile.setUser(user);
-
 
 			// Getting the basic data object that contains the rent values from HudUser api.
 			List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
@@ -279,9 +270,9 @@ public class UserController {
 
 
 			return "usersession";
+			}
+			return "redirect:/signin";
 		}
-		return "redirect:/signin";
-	}
 
 	@GetMapping("/{userId}/counties/{stateCode}") // EN-POINT FOR STATE-COUNTY SEARCHING CRITERIA
 	public String getCountiesByState(@PathVariable Integer userId, @PathVariable String stateCode, Model model, Authentication authentication) {
@@ -368,7 +359,7 @@ public class UserController {
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
-			
+
 			model.addAttribute("user", userAuth);
 			model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
 			model.addAttribute("states", apiServiceHudUser.getStatesList());
@@ -537,7 +528,8 @@ public class UserController {
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
 			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
-					.orElseThrow(() -> new IllegalArgumentException("User not found"));;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
+					.orElseThrow(() -> new IllegalArgumentException("User not found"));
+			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
@@ -565,7 +557,8 @@ public class UserController {
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			userAuth = (User) authentication.getPrincipal();
 			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
-					.orElseThrow(() -> new IllegalArgumentException("User not found"));;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
+					.orElseThrow(() -> new IllegalArgumentException("User not found"));
+			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
@@ -629,7 +622,8 @@ public class UserController {
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
 			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
-					.orElseThrow(() -> new IllegalArgumentException("User not found"));;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
+					.orElseThrow(() -> new IllegalArgumentException("User not found"));
+			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
@@ -672,7 +666,8 @@ public class UserController {
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
 			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
-					.orElseThrow(() -> new IllegalArgumentException("User not found"));;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
+					.orElseThrow(() -> new IllegalArgumentException("User not found"));
+			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);

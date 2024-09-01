@@ -525,8 +525,8 @@
                                 <li th:each="zipCode, iterStat : ${zipCodes}">
                                     <span th:if="${zipCode} == 'MSA level'">MSA general
                                         data</span><!--MSA level is new,  values are aggregated and provided for the entire MSA 08/03/2024-->
-                                      <a th:if="${zipCode} != 'MSA level'"
-                                    th:href="@{/app-testing/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
+                                    <a th:if="${zipCode} != 'MSA level'"
+                                        th:href="@{/app-testing/counties/{stateCode}/data/{dataEntityCode}/dataid/{dataindex}(stateCode=${stateCode}, dataEntityCode=${entityCode}, dataindex=${iterStat.index})}"
                                         th:text="${zipCode}">
                                     </a>
                                 </li>
@@ -822,7 +822,7 @@
                 <div style="padding: 20px">
                     <!-- If profile is created, show the submit button -->
                     <button type="submit" class="submit-button" id="submitBtn" style="display: none">
-                        Get Costs
+                        Check Costs
                     </button>
                 </div>
             </form>
@@ -868,7 +868,7 @@
                         <span class="tooltiptext">Generate multilple bar charts visualizations for comparison</span>
                     </button>
                     <p id="error-message" style="color: red; display: none">
-                        Please select at least one profile.
+                        Check mark the profile to visualize.Usefull for comparison.
                     </p>
                 </form>
 
@@ -885,138 +885,138 @@
 
         <script th:inline="javascript">
             // Function to toggle the image and show/hide the info block  // Chat GPT 3.5 code
-     function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
-         console.log("toggleImage called"); // Check if function is called
-         var infoBlock = document.getElementById(infoBlockId);
-         if (imgElement.src.includes(offSrc)) {
-             imgElement.src = onSrc;
-             if (infoBlock) infoBlock.style.display = "block"; // Show the info block
-         } else {
-             imgElement.src = offSrc;
-             if (infoBlock) infoBlock.style.display = "none"; // Hide the info block
-         }
-     }
+            function toggleImage(imgElement, onSrc, offSrc, infoBlockId) {
+                console.log("toggleImage called"); // Check if function is called
+                var infoBlock = document.getElementById(infoBlockId);
+                if (imgElement.src.includes(offSrc)) {
+                    imgElement.src = onSrc;
+                    if (infoBlock) infoBlock.style.display = "block"; // Show the info block
+                } else {
+                    imgElement.src = offSrc;
+                    if (infoBlock) infoBlock.style.display = "none"; // Hide the info block
+                }
+            }
 
-     document.addEventListener("DOMContentLoaded", function () {
-         // to display the submit button only when a radio button is selected
-         // Chat GPT 3.5 code
-         // Get all radio inputs
-         const radios = document.querySelectorAll('input[type="radio"]');
-         const submitBtn = document.getElementById("submitBtn");
+            document.addEventListener("DOMContentLoaded", function () {
+                // to display the submit button only when a radio button is selected
+                // Chat GPT 3.5 code
+                // Get all radio inputs
+                const radios = document.querySelectorAll('input[type="radio"]');
+                const submitBtn = document.getElementById("submitBtn");
 
-         // Function to update the visibility of the submit button
-         function updateSubmitButtonVisibility() {
-             // Check if any radio button is selected
-             const isAnySelected = Array.from(radios).some(
-                 (radio) => radio.checked
-             );
-             // Show or hide the submit button based on whether any radio is selected
-             submitBtn.style.display = isAnySelected ? "block" : "none"; // Use 'inline', 'inline-block', or 'block' as needed
-         }
+                // Function to update the visibility of the submit button
+                function updateSubmitButtonVisibility() {
+                    // Check if any radio button is selected
+                    const isAnySelected = Array.from(radios).some(
+                        (radio) => radio.checked
+                    );
+                    // Show or hide the submit button based on whether any radio is selected
+                    submitBtn.style.display = isAnySelected ? "block" : "none"; // Use 'inline', 'inline-block', or 'block' as needed
+                }
 
-         // Initialize button visibility on load
-         updateSubmitButtonVisibility();
+                // Initialize button visibility on load
+                updateSubmitButtonVisibility();
 
-         // Add change event listener to all radio buttons
-         radios.forEach((radio) => {
-             radio.addEventListener("change", updateSubmitButtonVisibility);
-         });
-     });
+                // Add change event listener to all radio buttons
+                radios.forEach((radio) => {
+                    radio.addEventListener("change", updateSubmitButtonVisibility);
+                });
+            });
 
-     // Plotly pie chart
-     document.addEventListener("DOMContentLoaded", function () {
-         const pieData = /*[[${pieData}]]*/ {};
-         const labels = Object.keys(pieData);
-         const values = Object.values(pieData).map((value) =>
-             parseFloat(value.toFixed(2))
-         );
-         // Apply border-radius to the plot container
-         const plotContainer = document.getElementById("myDiv");
-         plotContainer.style.borderRadius = "6px"; // Rounded borders
+            // Plotly pie chart
+            document.addEventListener("DOMContentLoaded", function () {
+                const pieData = /*[[${pieData}]]*/ {};
+                const labels = Object.keys(pieData);
+                const values = Object.values(pieData).map((value) =>
+                    parseFloat(value.toFixed(2))
+                );
+                // Apply border-radius to the plot container
+                const plotContainer = document.getElementById("myDiv");
+                plotContainer.style.borderRadius = "6px"; // Rounded borders
 
-         const data = [
-             {
-                 values: values,
-                 labels: labels,
-                 type: "pie",
-             },
-         ];
-         const layout = {
-             height: 200,
-             width: 470,
-             margin: { t: 10, b: 10, l: 10, r: 10 },
-             paper_bgcolor: "transparent",
-             plot_bgcolor: "transparent",
-         };
-         Plotly.newPlot("myDiv", data, layout);
-     });
+                const data = [
+                    {
+                        values: values,
+                        labels: labels,
+                        type: "pie",
+                    },
+                ];
+                const layout = {
+                    height: 200,
+                    width: 470,
+                    margin: { t: 10, b: 10, l: 10, r: 10 },
+                    paper_bgcolor: "transparent",
+                    plot_bgcolor: "transparent",
+                };
+                Plotly.newPlot("myDiv", data, layout);
+            });
 
-     // Plotly bar chart
-     document.addEventListener("DOMContentLoaded", function () {
-         const barChartData = /*[[${barChartData}]]*/ {};
-         if (Object.keys(barChartData).length > 0) {
-             const profileNames = Object.keys(barChartData);
-             const costTypes = Object.keys(barChartData[profileNames[0]]);
-             const data = [];
+            // Plotly bar chart
+            document.addEventListener("DOMContentLoaded", function () {
+                const barChartData = /*[[${barChartData}]]*/ {};
+                if (Object.keys(barChartData).length > 0) {
+                    const profileNames = Object.keys(barChartData);
+                    const costTypes = Object.keys(barChartData[profileNames[0]]);
+                    const data = [];
 
-             //Bar chart data
-             costTypes.forEach((costType) => {
-                 const trace = {
-                     x: profileNames,
-                     y: profileNames.map(
-                         (profileName) => barChartData[profileName][costType]
-                     ),
-                     name: costType,
-                     type: "bar",
-                 };
-                 data.push(trace);
-             });
-             const layout = {
-                 barmode: "group",
-                 xaxis: { title: "Profiles" },
-                 yaxis: { title: "Cost $" },
-                 bargap: 0.12,
-                 height: 240,
-                 width: 1500,
-                 margin: { t: 10, b: 40, l: 70, r: 20 },
-                 paper_bgcolor: "transparent",
-                 plot_bgcolor: "transparent",
-             };
+                    //Bar chart data
+                    costTypes.forEach((costType) => {
+                        const trace = {
+                            x: profileNames,
+                            y: profileNames.map(
+                                (profileName) => barChartData[profileName][costType]
+                            ),
+                            name: costType,
+                            type: "bar",
+                        };
+                        data.push(trace);
+                    });
+                    const layout = {
+                        barmode: "group",
+                        xaxis: { title: "Profiles" },
+                        yaxis: { title: "Cost $" },
+                        bargap: 0.12,
+                        height: 240,
+                        width: 1500,
+                        margin: { t: 10, b: 40, l: 70, r: 20 },
+                        paper_bgcolor: "transparent",
+                        plot_bgcolor: "transparent",
+                    };
 
-             Plotly.newPlot("barChartDiv", data, layout);
-         }
-     });
+                    Plotly.newPlot("barChartDiv", data, layout);
+                }
+            });
 
-     function validateForm() {
-         const checkboxes = document.querySelectorAll(
-             'input[name="createdProfile"]:checked'
-         );
-         const errorMessage = document.getElementById("error-message");
-         if (checkboxes.length === 0) {
-             errorMessage.style.display = "block";
-             return false; // Prevent form submission
-         }
-         errorMessage.style.display = "none";
-         return true; // Allow form submission
-     }
+            function validateForm() {
+                const checkboxes = document.querySelectorAll(
+                    'input[name="createdProfile"]:checked'
+                );
+                const errorMessage = document.getElementById("error-message");
+                if (checkboxes.length === 0) {
+                    errorMessage.style.display = "block";
+                    return false; // Prevent form submission
+                }
+                errorMessage.style.display = "none";
+                return true; // Allow form submission
+            }
 
-     // Filter list input function
-     function filterList(listId, searchInputId) {
-         const searchInput = document.getElementById(searchInputId);
-         const filter = searchInput.value.toLowerCase();
+            // Filter list input function
+            function filterList(listId, searchInputId) {
+                const searchInput = document.getElementById(searchInputId);
+                const filter = searchInput.value.toLowerCase();
 
-         console.log(`Filtering list ${listId} with value ${filter}`); // Debug log
-         const list = document.getElementById(listId);
+                console.log(`Filtering list ${listId} with value ${filter}`); // Debug log
+                const list = document.getElementById(listId);
 
-         if (list) {
-             const items = list.getElementsByTagName('li');
-             Array.from(items).forEach(item => {
-                 const textValue = item.textContent || item.innerText;
-                 console.log(`Text: ${textValue}, Filter: ${filter}`); // Log values
-                 item.style.display = textValue.toLowerCase().includes(filter) ? '' : 'none';
-             });
-         }
-     }
+                if (list) {
+                    const items = list.getElementsByTagName('li');
+                    Array.from(items).forEach(item => {
+                        const textValue = item.textContent || item.innerText;
+                        console.log(`Text: ${textValue}, Filter: ${filter}`); // Log values
+                        item.style.display = textValue.toLowerCase().includes(filter) ? '' : 'none';
+                    });
+                }
+            }
         </script>
 
     </body>
