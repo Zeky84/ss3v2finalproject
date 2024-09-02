@@ -11,12 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UserTests {
 
-	// @Test
-	// public void testUser() {
-	// 	User user = new User();
-	// 	user.setFirstName("John");
-	// 	user.setLastName("Doe");
-	// 	user.setEmail("
 
 	@Test
 	public void createUser() {
