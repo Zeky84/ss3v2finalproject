@@ -1,7 +1,5 @@
 package finalproject.ss3v2.web;
 
-import finalproject.ss3v2.domain.Profile;
-import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.dto.BasicData;
 import finalproject.ss3v2.dto.DataRent;
 import finalproject.ss3v2.dto.TestingProfile;
@@ -10,7 +8,6 @@ import finalproject.ss3v2.service.ApiServiceEnergyInfoAdmin;
 import finalproject.ss3v2.service.ApiServiceHudUser;
 import finalproject.ss3v2.service.ApiServiceZipCodeStack;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -103,7 +100,6 @@ public class TestingController {
         model.addAttribute("states", apiServiceHudUser.getStatesList());
         model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
         model.addAttribute("entityCode", dataEntityCode);
-        model.addAttribute("stateCodes", apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode));
         model.addAttribute("dataindex", dataindex);
 
         model.addAttribute("gallonsOfFuel", gallonsOfFuel);
@@ -133,7 +129,7 @@ public class TestingController {
         }
         // to manage when the data has only one basic data object
         if (basicData.size() == 1) {
-            stateCode = apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode).get(0);
+            stateCode = apiServiceHudUser.getStateCodeInMetroArea(dataEntityCode);
 
             model.addAttribute("rentValues", basicData.get(0));
             model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));

@@ -65,6 +65,8 @@ public class UserController {
 		User userAuth = null; //Bringing the user to the scope in the last line of the method
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			userAuth = (User) authentication.getPrincipal();
+			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
 			if (userAuth.getId().equals(userId)) {// to avoid any possible manipulation of the URL(current user trying to access another user's data) return to its own session
 				User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -125,15 +127,15 @@ public class UserController {
 		return !authority.getAuthority().contains("eyJhbGciOiJIUzI1NiJ9");
 	}
 
-
 	@GetMapping("/{userId}/metroarea/data/{dataEntityCode}") // ENDPOINT METRO AREA SEARCHING CRITERIA
 	public String getDataByMetroAreaCode(@PathVariable Integer userId, @PathVariable String dataEntityCode, Model model, Authentication authentication) {
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
-			User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
+			User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			model.addAttribute("user", userAuth);
 			model.addAttribute("states", apiServiceHudUser.getStatesList());
@@ -143,7 +145,6 @@ public class UserController {
 			if (!profiles.isEmpty()) {
 				model.addAttribute("profiles", profiles);
 			}
-
 			if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
 				// The previous code was changed. When trying to input search in the list of zip codes to localize it easier
 				// the input search was not working. Because instead of sending a list of zip codes to the front end, i was
@@ -169,7 +170,6 @@ public class UserController {
 				//found a case where no data was found... for example Arecibo, PR
 				model.addAttribute("nodata", "no data found for this search");
 			}
-
 			return "usersession";
 			}
 			return "redirect:/signin";
@@ -186,18 +186,16 @@ public class UserController {
 
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
-			User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
 
-
+			User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			model.addAttribute("user", userAuth);
 			model.addAttribute("states", apiServiceHudUser.getStatesList());
 			model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
 			model.addAttribute("entityCode", dataEntityCode);
-			model.addAttribute("stateCodes", apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode));
 			model.addAttribute("dataindex", dataindex);
 			List<Profile> profiles = user.getProfiles();
 			if (!profiles.isEmpty()) {
@@ -216,8 +214,6 @@ public class UserController {
 
 			// Getting the basic data object that contains the rent values from HudUser api.
 			List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
-
-
 			if (basicData.size() > 1) {
 				//Getting the state code from the zip code to get EAI and utilities database data using zipCodeStack api. Only works when the
 				// metro area has many zipcodes associated with it. If only one set of data, not zip code available so won't work
@@ -243,7 +239,7 @@ public class UserController {
 			}
 			// to manage when the data has only one basic data object
 			if (basicData.size() == 1) {
-				stateCode = apiServiceHudUser.getAllStatesCodesInMetroArea(dataEntityCode).get(0);
+				stateCode = apiServiceHudUser.getStateCodeInMetroArea(dataEntityCode);
 
 				model.addAttribute("rentValues", basicData.get(0));
 				model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
@@ -318,7 +314,6 @@ public class UserController {
 			if (!profiles.isEmpty()) {
 				model.addAttribute("profiles", profiles);
 			}
-
 			if (apiServiceHudUser.getTheDataCostByCode(dataEntityCode) != null) {
 				// The previous code was changed. When trying to input search in the list of zip codes to localize it easier
 				// the input search was not working. Instead of sending a list of zip codes to the front end, it was
@@ -355,10 +350,12 @@ public class UserController {
 															  @PathVariable Integer dataindex, Model model, Authentication authentication) {
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
-			User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
+			User user = userServiceImpl.findUserByEmail(userAuth.getEmail()).get();// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
+
 
 			model.addAttribute("user", userAuth);
 			model.addAttribute("metroAreas", apiServiceHudUser.getMetroAreasList());
@@ -380,16 +377,13 @@ public class UserController {
 			// Using to know if the data is coming from metroArea or state/county/zipCode(data.countyName empty means metroArea)
 			model.addAttribute("data", apiServiceHudUser.getTheDataCostByCode(dataEntityCode));
 
-
 			//Creating utilities profile, so the user will add values later to analyze and get total cost.
 			Profile profile = new Profile();
 			profile.setUser(user);
 			profile.setStateCode(stateCode);
 
-
 			// Getting the basic data object that contains the rent values from HudUser api.
 			List<BasicData> basicData = apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getBasicdata();
-
 			if (basicData.size() > 1) {
 				// basicData.size() > 1 means that the county has many zipcodes associated with it, so many data sets
 				model.addAttribute("rentValues", basicData.get(dataindex));
@@ -418,7 +412,6 @@ public class UserController {
 						.getCountyName());
 
 			}
-
 			//Saving all the profile things once the profile is created and set with the user
 			user.getProfiles().add(profile);
 			userServiceImpl.save(user);
@@ -442,18 +435,18 @@ public class UserController {
 
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
-			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
-					.orElseThrow(() -> new IllegalArgumentException("User not found"));// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
+			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
+					.orElseThrow(() -> new IllegalArgumentException("User not found"));// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			model.addAttribute("user", userAuth);
 			List<Profile> profiles = user.getProfiles();
 			if (!profiles.isEmpty()) {
 				model.addAttribute("profiles", profiles);
 			}
-
 			//Checking no null values before updating the profile(null values are set to 0)
 			if (rentType == null) {
 				rentType = 0.0;
@@ -507,7 +500,6 @@ public class UserController {
 			if (personsQty >= 5) {
 				profile.setElectricityCost((double) Math.round(electType * 1500 * 0.01));
 			}
-
 			profile.setWasteCost(wasteType);
 			profile.setWaterCost(waterType);
 			profile.setPublicTransportationCost(transpType);
@@ -527,12 +519,14 @@ public class UserController {
 			model, Authentication authentication) {
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
+
+			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
+			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
 			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
 					.orElseThrow(() -> new IllegalArgumentException("User not found"));
 			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
-			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
-			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
 
 			model.addAttribute("user", userAuth);
 			List<Profile> profiles = user.getProfiles();
@@ -556,12 +550,13 @@ public class UserController {
 		User userAuth = null; //Bringing the user to the scope in the last line of the method
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			userAuth = (User) authentication.getPrincipal();
-			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
-					.orElseThrow(() -> new IllegalArgumentException("User not found"));
-			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
+			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
+					.orElseThrow(() -> new IllegalArgumentException("User not found"));
+			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			model.addAttribute("user", userAuth);
 			model.addAttribute("states", apiServiceHudUser.getStatesList());
@@ -621,12 +616,13 @@ public class UserController {
 										  Authentication authentication) {
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
-			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
-					.orElseThrow(() -> new IllegalArgumentException("User not found"));
-			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
 			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
+			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
+					.orElseThrow(() -> new IllegalArgumentException("User not found"));
+			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
 			model.addAttribute("user", userAuth);
 			model.addAttribute("states", apiServiceHudUser.getStatesList());
@@ -665,12 +661,15 @@ public class UserController {
 	public String goToEditUser(@PathVariable Integer userId, Model model, Authentication authentication) {
 		if (authentication != null && refreshTokenService.verifyRefreshTokenExpirationByUserId(((User) authentication.getPrincipal()).getId())) {
 			User userAuth = (User) authentication.getPrincipal();
+
+			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
+			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
 			User user = userServiceImpl.findUserByEmail(userAuth.getEmail())
 					.orElseThrow(() -> new IllegalArgumentException("User not found"));
 			;// accessing the user from the db using the email from the userAuth, to avoid any possible manipulation of the URL 08/04/2024
 
-			// to avoid any possible manipulation of the URL(current user trying to access another user's data)
-			userServiceImpl.isUserFromAuthMatchingCurrentUser(userId, userAuth);
+
 			model.addAttribute("user", userAuth);
 			return "edituser";
 		}

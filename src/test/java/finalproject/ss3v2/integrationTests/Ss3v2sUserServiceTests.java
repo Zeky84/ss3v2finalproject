@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 //@Transactional
 @SpringBootTest
 public class Ss3v2sUserServiceTests {
+	//Arrange, Act, Assert
 
 	@Autowired
 	private UserServiceImpl userServiceImpl;
@@ -28,6 +29,7 @@ public class Ss3v2sUserServiceTests {
 
 	private ArrayList<User> users;
 
+	//Arrange
 	@BeforeEach
 	public void setUp() {
 		userRepository.deleteAll(); // Clean up the database before each test
@@ -41,14 +43,13 @@ public class Ss3v2sUserServiceTests {
 			users.add(user);
 		}
 	}
-
 	@AfterEach
 	public void tearDown() {
 		userRepository.deleteAll(); // Clean up the database after each test
 	}
 
 	@Test
-	public void testSaveUser() {
+	public void testSaveUsers() {
 		for (User user : users) {
 			userServiceImpl.save(user);
 		}
@@ -57,8 +58,10 @@ public class Ss3v2sUserServiceTests {
 
 	@Test
 	public void testFindUserByEmail() {
+		//Act
 		User savedUser = userRepository.save(users.get(0));
 		User userSavedInRepo = userRepository.findByEmail(savedUser.getEmail()).orElse(null);
+		//Assert
 		assertNotNull(userSavedInRepo);
 		assertEquals(savedUser.getEmail(), userSavedInRepo.getEmail());
 		assertEquals(savedUser.getFirstName(), userSavedInRepo.getFirstName());
@@ -81,7 +84,6 @@ public class Ss3v2sUserServiceTests {
 		User deletedUser = userRepository.findById(savedUser.getId()).orElse(null);
 		assertNull(deletedUser); // Assuming the findById returns null if the user is not found
 	}
-
 	private void assertNull(User deletedUser) {
 	}
 

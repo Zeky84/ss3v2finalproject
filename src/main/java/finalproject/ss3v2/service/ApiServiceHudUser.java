@@ -193,7 +193,9 @@ public class ApiServiceHudUser {
         return metroAreaRepository.findAll();
     }
 
-    public List<String> getAllStatesCodesInMetroArea(String metroAreaCode) {
+    public String getStateCodeInMetroArea(String metroAreaCode) {
+        // Right now this method is working just to get one state code, but initially it's conception was to get all
+        // the state codes in a metro area. Take a better approach and now getting the first element of the array
         String metroName = getTheDataCostByCode(metroAreaCode).getMetroName();
         List<String> statesCodes = new ArrayList<>();
 
@@ -205,7 +207,7 @@ public class ApiServiceHudUser {
             String[] codes = parts[1].split("-");
             statesCodes.addAll(Arrays.asList(codes));
         }
-        return statesCodes;
+		return statesCodes.get(0);
     }
 
 
