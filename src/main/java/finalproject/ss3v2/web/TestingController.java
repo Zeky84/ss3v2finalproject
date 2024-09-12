@@ -120,7 +120,7 @@ public class TestingController {
             stateCode = apiServiceZipCodeStack.getZipCodeData(basicData.get(dataindex).getZipCode());//getting the state code from the zip code, zip code stack api
 
             model.addAttribute("rentValues", basicData.get(dataindex));
-            model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+            model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByState(stateCode));
             model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
             model.addAttribute("stateCode", stateCode);
             model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
@@ -132,7 +132,7 @@ public class TestingController {
             stateCode = apiServiceHudUser.getStateCodeInMetroArea(dataEntityCode);
 
             model.addAttribute("rentValues", basicData.get(0));
-            model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+            model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByState(stateCode));
             model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
             model.addAttribute("stateCode", stateCode);
             model.addAttribute("location", "MetroArea: " + apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getMetroName());
@@ -221,7 +221,7 @@ public class TestingController {
         if (basicData.size() > 1) {
             // basicData.size() > 1 means that the county has many zipcodes associated with it, so many data sets
             model.addAttribute("rentValues", basicData.get(dataindex));
-            model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+            model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByState(stateCode));
             model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
             model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode)
                     .getCountyName() + " / Zip Code: " + basicData.get(dataindex).getZipCode());
@@ -231,7 +231,7 @@ public class TestingController {
         if (basicData.size() == 1) {
             // basicData.size() == 1 means that the county has only one zipcode associated with it, so only one data set
             model.addAttribute("rentValues", basicData.get(0));
-            model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByStateDebug(stateCode));
+            model.addAttribute("electRate", apiServiceEnergyInfoAdmin.getEnergyRateByState(stateCode));
             model.addAttribute("othersUtilities", utilitiesRepository.findByStateCode(stateCode));
             model.addAttribute("location", apiServiceHudUser.getTheDataCostByCode(dataEntityCode).getCountyName());
         }
