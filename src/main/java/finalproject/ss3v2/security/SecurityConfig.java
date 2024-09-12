@@ -172,8 +172,8 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userService.userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
 
-        logger.info("UserDetailsService: " + userDetailsService);
-        logger.info("PasswordEncoder: " + passwordEncoder);
+//        logger.info("UserDetailsService: " + userDetailsService);
+//        logger.info("PasswordEncoder: " + passwordEncoder);
 
         return authProvider;
     }

@@ -46,7 +46,6 @@ public class ApiServiceHudUser {
     public ApiServiceHudUser(ApiStateRepository stateRepository, ApiMetroAreaRepository metroAreaRepository) {
         this.stateRepository = stateRepository;
         this.metroAreaRepository = metroAreaRepository;
-
     }
 
     public void fetchStatesAndMetroAreasFromHudUserApi() {

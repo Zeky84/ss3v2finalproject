@@ -7,7 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ApplicationStartup {
+public class ApplicationStartup {//This class is used to run some code when the application starts
     //To get all the states and metro areas list from the HUD API when the application starts and saved in the database
     //To create the database with the CSV data when the application starts(all the cost living values except rent and electricity rates)
     ApiServiceHudUser apiServiceHudUser;

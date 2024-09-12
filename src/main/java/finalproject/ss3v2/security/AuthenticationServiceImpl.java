@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import finalproject.ss3v2.dao.request.SignInRequest;
 import finalproject.ss3v2.dao.request.SignUpRequest;
 import finalproject.ss3v2.dao.response.JwtAuthenticationResponse;
-import finalproject.ss3v2.domain.Role;
 import finalproject.ss3v2.domain.User;
 import finalproject.ss3v2.repository.UserRepository;
 import finalproject.ss3v2.service.RefreshTokenService;
