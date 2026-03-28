@@ -82,12 +82,22 @@ public class RefreshTokenService {
     }
 
     public String createNewAccessToken(RefreshTokenRequest refreshTokenRequest) {
-        Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByToken(refreshTokenRequest.refreshToken());
-        String accessToken = refreshTokenOpt
-                .map(this::verifyExpiration)
-                .map(refreshToken -> jwtService.generateToken(new HashMap<>(), refreshToken.getUser()))
-                .orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
-        return accessToken;
+        Optional<RefreshToken> refreshTokenOpt =
+                refreshTokenRepository.findByToken(refreshTokenRequest.refreshToken());
+
+        if (refreshTokenOpt.isEmpty()) {
+            return null; // ✅ instead of throwing
+        }
+
+        RefreshToken refreshToken;
+
+        try {
+            refreshToken = verifyExpiration(refreshTokenOpt.get());
+        } catch (Exception e) {
+            return null; // ✅ expired → return null instead of crash
+        }
+
+        return jwtService.generateToken(new HashMap<>(), refreshToken.getUser());
     }
 
     //--------------------------------------------------------------------------------addition to the original code

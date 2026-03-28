@@ -62,45 +62,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        if  (accessTokenCookie != null ) {
+        if (accessTokenCookie != null) {
 
-            int loginAttempt = 0;
+            String token = accessTokenCookie.getValue();
 
-            while (loginAttempt <= 5) {
-                String token = accessTokenCookie.getValue();
+            try {
+                String subject = jwtService.extractUserName(token);
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-                try {
-                    String subject = jwtService.extractUserName(token);
-                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (StringUtils.hasText(subject) && authentication == null) {
+                    UserDetails userDetails = userService.userDetailsService().loadUserByUsername(subject);
 
-                    if (StringUtils.hasText(subject) && authentication == null) {
-                        UserDetails userDetails = userService.userDetailsService().loadUserByUsername(subject);
+                    if (jwtService.isTokenValid(token, userDetails)) {
+                        UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails,
+                                        null,
+                                        userDetails.getAuthorities());
 
-                        if (jwtService.isTokenValid(token, userDetails)) {
-                            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken (userDetails,
-                                    userDetails.getPassword(),
-                                    userDetails.getAuthorities());
-                            securityContext.setAuthentication(authToken);
-                            SecurityContextHolder.setContext(securityContext);
-
-                            // if successful login occurs:
-                            break;
-                        }
-                    }
-                } catch (ExpiredJwtException e) {
-                    try {
-                        token = refreshTokenService.createNewAccessToken(new RefreshTokenRequest(refreshTokenCookie.getValue()));
-                        accessTokenCookie = CookieUtils.createAccessTokenCookie(token);
-
-                        response.addCookie(accessTokenCookie);
-                        e.printStackTrace();
-                    } catch (Exception e1) {
-
-                        e1.printStackTrace();
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 }
-                loginAttempt++;
+
+            } catch (ExpiredJwtException e) {
+
+                // 🔥 Only try refresh if refresh token exists
+                if (refreshTokenCookie != null) {
+                    try {
+                        String newAccessToken = refreshTokenService
+                                .createNewAccessToken(new RefreshTokenRequest(refreshTokenCookie.getValue()));
+
+                        if (newAccessToken != null) {
+                            Cookie newCookie = CookieUtils.createAccessTokenCookie(newAccessToken);
+                            response.addCookie(newCookie);
+                        }
+
+                    } catch (Exception ex) {
+                        // ✅ Do NOT spam logs, just clear context
+                        SecurityContextHolder.clearContext();
+                    }
+                }
             }
         }
         logger.debug("Request URI: {}", request.getRequestURI());
