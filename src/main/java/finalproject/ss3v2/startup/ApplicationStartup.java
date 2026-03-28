@@ -21,8 +21,22 @@ public class ApplicationStartup {//This class is used to run some code when the 
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
-        apiServiceHudUser.fetchStatesAndMetroAreasFromHudUserApi();
-        csvDataService.createDbWithCsvData();
+
+        try {
+            apiServiceHudUser.fetchStatesAndMetroAreasFromHudUserApi();
+            System.out.println("HUD data loaded successfully");
+        } catch (Exception e) {
+            System.err.println("Failed to load HUD data");
+            e.printStackTrace();
+        }
+
+        try {
+            csvDataService.createDbWithCsvData();
+            System.out.println("CSV data loaded successfully");
+        } catch (Exception e) {
+            System.err.println("Failed to load CSV data");
+            e.printStackTrace();
+        }
     }
 
 }
